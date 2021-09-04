@@ -197,7 +197,7 @@ void OutfitterPanel::DrawItem(const string &name, const Point &point, int scroll
 	else if(stock)
 		message = "in stock: " + to_string(stock);
 	else if(!outfitter.Has(outfit))
-		message = "(not sold here)";
+		message = isLicense ? "(not available here)" : "(not sold here)";
 	if(!message.empty())
 	{
 		Point pos = point + Point(
@@ -476,9 +476,13 @@ void OutfitterPanel::FailBuy() const
 	
 	if(!(outfitter.Has(selectedOutfit) || player.Stock(selectedOutfit) > 0 || isInCargo || isInStorage))
 	{
-		GetUI()->Push(new Dialog("You cannot buy this outfit here. "
-			"It is being shown in the list because you have one installed in your ship, "
-			"but this " + planet->Noun() + " does not sell them."));
+		if(IsLicense(selectedOutfit->Name()))
+			GetUI()->Push(new Dialog("You cannot buy this license here, "
+				"because it is not available on this " + planet->Noun() + "."));
+		else
+			GetUI()->Push(new Dialog("You cannot buy this outfit here. "
+				"It is being shown in the list because you have one installed in your ship, "
+				"but this " + planet->Noun() + " does not sell them."));
 		return;
 	}
 	
