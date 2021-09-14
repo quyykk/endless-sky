@@ -4,7 +4,7 @@
 
 # Summary
 
-Add the ability to specify a `"type"` to an outfit. This is used to group different outfits together and can be used by missions for query/removal.
+Add the ability to specify a `type` to an outfit. This is used to group different outfits together and can be used by missions for query/removal.
 
 ```
 outfit "Hyperdrive"
@@ -15,9 +15,9 @@ outfit "Scram Drive"
 
 # Motivation
 
-Something very often requested is the ability to have species-specific hyperdrives. This RFC solves this problem using `"type"` on outfits. This type could then be used by missions to check/remove a outfit that matches the given type, which IIUC is the only blocker for species-specific hyperdrives.
+Something very often requested is the ability to have species-specific hyperdrives. This RFC solves this problem using `type` on outfits. This type could then be used by missions to check/remove a outfit that matches the given type, which IIUC is the only blocker for species-specific hyperdrives.
 
-More generally, `"type"` enables us to group outfits together which is useful for other outfits than hyperdrives too.
+More generally, `type` enables us to group outfits together which is useful for other outfits than hyperdrives too.
 
 # Detailed Design
 
@@ -28,7 +28,7 @@ outfit "Hyperdrive"
 	type "Hyperdrive"
 ```
 
-Now the outfit `Hyperdrive` belongs to/ the type (or is a) `Hyperdrive`. The type name can be anything, it has no relation at all with the outfit. This type is also not shown in the UI, it's for internal use only.
+Now the outfit `Hyperdrive` belongs to the type (or is a) `Hyperdrive`. The type name can be anything, it has no relation at all with the outfit. This type is also not shown in the UI, it's for internal use only.
 
 Missions have their `outfit` node expanded to allow an optional `type` like this:
 
@@ -37,7 +37,7 @@ on offer
 	outfit type Hyperdrive -1
 ```
 
-which will remove the first outfit that has a `"type"` equal to `Hyperdrive`.
+which will remove the first outfit that has a `type` equal to `Hyperdrive`.
 
 
 # Drawbacks
