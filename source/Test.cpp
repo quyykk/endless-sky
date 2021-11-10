@@ -375,6 +375,11 @@ void Test::Step(TestContext &context, PlayerInfo &player, Command &commandToGive
 	// Tests always wait until the game is fully loaded.
 	if(!GameData::IsLoaded())
 		return;
+	if(context.startupWait)
+	{
+		--(context.startupWait);
+		return;
+	}
 		
 	if(status == Status::BROKEN)
 		Fail(context, player, "Test has a broken status.");
