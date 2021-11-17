@@ -480,7 +480,7 @@ Interface::TextElement::TextElement(const DataNode &node, const Point &globalAnc
 	if(node.Size() < 2)
 		return;
 	
-	isDynamic = (node.Token(0) == "string");
+	const bool isDynamic = (node.Token(0) == "string");
 	if(node.Token(0) == "button")
 	{
 		buttonKey = node.Token(1).front();
@@ -587,7 +587,8 @@ void Interface::TextElement::Place(const Rectangle &bounds, Panel *panel) const
 
 string Interface::TextElement::GetString(const Information &info) const
 {
-	return isDynamic ? info.GetString(str) : str;
+	const auto &text = info.GetString(str);
+	return text.empty() ? str : text;
 }
 
 

@@ -169,7 +169,6 @@ private:
 		const Color *color[3] = {nullptr, nullptr, nullptr};
 		int fontSize = 14;
 		char buttonKey = '\0';
-		bool isDynamic = false;
 		Truncate truncate = Truncate::NONE;
 	};
 	
