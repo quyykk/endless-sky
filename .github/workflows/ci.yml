@@ -31,6 +31,7 @@ on:
     - keys.txt
     - SConstruct
     - .winmake
+    - .codespell.exclude
   pull_request:
     # Run for any push to any pull request, if it modifies source code or game text.
     types: [opened, synchronize]
@@ -44,6 +45,7 @@ on:
     - keys.txt
     - SConstruct
     - .winmake
+    - .codespell.exclude
 
 
 jobs:
@@ -58,6 +60,7 @@ jobs:
       linux: ${{ steps.filter.outputs.linux }}
       unit_tests: ${{ steps.filter.outputs.unit_tests }}
       integration_tests: ${{ steps.filter.outputs.integration_tests }}
+      codespell: ${{ steps.filter.codespell }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -506,7 +509,7 @@ jobs:
 
   test_ubuntu-spellcheck:
     needs: [changed]
-    if: ${{ needs.changed.outputs.data == 'true' }}
+    if: ${{ needs.changed.outputs.data == 'true' || needs.changed.outputs.codespell == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
