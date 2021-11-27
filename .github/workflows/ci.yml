@@ -501,3 +501,17 @@ jobs:
       # In a perfect world we would run a debug build, but since this will run on PRs, we can limit our search of "what caused the bug" to only the code
       # added by that PR, which means debugging symbols aren't as necessary. (We can ignore the still-reachable cin, cout, cerr inherited file descriptors.)
       run: valgrind --tool=memcheck --leak-check=full --track-origins=yes --track-fds=yes --error-exitcode=1 ./endless-sky -p
+
+
+
+  test_ubuntu-spellcheck:
+    needs: [changed]
+    if: ${{ needs.changed.outputs.data == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: codespell-project/actions-codespell@master
+      with:
+        builtin: clear,en-GB_to_en-US
+        path: data/
+        exclude_file: .codespell.exclude
