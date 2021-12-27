@@ -514,7 +514,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: ${{ GITHUB_REF }}
+        ref: ${{ env.GITHUB_REF }}
     - uses: codespell-project/actions-codespell@master
       with:
         builtin: clear,en-GB_to_en-US
