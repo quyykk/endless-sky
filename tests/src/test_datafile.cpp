@@ -78,7 +78,7 @@ planet Earth"
 			const auto warnings = Format::Split(sink.Flush(), "\n");
 			const std::string warning = "Warning: Closing quotation mark is missing:";
 
-			REQUIRE( warnings.size() >= 5 );
+			REQUIRE( warnings.size() == 7 );
 
 			CHECK( warnings[0] == warning );
 			CHECK( warnings[1].find("system Sol") != std::string::npos );
@@ -109,7 +109,7 @@ mixed node
 			const std::string commentWarning = "Warning: Mixed whitespace usage for comment at line";
 			const std::string nodeWarning = "Warning: Mixed whitespace usage at line";
 
-			REQUIRE( warnings.size() >= 7 );
+			REQUIRE( warnings.size() == 9 );
 
 			CHECK( warnings[0] == nodeWarning );
 			CHECK( warnings[1].find("space") != std::string::npos );
