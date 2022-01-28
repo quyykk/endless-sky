@@ -21,6 +21,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "../../source/text/Format.h"
 
 // ... and any system includes needed for the test file.
+#include <algorithm>
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -31,6 +32,22 @@ namespace { // test namespace
 
 // Insert file-local data here, e.g. classes, structs, or fixtures that will be useful
 // to help test this class/method.
+const std::string missingQuoteWarning = "Warning: Closing quotation mark is missing:";
+const std::string mixedCommentWarning = "Warning: Mixed whitespace usage for comment at line";
+const std::string mixedNodeWarning = "Warning: Mixed whitespace usage at line";
+
+std::vector<std::string> Split(const std::string &str)
+{
+	auto result = Format::Split(str, "\n");
+
+	// Strip any empty lines from the output.
+	result.erase(std::remove_if(result.begin(), result.end(), [](const std::string &val)
+		{
+			return val.empty();
+		}), result.end());
+
+	return result;
+}
 
 // #endregion mock data
 
@@ -54,70 +71,195 @@ node2 hi
 		const DataFile root(stream);
 
 		THEN( "it has the correct properties" ) {
-			REQUIRE( std::distance(root.begin(), root.end()) == 2);
+			REQUIRE( std::distance(root.begin(), root.end()) == 2 );
 			CHECK( root.begin()->Token(0) == "node1" );
 			CHECK( std::next(root.begin())->Token(0) == "node2" );
 		}
 	}
 }
 
-SCENARIO( "Loading an ill-formed DataFile", "[DataFile]") {
+SCENARIO( "Loading a DataFile with missing quotes", "[DataFile]" ) {
 	OutputSink sink(std::cerr);
 
-	GIVEN( "A DataFile with missing quotes" ) {
-		std::istringstream stream(R"(
-"system Sol
-	haze "some/haze
-
-# The below is not a syntax error, but valid.
-planet Earth"
-)");
+	GIVEN( "A leading quote at root level" ) {
+		std::istringstream stream(R"("system Sol)");
 		const DataFile root(stream);
 
-		THEN( "they are correctly identified" ) {
-			const auto warnings = Format::Split(sink.Flush(), "\n");
-			const std::string warning = "Warning: Closing quotation mark is missing:";
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
 
-			REQUIRE( warnings.size() == 7 );
-
-			CHECK( warnings[0] == warning );
+			REQUIRE( warnings.size() == 2 );
+			CHECK( warnings[0] == missingQuoteWarning );
 			CHECK( warnings[1].find("system Sol") != std::string::npos );
-			CHECK( warnings[3] == warning );
-			CHECK( warnings[4].find("system Sol") != std::string::npos );
-			CHECK( warnings[5].find("haze some/haze") != std::string::npos );
 		}
 	}
 
-	GIVEN( "A DataFile with mixed whitespace" ) {
+	GIVEN( "A leading quote at child level" ) {
 		std::istringstream stream(R"(
-node using
-	# comment
-	tabs like vanilla
-
-space
- node
- # and a comment
-
-# a comment
-mixed node
- 	foo
+system Test
+	something "else
 )");
 		const DataFile root(stream);
 
-		THEN( "they are correctly identified") {
-			const auto warnings = Format::Split(sink.Flush(), "\n");
-			const std::string commentWarning = "Warning: Mixed whitespace usage for comment at line";
-			const std::string nodeWarning = "Warning: Mixed whitespace usage at line";
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
 
-			REQUIRE( warnings.size() == 9 );
+			REQUIRE( warnings.size() == 3 );
+			CHECK( warnings[0] == missingQuoteWarning );
+			CHECK( warnings[1].find("system Test") != std::string::npos );
+			CHECK( warnings[2].find("something else") != std::string::npos );
+		}
+	}
 
-			CHECK( warnings[0] == nodeWarning );
-			CHECK( warnings[1].find("space") != std::string::npos );
-			CHECK( warnings[2].find("node") != std::string::npos );
-			CHECK( warnings[4] == commentWarning + " 8" );
-			CHECK( warnings[5] == nodeWarning );
-			CHECK( warnings[6].find("mixed node") != std::string::npos );
-			CHECK( warnings[7].find("foo") != std::string::npos );
+	GIVEN( "A trailing quote" ) {
+		std::istringstream stream(R"(
+system" f
+	this is" ok"
+)");
+		const DataFile root(stream);
+
+		THEN( "No warnings are issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			CHECK( warnings.empty() );
+		}
+	}
+
+	GIVEN( "Quotes in comments" ) {
+		std::istringstream stream(R"(# system "foo)");
+		const DataFile root(stream);
+
+		THEN( "No warnings are issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			CHECK( warnings.empty() );
+		}
+	}
+}
+
+SCENARIO( "Loading a DataFile with mixed whitespace", "[DataFile]") {
+	OutputSink sink(std::cerr);
+
+	GIVEN( "Only tabs" ) {
+		std::istringstream stream(R"(
+system foo
+	description bar
+		no error
+)");
+		const DataFile root(stream);
+
+		THEN( "No warnings are issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			CHECK( warnings.empty() );
+		}
+	}
+
+	GIVEN( "Only spaces") {
+		std::istringstream stream(R"(
+system foo
+ description bar
+  no error
+)");
+		const DataFile root(stream);
+
+		THEN( "No warnings are issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			CHECK( warnings.empty() );
+		}
+	}
+
+	GIVEN( "Tabs and later spaces" ) {
+		std::istringstream stream(R"(
+system foo
+	something
+
+now with
+ spaces
+)");
+		const DataFile root(stream);
+
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			REQUIRE( warnings.size() == 3 );
+			CHECK( warnings[0] == mixedNodeWarning );
+			CHECK( warnings[1].find("now with") != std::string::npos );
+			CHECK( warnings[2].find("spaces") != std::string::npos );
+		}
+	}
+
+	GIVEN( "Spaces and later tabs" ) {
+		std::istringstream stream(R"(
+system foo
+ something
+
+now with
+	tabs
+)");
+		const DataFile root(stream);
+
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			REQUIRE( warnings.size() == 3 );
+			CHECK( warnings[0] == mixedNodeWarning );
+			CHECK( warnings[1].find("now with") != std::string::npos );
+			CHECK( warnings[2].find("tabs") != std::string::npos );
+		}
+	}
+
+	GIVEN( "Spaces and tabs on the same line" ) {
+		std::istringstream stream(R"(
+system test
+	 foo
+)");
+		const DataFile root(stream);
+
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			REQUIRE( warnings.size() == 3 );
+			CHECK( warnings[0] == mixedNodeWarning );
+			CHECK( warnings[1].find("system test") != std::string::npos );
+			CHECK( warnings[2].find("foo") != std::string::npos );
+		}
+	}
+
+	GIVEN( "Tabs and later spaces for comments" ) {
+		std::istringstream stream(R"(
+system foo
+	# something
+
+now with
+ # spaces
+)");
+		const DataFile root(stream);
+
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			REQUIRE( warnings.size() == 1 );
+			CHECK( warnings[0] == mixedCommentWarning + " 6" );
+		}
+	}
+
+	GIVEN( "Spaces and later tabs for comments" ) {
+		std::istringstream stream(R"(
+system foo
+ # something
+
+now with
+	# tabs
+)");
+		const DataFile root(stream);
+
+		THEN( "A warning is issued" ) {
+			const auto warnings = Split(sink.Flush());
+
+			REQUIRE( warnings.size() == 1 );
+			CHECK( warnings[0] == mixedCommentWarning + " 6" );
 		}
 	}
 }
