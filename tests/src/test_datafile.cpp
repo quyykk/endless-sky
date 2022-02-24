@@ -23,6 +23,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 // ... and any system includes needed for the test file.
 #include <algorithm>
 #include <iterator>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -64,16 +65,37 @@ SCENARIO( "Creating a DataFile", "[DataFile]") {
 	GIVEN( "A DataFile created with a stream" ) {
 		std::istringstream stream(R"(
 node1
-	something
+	foo
+
+# parent comment
+
 node2 hi
 	something else
+		# comment
+		grand child
+	# another comment
 )");
 		const DataFile root(stream);
 
-		THEN( "it has the correct properties" ) {
+		THEN( "iterating visits each node that has no indentation prefix" ) {
 			REQUIRE( std::distance(root.begin(), root.end()) == 2 );
 			CHECK( root.begin()->Token(0) == "node1" );
 			CHECK( std::next(root.begin())->Token(0) == "node2" );
+		}
+		AND_THEN( "iterating parent nodes visits the child nodes" ) {
+			std::set<std::string> children{"foo", "something"};
+			for(const auto &parent : root)
+				for(const auto &child : parent)
+					REQUIRE(children.count(child.Token(0)));
+		}
+		AND_THEN(" iterating child nodes visists the grand nodes" ) {
+			for(const auto &parent : root)
+				for(const auto &child : parent)
+					for(const auto &grand : child)
+					{
+						REQUIRE(grand.Token(0) == "grand");
+						REQUIRE(grand.Token(1) == "child");
+					}
 		}
 	}
 }
