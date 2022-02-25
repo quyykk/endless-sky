@@ -88,7 +88,7 @@ node2 hi
 				for(const auto &child : parent)
 					REQUIRE(children.count(child.Token(0)));
 		}
-		AND_THEN(" iterating child nodes visists the grand nodes" ) {
+		AND_THEN( "iterating child nodes visits their child nodes" ) {
 			for(const auto &parent : root)
 				for(const auto &child : parent)
 					for(const auto &grand : child)
