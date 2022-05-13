@@ -1085,6 +1085,10 @@ void Engine::Draw() const
 		font.Draw(loadString,
 			Point(-10 - font.Width(loadString), Screen::Height() * -.5 + 5.), color);
 	}
+
+	if(auto *flag = player.Flagship())
+		font.Draw(to_string(static_cast<int>(round(flag->Position().Length()))),
+				Point(0., Screen::Height() * -.5 + 20.), *colors.Get("medium"));
 }
 
 

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - system-center-distance-display
   pull_request:
     types:
       - synchronize
