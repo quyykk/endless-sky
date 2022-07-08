@@ -1,0 +1,118 @@
+name: Release CD
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  appimage_amd64:
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: x86_64
+      OUTPUT: endless-sky-amd64-${{ github.event.release.tag_name }}.AppImage
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install dependencies
+        run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
+      - name: Adjust version strings
+        run: ./utils/cd_update_versions.sh
+        shell: bash
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'linux'
+          buildPreset: 'linux-release'
+      - name: Run Unit Tests
+        run: ./build/linux/Release/endless-sky-tests
+      - name: Package Application
+        run: ./utils/build_appimage.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
+      - name: Upload AppImage
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+
+  windows_win64:
+    runs-on: windows-latest
+    env:
+      OUTPUT: EndlessSky-win64-${{ github.event.release.tag_name }}.zip
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Adjust version strings
+        run: ./utils/cd_update_versions.sh
+        shell: bash
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw'
+          buildPreset: 'mingw-release'
+      - name: Copy MinGW runtime DLLs
+        run: |
+          COPY $Env:DIR_MINGW64\bin\libgcc_s_seh-1.dll .\build\mingw\Release
+          COPY $Env:DIR_MINGW64\bin\libstdc++-6.dll .\build\mingw\Release
+          COPY $Env:DIR_MINGW64\bin\libwinpthread-1.dll .\build\mingw\Release
+      - name: Run Unit Tests
+        run: .\build\mingw\Release\EndlessSkyTests.exe
+      - name: Package Application
+        run: |
+          COPY .\build\mingw\Release\EndlessSky.exe .
+          COPY ".\build\mingw\Release\*.dll" .
+          7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
+      - name: Upload zip
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+  dmg_macos:
+    runs-on: macos-latest
+    env:
+      OUTPUT: endless-sky-macos-${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Adjust version strings
+        run: ./utils/cd_update_versions.sh
+        shell: bash
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'macos10.9'
+          buildPreset: 'macos10.9-release'
+      - name: Run Unit Tests
+        run: ./build/macos/Release/EndlessSkyTests
+      - name: Package Application
+        run: |
+          cd build/Release
+          mkdir ${{ env.OUTPUT }}
+          mv EndlessSky.app ${{ env.OUTPUT }}
+          ln -s /Applications ${{ env.OUTPUT }}
+          hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.OUTPUT }}.dmg
+          path: ${{ env.OUTPUT }}.dmg
+      - name: Upload disk image
+        uses: softprops/actions-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}.dmg

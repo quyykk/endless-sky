@@ -1,0 +1,22 @@
+{
+	"name": "endless-sky",
+	"version": "0.9.15",
+	"homepage": "https://endless-sky.github.io",
+	"description": "Space exploration, trading, and combat game.",
+	"dependencies": [
+		"sdl2",
+		"openal-soft",
+		"libpng",
+		"libjpeg-turbo",
+		"libmad",
+		"glew",
+		{
+			"name": "libuuid",
+			"platform": "!windows & !osx"
+		},
+		{
+			"name": "alsa",
+			"platform": "!windows & !osx"
+		}
+	]
+}

@@ -1,0 +1,283 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/install/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "linux",
+      "displayName": "Linux",
+      "description": "Builds with the default host compiler on Linux",
+      "inherits": "base",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-gles",
+      "displayName": "Linux",
+      "description": "Builds with the default host compiler with OpenGL ES on Linux",
+      "inherits": "base",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic",
+		"ES_GLES": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "macos",
+      "displayName": "MacOS",
+      "description": "Builds with the default host compiler on MacOS",
+      "inherits": "base",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos10.9",
+      "displayName": "MacOS 10.9",
+      "description": "Builds with the default host compiler for MacOS 10.9",
+      "inherits": "macos",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-osx10.9-dynamic",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "msvc",
+      "displayName": "MSVC",
+      "description": "Builds with the MSVC compiler toolchain",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "msvc32",
+      "displayName": "MSVC x86",
+      "description": "Builds with the x86 MSVC compiler toolchain",
+      "inherits": "base",
+	  "generator": "Visual Studio 17",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl",
+        "VCPKG_TARGET_TRIPLET": "x86-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "mingw",
+      "displayName": "MinGW",
+      "description": "Builds with the MinGW compiler toolchain",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_AR": "x86_64-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "x86_64-w64-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic"
+      }
+    },
+    {
+      "name": "mingw32",
+      "displayName": "MinGW x86",
+      "description": "Builds with the x86 MinGW compiler toolchain",
+      "inherits": "base",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++",
+        "CMAKE_AR": "i686-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "i686-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x86-mingw-dynamic"
+      }
+    },
+    {
+      "name": "xcode",
+      "displayName": "XCode",
+      "description": "Builds with XCode on MacOS",
+      "inherits": "base",
+	  "generator": "XCode",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-debug",
+      "displayName": "Debug",
+      "configurePreset": "linux",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "linux-release",
+      "displayName": "Release",
+      "configurePreset": "linux",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "linux-gles-debug",
+      "displayName": "Debug",
+      "configurePreset": "linux-gles",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "linux-gles-release",
+      "displayName": "Release",
+      "configurePreset": "linux-gles",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "macos-debug",
+      "displayName": "Debug",
+      "configurePreset": "macos",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "macos-release",
+      "displayName": "Release",
+      "configurePreset": "macos",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "macos10.9-debug",
+      "displayName": "Debug",
+      "configurePreset": "macos10.9",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "macos10.9-release",
+      "displayName": "Release",
+      "configurePreset": "macos10.9",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "xcode-debug",
+      "displayName": "Debug",
+      "configurePreset": "xcode",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "xcode-release",
+      "displayName": "Release",
+      "configurePreset": "xcode",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "msvc-debug",
+      "displayName": "Debug",
+      "configurePreset": "msvc",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "msvc-release",
+      "displayName": "Release",
+      "configurePreset": "msvc",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "msvc32-debug",
+      "displayName": "Debug",
+      "configurePreset": "msvc32",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "msvc32-release",
+      "displayName": "Release",
+      "configurePreset": "msvc32",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "mingw-debug",
+      "displayName": "Debug",
+      "configurePreset": "mingw",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "mingw-release",
+      "displayName": "Release",
+      "configurePreset": "mingw",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "mingw32-debug",
+      "displayName": "Debug",
+      "configurePreset": "mingw32",
+      "configuration": "Debug",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	},
+    {
+      "name": "mingw32-release",
+      "displayName": "Release",
+      "configurePreset": "mingw32",
+      "configuration": "Release",
+	  "targets": ["EndlessSky", "EndlessSkyTests"]
+	}
+  ]
+}
