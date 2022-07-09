@@ -99,10 +99,10 @@ jobs:
           configurePreset: 'macos10.9'
           buildPreset: 'macos10.9-release'
       - name: Run Unit Tests
-        run: ./build/macos/Release/EndlessSkyTests
+        run: ./build/macos10.9/Release/EndlessSkyTests
       - name: Package Application
         run: |
-          cd build/Release
+          cd build/macos10.9/Release
           mkdir ${{ env.OUTPUT }}
           mv EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
