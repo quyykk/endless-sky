@@ -113,6 +113,6 @@ jobs:
           name: ${{ env.OUTPUT }}.dmg
           path: ${{ env.OUTPUT }}.dmg
       - name: Upload disk image
-        uses: softprops/actions-gh-release@v1
+        uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.OUTPUT }}.dmg
