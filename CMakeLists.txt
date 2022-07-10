@@ -97,6 +97,18 @@ add_subdirectory(tests/unit)
 if(MINGW)
 	target_link_libraries(EndlessSky PRIVATE mingw32)
 	target_link_libraries(EndlessSkyTests PRIVATE mingw32)
+
+	# On Windows copy the MinGW runtime DLLs to the output folder as well.
+	# This is to avoid the situation where a user has other MinGW runtime DLLs
+	# in their PATH that are incompatible with the MinGW used to compile ES.
+	if(WIN32)
+		get_filename_component(PARENT_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
+		foreach(lib "libstdc++-6" "libwinpthread-1" "libgcc_s_seh-1")
+			add_custom_command(TARGET EndlessSky POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy ${PARENT_DIR}/${lib}.dll $<TARGET_FILE_DIR:EndlessSky>
+				COMMAND_EXPAND_LISTS)
+		endforeach()
+	endif()
 endif()
 target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)

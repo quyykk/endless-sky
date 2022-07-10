@@ -79,7 +79,6 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win64-continuous.zip
-      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
     steps:
       - uses: actions/checkout@v3
         with:
@@ -93,11 +92,6 @@ jobs:
         with:
           configurePreset: 'mingw'
           buildPreset: 'mingw-release'
-      - name: Copy MinGW runtime DLLs
-        run: |
-          COPY $Env:DIR_MINGW64\bin\libgcc_s_seh-1.dll .\build\mingw\Release
-          COPY $Env:DIR_MINGW64\bin\libstdc++-6.dll .\build\mingw\Release
-          COPY $Env:DIR_MINGW64\bin\libwinpthread-1.dll .\build\mingw\Release
       - name: Run Unit Tests
         run: .\build\mingw\Release\EndlessSkyTests.exe
       - name: Package Application
