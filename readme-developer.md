@@ -3,7 +3,7 @@
 First you need a copy of the code:
 
 ```powershell
-> git clone endless-sky --recursive
+> git clone https://github.com/endless-sky/endless-sky --recursive
 ```
 
 If you clone the repo another way make sure to download submodules as well when doing so. If you didn't you can download the submodule by executing
@@ -25,8 +25,10 @@ Use your favorite package manager to install the following (version numbers may 
 <summary>DEB-based distros</summary>
 
 ```
-g++ cmake ninja-build libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev
+g++ cmake ninja-build pkg-info libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev
 ```
+
+If you're on an older version of Ubunut, you'll need an up-to-date version of cmake which you can get from the [offical apt](https://apt.kitware.com/).
 
 </details>
 
@@ -34,24 +36,24 @@ g++ cmake ninja-build libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev
 <summary>RPM-based distros</summary>
 
 ```
-gcc-c++ cmake ninja mesa-libGL-devel
+gcc-c++ cmake ninja-build mesa-libGL-devel
 ```
 
 </details>
-
-If you want to use an IDE, scroll down and check the entry for your IDE. If you don't want an IDE, you can build ES as follows:
 
 ## Windows
 
 Currently, only the MinGW compiler toolchain is supported on Windows. You can download the [MinGW Winlibs](https://winlibs.com/#download-release) build, which also includes various tools you'll need to build the game as well.
 
-Download the latest GCC MSVCRT 64-bit archive and extract it somewhere (C:\ for example) and add the folder to your PATH (Press the Windows key and type "edit environment variables").
+You'll need the MSVCRT runtime version, 64-bit. The latest version is currently gcc 12 and can be downloaded [here](https://github.com/brechtsanders/winlibs_mingw/releases/download/12.1.0-14.0.4-10.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-12.1.0-mingw-w64msvcrt-10.0.0-r2.zip).
+
+Extract the zip file in a folder whose path doesn't contain a space (C:\ for example) and add the bin\ folder inside to your PATH (Press the Windows key and type "edit environment variables").
 
 You will also need to install [CMake](https://cmake.org) (if it isn't already installed as part of the Visual Studio toolchain).
 
 ## MacOS
 
-Download and install the XCode command line tools. If you want to use XCode as an IDE as well, you'll need to install the IDE itself as well.
+Download and install the XCode command line tools (`xcode-select --install`). If you want to use XCode as an IDE as well, you'll need to install the IDE itself as well.
 
 Next, install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools you will need:
 
@@ -59,7 +61,7 @@ Next, install [Homebrew](https://brew.sh). Once it is installed, use it to insta
   $ brew install cmake ninja
 ```
 
-### Building on the command line
+## Building on the command line
 
 If you want to build the game from the command line: from the project root folder, type:
 
@@ -78,11 +80,11 @@ Replace `<preset>` with one of the following presets:
 - MacOS: `macos` (builds with the default compiler), `xcode` (builds using the XCode toolchain)
 - Linux: `linux` (builds with the default compiler)
 
-### Building with Visual Studio Code, CLion
+## Building with Visual Studio Code, CLion
 
-Open the root folder and follow the steps from the IDE. Now you can build and run the game immediately.
+Open the ES folder with the IDE and that's it. For Visual Studio Code you'll need the [CMake Tools extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools).
 
-### Building with Code::Blocks
+## Building with Code::Blocks
 
 If you want to use the Code::Blocks IDE, from the root of the project folder execute:
 
@@ -93,7 +95,7 @@ If you want to use the Code::Blocks IDE, from the root of the project folder exe
 Now there will be a Code::Blocks project inside `build\mingw`.
 
 
-### Building with Visual Studio
+## Building with Visual Studio
 
 For Visual Studio, it is recommended to use the CMake project. Make sure you have CMake installed from the Visual Studio Installer, as well as the C++ compiler tools. Then you can open the root folder and hit compile. This is available starting with VS 2022. It is possible to use MinGW to compile the project, but VS is not able to debug the game (you can use Visual Studio Code for debugging) unless you use MSVC to compile.
 
@@ -108,7 +110,7 @@ You can also create a Visual Studio project using the following (from the projec
 This will create a VS 2022 solution inside the `build\` directory. If you need a VS 2019 solution, use `16` as the version, and so on.
 
 
-### Building with XCode
+## Building with XCode
 
 If you want to use the XCode IDE, from the root of the project folder execute:
 
