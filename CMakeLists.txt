@@ -73,8 +73,6 @@ if(APPLE)
 	# TODO: Make this a CMake function to avoid duplication.
 	foreach(file "license.txt" "keys.txt" "icon.png" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
-		set_property(SOURCE ${file} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${file}")
-		source_group("Resources/${file}" FILES "${file}")
 	endforeach()
 
 	# Add custom plist and iconset to bundle.
