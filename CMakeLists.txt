@@ -103,10 +103,14 @@ if(MINGW)
 	# in their PATH that are incompatible with the MinGW used to compile ES.
 	if(WIN32)
 		get_filename_component(PARENT_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
+		get_filename_component(MINGW_RUNTIME_DIR ${PARENT_DIR} DIRECTORY)
 		foreach(lib "libstdc++-6" "libwinpthread-1" "libgcc_s_seh-1")
-			add_custom_command(TARGET EndlessSky POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy ${PARENT_DIR}/${lib}.dll $<TARGET_FILE_DIR:EndlessSky>
-				COMMAND_EXPAND_LISTS)
+			file(GLOB_RECURSE FILE_PATH "${MINGW_RUNTIME_DIR}/${lib}.dll")
+			if(FILE_PATH)
+				add_custom_command(TARGET EndlessSky POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FILE_PATH} $<TARGET_FILE_DIR:EndlessSky>
+					COMMAND_EXPAND_LISTS)
+			endif()
 		endforeach()
 	endif()
 endif()
