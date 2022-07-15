@@ -20,4 +20,4 @@ runs:
         buildPreset: 'mingw-release'
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
-      shell: bash
+      shell: pwsh
