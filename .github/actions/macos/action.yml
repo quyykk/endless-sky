@@ -23,5 +23,5 @@ runs:
         buildPreset: ${{ inputs.mavericks == 'true' && 'macos10.9-release' || 'macos-release' }}
         buildPresetCmdString: "['--build', 'build/macos', '--config', 'Release']"
     - name: Run Unit Tests
-      run: ./build/macos/Release/endless-sky-tests
+      run: ./build/macos/Release/EndlessSkyTests
       shell: bash
