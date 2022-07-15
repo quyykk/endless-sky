@@ -28,7 +28,7 @@ jobs:
         cd steam
         docker-compose run endless-sky-${{ matrix.arch }}
     - name: Prepare binary
-      run: mv build/steam-${{ matrix.arch }}/endless-sky .
+      run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
     - name: Upload GH artifact
       uses: actions/upload-artifact@v2
       with:
