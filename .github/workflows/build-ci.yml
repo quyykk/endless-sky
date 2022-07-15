@@ -13,7 +13,6 @@ on:
 
 jobs:
   build_ubuntu:
-    needs: changed
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -55,7 +54,6 @@ jobs:
 
 
   build_windows:
-    needs: changed
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -92,7 +90,6 @@ jobs:
 
 
   build_macos:
-    needs: changed
     name: Build
     runs-on: ${{ matrix.os }}
     strategy:
