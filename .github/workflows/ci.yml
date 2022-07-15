@@ -80,7 +80,8 @@ jobs:
           ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
           ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
           ${{ matrix.os }}-${{ matrix.opengl }}-ccache-
-    - uses: ./.github/actions/ubuntu
+    - name: Build Endless Sky
+      uses: ./.github/actions/ubuntu
       with:
         ccache: 'true'
         opengl: ${{ matrix.opengl }}
@@ -120,7 +121,8 @@ jobs:
           ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
           ${{ matrix.os }}-ccache-${{ github.repository }}-
           ${{ matrix.os }}-ccache
-    - uses: ./.github/actions/windows
+    - name: Build Endless Sky
+      uses: ./.github/actions/windows
       with:
         ccache: 'true'
     - name: Upload game binary
@@ -156,7 +158,8 @@ jobs:
           ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
           ${{ matrix.os }}-ccache-${{ github.repository }}-
           ${{ matrix.os }}-ccache
-    - uses: ./.github/actions/macos
+    - name: Build Endless Sky
+      uses: ./.github/actions/macos
 
 
   # This section is for tests on ubuntu 16 (and on ubuntu 20).
