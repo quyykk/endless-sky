@@ -21,7 +21,6 @@ runs:
         configurePresetCmdString: "['--preset', '${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}', '-B', 'build/linux']"
         buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
         buildPresetCmdString: "['--build', 'build/linux', '--config', 'Release']"
-    - uses: lukka/run-cmake@v10
     - name: Run Unit Tests
       run: ./build/linux/Release/endless-sky-tests
       shell: bash

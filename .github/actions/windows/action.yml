@@ -18,7 +18,6 @@ runs:
         configurePreset: 'mingw'
         configurePresetCmdString: "['--preset', 'mingw', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}']"
         buildPreset: 'mingw-release'
-    - uses: lukka/run-cmake@v10
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
       shell: bash
