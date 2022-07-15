@@ -22,8 +22,7 @@ jobs:
           submodules: true
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
-        shell: bash
-      - uses: ./.github/actions/build/ubuntu
+      - uses: ./.github/actions/ubuntu
       - name: Package Application
         run: ./utils/build_appimage.sh
       - name: Upload artifact
@@ -44,7 +43,6 @@ jobs:
           submodules: true
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
-        shell: bash
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
         with:
@@ -78,8 +76,7 @@ jobs:
           submodules: true
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
-        shell: bash
-      - uses: ./.github/actions/build/windows
+      - uses: ./.github/actions/windows
       - name: Package Application
         run: |
           COPY .\build\mingw\Release\EndlessSky.exe .
@@ -103,8 +100,7 @@ jobs:
           submodules: true
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
-        shell: bash
-      - uses: ./.github/actions/build/macos
+      - uses: ./.github/actions/macos
         with:
           mavericks: 'true'
       - name: Package Application

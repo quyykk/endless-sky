@@ -10,16 +10,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install development dependencies
-      run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev ${{ inputs.ccache == 'true' && ccache || '' }}
+    - name: Install ccache
+      run: brew install ccache
+      shell: bash
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10.2
     - uses: lukka/run-cmake@v10
       with:
-        configurePreset: 'linux'
+        configurePreset: ${{ inputs.maverics == 'true' && 'macos10.9' || 'macos' }}
         configurePresetCmdString: "['--preset', '${{ inputs.mavericks == 'true' && 'macos10.9' || 'macos' }}', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}', '-B', 'build/macos']"
         buildPreset: ${{ inputs.mavericks == 'true' && 'macos10.9-release' || 'macos-release' }}
         buildPresetCmdString: "['--build', 'build/macos', '--config', 'Release']"
     - uses: lukka/run-cmake@v10
     - name: Run Unit Tests
       run: ./build/macos/Release/endless-sky-tests
+      shell: bash

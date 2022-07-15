@@ -12,6 +12,7 @@ runs:
   steps:
     - name: Install development dependencies
       run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev ${{ inputs.ccache == 'true' && ccache || '' }}
+      shell: bash
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10.2
     - uses: lukka/run-cmake@v10
@@ -23,3 +24,4 @@ runs:
     - uses: lukka/run-cmake@v10
     - name: Run Unit Tests
       run: ./build/linux/Release/endless-sky-tests
+      shell: bash

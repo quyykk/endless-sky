@@ -10,6 +10,7 @@ runs:
     - name: Install ccache
       if: ${{ inputs.ccache == 'true' }}
       run: choco install ccache
+      shell: bash
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10.2
     - uses: lukka/run-cmake@v10
@@ -20,3 +21,4 @@ runs:
     - uses: lukka/run-cmake@v10
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
+      shell: bash
