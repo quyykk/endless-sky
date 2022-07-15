@@ -25,10 +25,10 @@ Use your favorite package manager to install the following (version numbers may 
 <summary>DEB-based distros</summary>
 
 ```
-g++ cmake ninja-build pkg-info libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev
+g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl
 ```
 
-If you're on an older version of Ubunut, you'll need an up-to-date version of cmake which you can get from the [offical apt](https://apt.kitware.com/).
+If you're on an older version of Ubuntu, you'll need an up-to-date version of cmake which you can get from the [offical website](https://cmake.org/download/).
 
 </details>
 
