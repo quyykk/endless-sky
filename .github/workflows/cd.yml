@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - cmake
   pull_request:
     types:
       - synchronize
@@ -12,6 +11,7 @@ on:
 
 jobs:
   ubuntu_x86_64:
+    name: Ubuntu x64
     runs-on: ubuntu-18.04
     env:
       ARCH: x86_64
@@ -43,6 +43,7 @@ jobs:
 
 
   windows_win32:
+    name: Windows x86
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win32-continuous.zip
@@ -76,6 +77,7 @@ jobs:
 
 
   windows_win64:
+    name: Windows x64
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win64-continuous.zip
@@ -107,6 +109,7 @@ jobs:
 
 
   macos_x86_64:
+    name: MacOS x64
     runs-on: macos-latest
     env:
       OUTPUT: EndlessSky-macOS-continuous.zip
@@ -189,7 +192,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          path: ${{ github.workspace }} # This will download all files to e.g `./EndlessSky-win64.zip/EndlessSky-win64.zip`
+          path: ${{ github.workspace }}
       - name: Add ${{ env.OUTPUT_UBUNTU }} to release tag
         run: |
           github-release upload \
