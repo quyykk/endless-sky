@@ -54,8 +54,8 @@ jobs:
     uses: ./.github/workflows/compute-changes.yml
 
 
-  build_ci:
-    name: Build CI
+  build:
+    name: Build
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
     uses: ./.github/workflows/build-ci.yml
 
@@ -64,7 +64,7 @@ jobs:
   # The tests with Xvfb in this section work fine on ubuntu 16 and on Ubuntu 20, but they don't work on Ubuntu 18.
   # (Both 18.04 & 20.04 have the same Open GL extension support, but the SDL library fails to initialize for 18.04)
   test_ubuntu-integration:
-    needs: [build_ubuntu, changed]
+    needs: [build, changed]
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.outputs.integration_tests == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -112,7 +112,7 @@ jobs:
 
 
   test_parse:
-    needs: [build_windows, changed]
+    needs: [build, changed]
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.outputs.data == 'true' || needs.changed.outputs.parse_script == 'true' }}
     runs-on: windows-latest
     env:
