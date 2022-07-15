@@ -55,6 +55,7 @@ jobs:
 
 
   build:
+    needs: changed
     name: Build
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
     uses: ./.github/workflows/build-ci.yml
