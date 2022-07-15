@@ -1,0 +1,25 @@
+name: Build Ubuntu
+description: Builds and run the unit tests on Ubuntu
+inputs:
+  ccache:
+    description: Whether to use ccache or not
+    default: 'false'
+  opengl:
+    description: Whether to use desktop OpenGL or OpenGL ES (gles)
+    default: 'desktop'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install development dependencies
+      run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev ${{ inputs.ccache == 'true' && ccache || '' }}
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10.2
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'linux'
+        configurePresetCmdString: "['--preset', '${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}', '-B', 'build/linux']"
+        buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
+        buildPresetCmdString: "['--build', 'build/linux', '--config', 'Release']"
+    - uses: lukka/run-cmake@v10
+    - name: Run Unit Tests
+      run: ./build/linux/Release/endless-sky-tests

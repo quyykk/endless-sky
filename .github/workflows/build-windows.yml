@@ -1,0 +1,22 @@
+name: Build Windows
+description: Builds and run the unit tests on Windows
+inputs:
+  ccache:
+    description: Whether to use ccache or not
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install ccache
+      if: ${{ inputs.ccache == 'true' }}
+      run: choco install ccache
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10.2
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'mingw'
+        configurePresetCmdString: "['--preset', 'mingw', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}']"
+        buildPreset: 'mingw-release'
+    - uses: lukka/run-cmake@v10
+    - name: Run Unit Tests
+      run: .\build\mingw\Release\EndlessSkyTests.exe

@@ -20,19 +20,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Install dependencies
-        run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
-      - uses: lukka/run-cmake@v10
-        with:
-          configurePreset: 'linux'
-          buildPreset: 'linux-release'
-      - name: Run Unit Tests
-        run: ./build/linux/Release/endless-sky-tests
+      - uses: ./.github/workflows/build-ubuntu.yml
       - name: Package Application
         run: ./utils/build_appimage.sh
       - name: Upload artifact
@@ -88,14 +79,7 @@ jobs:
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
-      - uses: lukka/run-cmake@v10
-        with:
-          configurePreset: 'mingw'
-          buildPreset: 'mingw-release'
-      - name: Run Unit Tests
-        run: .\build\mingw\Release\EndlessSkyTests.exe
+      - uses: ./.github/workflows/build-windows.yml
       - name: Package Application
         run: |
           COPY .\build\mingw\Release\EndlessSky.exe .
@@ -120,17 +104,12 @@ jobs:
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
-      - uses: lukka/run-cmake@v10
+      - uses: ./.github/workflows/build-macos.yml
         with:
-          configurePreset: 'macos10.9'
-          buildPreset: 'macos10.9-release'
-      - name: Run Unit Tests
-        run: ./build/macos10.9/Release/EndlessSkyTests
+          mavericks: 'true'
       - name: Package Application
         run: |
-          cd build/macos10.9/Release
+          cd build/macos/Release
           ls -la
           7z a ${{ github.workspace }}/${{ env.OUTPUT }} EndlessSky.app
       - name: Upload artifact

@@ -1,0 +1,25 @@
+name: Build MacOS
+description: Builds and run the unit tests on MacOS
+inputs:
+  ccache:
+    description: Whether to use ccache or not
+    default: 'false'
+  mavericks:
+    description: Whether to build for MacOS 10.9 Mavericks
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install development dependencies
+      run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev ${{ inputs.ccache == 'true' && ccache || '' }}
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10.2
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'linux'
+        configurePresetCmdString: "['--preset', '${{ inputs.mavericks == 'true' && 'macos10.9' || 'macos' }}', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}', '-B', 'build/macos']"
+        buildPreset: ${{ inputs.mavericks == 'true' && 'macos10.9-release' || 'macos-release' }}
+        buildPresetCmdString: "['--build', 'build/macos', '--config', 'Release']"
+    - uses: lukka/run-cmake@v10
+    - name: Run Unit Tests
+      run: ./build/macos/Release/endless-sky-tests
