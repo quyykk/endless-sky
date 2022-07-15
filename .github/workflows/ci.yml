@@ -57,7 +57,7 @@ jobs:
   build_ci:
     name: Build CI
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
-    uses: ./.github/workflows/build_ci.yml
+    uses: ./.github/workflows/build-ci.yml
 
 
   # This section is for tests on ubuntu 16 (and on ubuntu 20).
