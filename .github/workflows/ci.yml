@@ -54,112 +54,10 @@ jobs:
     uses: ./.github/workflows/compute-changes.yml
 
 
-  build_ubuntu:
-    needs: changed
-    name: Build
+  build_ci:
+    name: Build CI
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, ubuntu-18.04]
-        opengl: [desktop, gles]
-    env:
-      ARCH: x86_64
-      OUTPUT: endless-sky-x86_64-continuous.AppImage
-      CCACHE_DIR: ${{ github.workspace }}/ccache
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Cache ccache results
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
-        restore-keys: |
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-
-    - name: Build Endless Sky
-      uses: ./.github/actions/ubuntu
-      with:
-        ccache: 'true'
-        opengl: ${{ matrix.opengl }}
-    - name: Package Application
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
-      run: ./utils/build_appimage.sh
-    - name: Upload game binary
-      # The integration tests which use this artifact only support Ubuntu 20.04.
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: binary-${{ matrix.os }}-${{ matrix.opengl }}
-        path: ${{ env.OUTPUT }}
-
-
-  build_windows:
-    needs: changed
-    name: Build
-    if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022, windows-2019]
-    env:
-        DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
-        CCACHE_DIR: ${{ github.workspace}}\ccache
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Cache ccache results
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
-        restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-ccache
-    - name: Build Endless Sky
-      uses: ./.github/actions/windows
-      with:
-        ccache: 'true'
-    - name: Upload game binary
-      if: ${{ matrix.os == 'windows-2022' }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: binary-windows-latest
-        path: |
-          build/mingw/Release/EndlessSky.exe
-          build/mingw/Release/*.dll
-
-
-  build_macos:
-    needs: changed
-    name: Build
-    if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-12, macos-11]
-    env:
-      CCACHE_DIR: ${{ github.workspace }}/ccache
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - name: Cache ccache results
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
-        restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-ccache
-    - name: Build Endless Sky
-      uses: ./.github/actions/macos
+    uses: ./.github/workflows/build_ci.yml
 
 
   # This section is for tests on ubuntu 16 (and on ubuntu 20).
@@ -244,7 +142,8 @@ jobs:
 
 
   spellcheck:
-    needs: [changed]
+    needs: changed
+    name: Spellcheck
     if: ${{ needs.changed.outputs.data == 'true' || needs.changed.outputs.codespell == 'true' }}
     runs-on: ubuntu-latest
     steps:
@@ -259,6 +158,7 @@ jobs:
 
 
   style-check:
+    name: Style Check
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -268,6 +168,7 @@ jobs:
 
   validate-copyright:
     needs: changed
+    name: Validate Copyright
     if: ${{ needs.changed.outputs.copyright == 'true' }}
     runs-on: ubuntu-latest
     steps:
