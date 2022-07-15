@@ -1,0 +1,32 @@
+services:
+  endless-sky-x64:
+    build: .
+    volumes:
+      - '../.:/endless-sky'
+    command:
+      - '/bin/bash'
+      - '-c'
+      - |
+        mkdir -p build/steam-x64
+        cd build/steam-x64
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        make -j $$(nproc)
+        ./endless-sky-tests
+
+
+  endless-sky-x86:
+    build:
+      context: .
+      args:
+        arch: /i386
+    volumes:
+      - '../.:/endless-sky'
+    command:
+      - '/bin/bash'
+      - '-c'
+      - |
+        mkdir -p build/steam-x86
+        cd build/steam-x86
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        make -j $$(nproc)
+        ./endless-sky-tests

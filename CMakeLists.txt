@@ -6,6 +6,7 @@ endif()
 
 # Some options.
 option(GLES "Build the game with OpenGL ES on Linux" OFF)
+option(STEAM "Build the game in a way that will make it run inside the Steam Linux runtime" OFF)
 
 # Use C++11 without any compiler specific extensions.
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
@@ -23,26 +24,36 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
 endif()
 
-# Add our custom triplets for vcpkg.
-set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
-
-# Setup vcpkg.
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-	CACHE STRING "Vcpkg toolchain file")
+# Add our custom triplets for vcpkg and setup vcpkg. For Steam we use the system libraries.
+if(NOT STEAM)
+	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
+	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+		CACHE STRING "Vcpkg toolchain file")
+endif()
 
 project("Endless Sky" VERSION 0.9.15
 	DESCRIPTION "Space exploration, trading, and combat game."
 	LANGUAGES CXX)
 
-find_package(SDL2 CONFIG REQUIRED)
-find_package(OpenAL CONFIG REQUIRED)
-find_package(PNG REQUIRED)
-find_package(JPEG REQUIRED)
-find_package(GLEW REQUIRED)
-# libmad doesn't provide native cmake support.
-find_path(LIBMAD_INCLUDE_DIR mad.h)
-find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib" NO_DEFAULT_PATH)
-find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" NO_DEFAULT_PATH)
+# Steam uses the system libraries for dependencies, instead of the ones provided by vcpkg.
+if(STEAM)
+	find_library(SDL2 SDL2)
+	find_library(OpenAL openal)
+	find_library(PNG png)
+	find_library(JPEG jpeg)
+	find_library(GLEW GLEW)
+	find_library(LIBMAD NAMES libmad.a)
+else()
+	find_package(SDL2 CONFIG REQUIRED)
+	find_package(OpenAL CONFIG REQUIRED)
+	find_package(PNG REQUIRED)
+	find_package(JPEG REQUIRED)
+	find_package(GLEW REQUIRED)
+	# libmad doesn't provide native cmake support.
+	find_path(LIBMAD_INCLUDE_DIR mad.h)
+	find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib" NO_DEFAULT_PATH)
+	find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" NO_DEFAULT_PATH)
+endif()
 
 # Create library target. The source files are populated inside source/CMakeLists.txt.
 add_library(EndlessSkyLib STATIC "")
@@ -114,15 +125,24 @@ if(MINGW)
 		endforeach()
 	endif()
 endif()
-target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
+
+if(STEAM)
+	target_link_libraries(EndlessSky PRIVATE EndlessSkyLib)
+else()
+	target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
+endif()
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 
 # Choose the correct libraries for the target platform. If we're building without vcpkg link
 # the corresponding system libraries as well.
-target_link_libraries(EndlessSkyLib PUBLIC SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
-	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
-target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR})
-target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
+if(STEAM)
+	target_link_libraries(EndlessSkyLib PUBLIC ${SDL2} ${PNG} ${JPEG} ${OpenAL} ${LIBMAD} pthread)
+else()
+	target_link_libraries(EndlessSkyLib PUBLIC SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
+		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
+	target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR})
+	target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
+endif()
 
 if(WIN32)
 	target_link_libraries(EndlessSkyLib PUBLIC rpcrt4 Winmm)
@@ -133,6 +153,9 @@ else()
 		find_path(UUID_INCLUDE uuid/uuid.h /usr/local/include /usr/include)
 		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 		target_include_directories(EndlessSkyLib PUBLIC ${UUID_INCLUDE})
+	elseif(STEAM)
+		find_library(UUID_LIB uuid)
+		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 	else()
 		find_package(unofficial-libuuid CONFIG REQUIRED)
 		target_link_libraries(EndlessSkyLib PUBLIC unofficial::UUID::uuid pthread)
@@ -145,9 +168,11 @@ if(ES_GLES AND UNIX AND NOT APPLE)
 	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
 else()
 	if(WIN32 OR APPLE)
-		target_link_libraries(EndlessSky PUBLIC GLEW::GLEW)
+		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
+	elseif(STEAM)
+		target_link_libraries(EndlessSky PRIVATE GL ${GLEW})
 	else()
-		target_link_libraries(EndlessSky PUBLIC GL GLEW::GLEW)
+		target_link_libraries(EndlessSky PRIVATE GL GLEW::GLEW)
 	endif()
 endif()
 
