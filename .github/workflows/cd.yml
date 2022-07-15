@@ -23,7 +23,7 @@ jobs:
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: ./.github/workflows/build-ubuntu.yml
+      - uses: ./.github/actions/build/ubuntu
       - name: Package Application
         run: ./utils/build_appimage.sh
       - name: Upload artifact
@@ -79,7 +79,7 @@ jobs:
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: ./.github/workflows/build-windows.yml
+      - uses: ./.github/actions/build/windows
       - name: Package Application
         run: |
           COPY .\build\mingw\Release\EndlessSky.exe .
@@ -104,7 +104,7 @@ jobs:
       - name: Adjust version strings
         run: ./utils/cd_update_versions.sh
         shell: bash
-      - uses: ./.github/workflows/build-macos.yml
+      - uses: ./.github/actions/build/macos
         with:
           mavericks: 'true'
       - name: Package Application
