@@ -12,8 +12,6 @@ option(STEAM "Build the game in a way that will make it run inside the Steam Lin
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-# The lowest macOS we support is 10.9.
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 # Use LTO for Release builds only.
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)

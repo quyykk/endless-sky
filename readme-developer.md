@@ -58,7 +58,7 @@ Download and install the XCode command line tools (`xcode-select --install`). If
 Next, install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools you will need:
 
 ```
-  $ brew install cmake ninja
+  $ brew install cmake ninja pkg-config
 ```
 
 ## Building on the command line
