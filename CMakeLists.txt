@@ -167,6 +167,11 @@ if(ES_GLES AND UNIX AND NOT APPLE)
 else()
 	if(WIN32 OR APPLE)
 		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
+
+		# Apple deprecated OpenGL in MacOs 10.14, but we don't care.
+		if(APPLE)
+			target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
+		endif()
 	elseif(STEAM)
 		target_link_libraries(EndlessSky PRIVATE GL ${GLEW})
 	else()
