@@ -13,11 +13,11 @@ on:
 
 jobs:
   build_ubuntu:
-    name: Build
-    runs-on: ${{ matrix.os }}
+    name: Ubuntu
+    runs-on: ubuntu-${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-18.04]
+        os: [20.04, 18.04]
         opengl: [desktop, gles]
     env:
       ARCH: x86_64
@@ -31,30 +31,30 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        key: ubunut-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-${{ matrix.opengl }}-ccache-
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-
     - name: Build Endless Sky
       uses: ./.github/actions/ubuntu
       with:
         ccache: 'true'
         opengl: ${{ matrix.opengl }}
     - name: Package Application
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      if: ${{ matrix.os == '20.04' }}
       run: ./utils/build_appimage.sh
     - name: Upload game binary
       # The integration tests which use this artifact only support Ubuntu 20.04.
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      if: ${{ matrix.os == '20.04' }}
       uses: actions/upload-artifact@v3
       with:
-        name: binary-${{ matrix.os }}-${{ matrix.opengl }}
+        name: binary-ubuntu-${{ matrix.os }}-${{ matrix.opengl }}
         path: ${{ env.OUTPUT }}
 
 
   build_windows:
-    name: Build
+    name: Windows
     runs-on: windows-latest
     strategy:
       matrix:
@@ -71,16 +71,16 @@ jobs:
         path: ${{ env.CCACHE_DIR }}
         key: ${{ matrix.mingw }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-ccache
+          ${{ matrix.mingw }}-ccache-${{ github.repository }}-${{ github.ref }}-
+          ${{ matrix.mingw }}-ccache-${{ github.repository }}-
+          ${{ matrix.mingw }}-ccache
     - name: Build Endless Sky
       uses: ./.github/actions/windows
       with:
         ccache: 'true'
         version: ${{ matrix.mingw }}
     - name: Upload game binary
-      if: ${{ matrix.os == 'windows-2022' }}
+      if: ${{ matrix.mingw == '12.1.0' }}
       uses: actions/upload-artifact@v3
       with:
         name: binary-windows-latest
@@ -90,11 +90,11 @@ jobs:
 
 
   build_macos:
-    name: Build
-    runs-on: ${{ matrix.os }}
+    name: MacOS
+    runs-on: macos-${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-12, macos-11]
+        os: [12, 11]
     env:
       CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
@@ -105,10 +105,10 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        key: macos-${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          ${{ matrix.os }}-ccache-${{ github.repository }}-
-          ${{ matrix.os }}-ccache
+          macos-${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
+          macos-${{ matrix.os }}-ccache-${{ github.repository }}-
+          macos-${{ matrix.os }}-ccache
     - name: Build Endless Sky
       uses: ./.github/actions/macos
