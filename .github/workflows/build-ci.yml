@@ -69,7 +69,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        key: ${{ matrix.mingw }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
           ${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
           ${{ matrix.os }}-ccache-${{ github.repository }}-
