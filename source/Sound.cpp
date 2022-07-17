@@ -15,11 +15,7 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "File.h"
 #include "Files.h"
 
-#ifndef __APPLE__
 #include <AL/al.h>
-#else
-#include <OpenAL/al.h>
-#endif
 
 #include <cstdio>
 #include <vector>

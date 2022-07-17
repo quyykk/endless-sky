@@ -18,13 +18,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #include "Random.h"
 #include "Sound.h"
 
-#ifndef __APPLE__
 #include <AL/al.h>
 #include <AL/alc.h>
-#else
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#endif
 
 #include <algorithm>
 #include <cmath>
