@@ -31,7 +31,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ubunut-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        key: ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
           ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
           ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
