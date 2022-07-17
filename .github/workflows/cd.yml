@@ -79,6 +79,8 @@ jobs:
         run: ./utils/cd_update_versions.sh
       - name: Build Endless Sky
         uses: ./.github/actions/windows
+        with:
+          version: '12.1.0'
       - name: Package Application
         run: |
           COPY .\build\mingw\Release\EndlessSky.exe .

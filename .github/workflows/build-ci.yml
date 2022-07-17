@@ -55,12 +55,11 @@ jobs:
 
   build_windows:
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     strategy:
       matrix:
-        os: [windows-2022, windows-2019]
+        mingw: ['8.5.0', '10.3.0', '12.1.0']
     env:
-        DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
         CCACHE_DIR: ${{ github.workspace}}\ccache
     steps:
     - uses: actions/checkout@v3
@@ -79,6 +78,7 @@ jobs:
       uses: ./.github/actions/windows
       with:
         ccache: 'true'
+        version: ${{ matrix.mingw }}
     - name: Upload game binary
       if: ${{ matrix.os == 'windows-2022' }}
       uses: actions/upload-artifact@v3
