@@ -52,7 +52,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: binary-ubuntu-${{ matrix.os }}-${{ matrix.opengl }}
-        path: ${{ env.OUTPUT }}
+        path: |
+          ${{ env.OUTPUT }}
+          credits.txt
 
 
   build_windows:
@@ -91,6 +93,7 @@ jobs:
         path: |
           build/mingw/Release/EndlessSky.exe
           build/mingw/Release/*.dll
+          credits.txt
 
 
   build_macos:

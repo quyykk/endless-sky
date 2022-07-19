@@ -103,34 +103,30 @@ jobs:
     #     depot7Path: ${{ env.dir64 }}
     #     releaseBranch: canary
 
-  deploy_data_depot:
-    needs: changed
-    if: needs.changed.outputs.data == 'true'
-    runs-on: ubuntu-latest
-    # environment: steam
-    env:
-      dir: data-depot
-    steps:
-    - uses: actions/checkout@v3
-    - name: Get CMake
-      uses: lukka/get-cmake@latest
-    - name: Generate game files
-      run: cmake --preset linux -DES_RELEASE=ON
-    - name: 'Prepare data upload'
-      run: |
-        mkdir ${{ env.dir }}
-        mv -t ${{ env.dir }} \
-          changelog \
-          copyright \
-          credits.txt \
-          icon.png \
-          keys.txt \
-          license.txt \
-          data/ \
-          images/ \
-          sounds/
-    - name: Verify move
-      run: head -n 13 ${{ env.dir }}/credits.txt
+#  deploy_data_depot:
+#    needs: changed
+#    if: needs.changed.outputs.data == 'true'
+#    runs-on: ubuntu-latest
+#    # environment: steam
+#    env:
+#      dir: data-depot
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: 'Prepare data upload'
+#      run: |
+#        mkdir ${{ env.dir }}
+#        mv -t ${{ env.dir }} \
+#          changelog \
+#          copyright \
+#          credits.txt \
+#          icon.png \
+#          keys.txt \
+#          license.txt \
+#          data/ \
+#          images/ \
+#          sounds/
+#    - name: Verify move
+#      run: head -n 13 ${{ env.dir }}/credits.txt
     # - uses: game-ci/steam-deploy@v0.1
     #   with:
     #     appId: 404410
