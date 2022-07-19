@@ -84,7 +84,7 @@ jobs:
       ARTIFACT: endless-sky
     steps:
     - name: Download Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: ${{ github.workspace }}
     - name: Prepare binary upload
@@ -111,9 +111,11 @@ jobs:
     env:
       dir: data-depot
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
+    - uses: actions/checkout@v3
+    - name: Get CMake
+      uses: lukka/get-cmake@latest
+    - name: Generate game files
+      run: cmake --preset linux -DES_RELEASE=ON
     - name: 'Prepare data upload'
       run: |
         mkdir ${{ env.dir }}
