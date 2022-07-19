@@ -41,6 +41,8 @@ jobs:
       with:
         ccache: 'true'
         opengl: ${{ matrix.opengl }}
+    - name: Run Benchmarks
+      run: ./build/linux/Release/endless-sky-tests.exe [!benchmark]
     - name: Package Application
       if: ${{ matrix.os == '20.04' }}
       run: ./utils/build_appimage.sh
@@ -79,6 +81,8 @@ jobs:
       with:
         ccache: 'true'
         version: ${{ matrix.mingw }}
+    - name: Run Benchmarks
+      run: .\build\ming\Release\EndlessSkyTests.exe [!benchmark]
     - name: Upload game binary
       if: ${{ matrix.mingw == '12.1.0' }}
       uses: actions/upload-artifact@v3
@@ -112,3 +116,5 @@ jobs:
           macos-${{ matrix.os }}-ccache
     - name: Build Endless Sky
       uses: ./.github/actions/macos
+    - name: Run Benchmarks
+      run: ./build/macos/Release/EndlessSkyTests [!benchmark]
