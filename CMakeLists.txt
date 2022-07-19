@@ -7,6 +7,8 @@ endif()
 # Some options.
 option(GLES "Build the game with OpenGL ES on Linux" OFF)
 option(STEAM "Build the game in a way that will make it run inside the Steam Linux runtime" OFF)
+option(ES_RELEASE "Whether the current version is a published release" OFF)
+option(ES_INCLUDE_HASH "Whether to include the current git hash as part of the version. Doesn't update unless you regenerate!" OFF)
 
 # Use C++11 without any compiler specific extensions.
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
@@ -32,6 +34,35 @@ endif()
 project("Endless Sky" VERSION 0.9.15
 	DESCRIPTION "Space exploration, trading, and combat game."
 	LANGUAGES CXX)
+
+# Configure various files that reference the current version number.
+string(TIMESTAMP ES_CURRENT_DATE "%d %b %Y")
+if(NOT ES_RELEASE)
+	if(ES_INCLUDE_HASH)
+		# Figure out the hash of the current commit. This won't change unless you recreate the
+		# CMake build!
+		execute_process(COMMAND git rev-parse --short HEAD
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE ES_HASH
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+		set(ES_VERSION_SUFFIX "-alpha (${ES_HASH})")
+
+		# Also add an expanded commit description inside credits.txt.
+		execute_process(COMMAND git --no-pager log "--pretty=Last change by %an: %n %s" -1
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE ES_LAST_CHANGE
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+		string(TIMESTAMP ES_BUILT_DATE "%Y-%m-%d %H-%M UTC" UTC)
+		set(ES_CREDITS_CHANGE "\nBuilt: ${ES_BUILT_DATE}\n${ES_LAST_CHANGE}\n")
+	else()
+		set(ES_VERSION_SUFFIX "-alpha")
+	endif()
+endif()
+configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Version.h" @ONLY)
+configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
+configure_file("./app/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/app/endless-sky.6" @ONLY)
 
 # Steam uses the system libraries for dependencies, instead of the ones provided by vcpkg.
 if(STEAM)
@@ -79,16 +110,15 @@ if(APPLE)
 		endforeach()
 	endforeach()
 	# Now do the same to standone files.
-	# TODO: Make this a CMake function to avoid duplication.
 	foreach(file "license.txt" "keys.txt" "icon.png" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
 	endforeach()
 
 	# Add custom plist and iconset to bundle.
-	target_sources(EndlessSky PRIVATE ${CMAKE_CURRENT_LIST_DIR}/XCode/EndlessSky-Info.plist)
-	target_sources(EndlessSky PRIVATE ${CMAKE_CURRENT_LIST_DIR}/XCode/Images.xcassets)
-	set_target_properties(EndlessSky PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/XCode/EndlessSky-Info.plist
-		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/XCode/Images.xcassets
+	target_sources(EndlessSky PRIVATE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets)
+	set_target_properties(EndlessSky PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/app/EndlessSky-Info.plist.in
+		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets
+		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/icons/endless-sky.iconset
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME endless-sky)
 
 elseif(WIN32)
@@ -203,10 +233,10 @@ if(UNIX AND NOT APPLE)
 	install(TARGETS EndlessSky CONFIGURATIONS Release RUNTIME DESTINATION games)
 
 	# Install the desktop file.
-	install(FILES endless-sky.desktop DESTINATION share/applications)
+	install(FILES app/endless-sky.desktop DESTINATION share/applications)
 
 	# Install app center metadata.
-	install(FILES endless-sky.appdata.xml DESTINATION share/metainfo)
+	install(FILES app/endless-sky.appdata.xml DESTINATION share/metainfo)
 
 	# Install icons, keeping track of all the paths.
 	# Most Ubuntu apps supply 16, 22, 24, 32, 48, and 256, and sometimes others.

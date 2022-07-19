@@ -17,14 +17,16 @@ jobs:
           submodules: true
       - name: Install dependencies
         run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
-      - name: Adjust version strings
-        run: ./utils/cd_update_versions.sh
-        shell: bash
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'linux'
+          configurePresetCmdString: >
+            [
+            '--preset', 'linux',
+            '-DES_RELEASE=ON'
+            ]
           buildPreset: 'linux-release'
       - name: Run Unit Tests
         run: ./build/linux/Release/endless-sky-tests
@@ -45,25 +47,21 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win64-${{ github.event.release.tag_name }}.zip
-      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Adjust version strings
-        run: ./utils/cd_update_versions.sh
-        shell: bash
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw'
+          configurePresetCmdString: >
+            [
+            '--preset', 'mingw',
+            '-DES_RELEASE=ON'
+            ]
           buildPreset: 'mingw-release'
-      - name: Copy MinGW runtime DLLs
-        run: |
-          COPY $Env:DIR_MINGW64\bin\libgcc_s_seh-1.dll .\build\mingw\Release
-          COPY $Env:DIR_MINGW64\bin\libstdc++-6.dll .\build\mingw\Release
-          COPY $Env:DIR_MINGW64\bin\libwinpthread-1.dll .\build\mingw\Release
       - name: Run Unit Tests
         run: .\build\mingw\Release\EndlessSkyTests.exe
       - name: Package Application
@@ -89,14 +87,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Adjust version strings
-        run: ./utils/cd_update_versions.sh
-        shell: bash
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos10.9'
+          configurePresetCmdString: >
+            [
+            '--preset', 'macos10.9',
+            '-DES_RELEASE=ON'
+            ]
           buildPreset: 'macos10.9-release'
       - name: Run Unit Tests
         run: ./build/macos10.9/Release/EndlessSkyTests

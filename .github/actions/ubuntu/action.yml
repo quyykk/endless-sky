@@ -18,7 +18,13 @@ runs:
     - uses: lukka/run-cmake@v10
       with:
         configurePreset: 'linux'
-        configurePresetCmdString: "['--preset', '${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}', '${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}', '-B', 'build/linux']"
+        configurePresetCmdString: >
+          [
+          '--preset', "${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}",
+          "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
+          '-DES_INCLUDE_HASH=ON',
+          '-B', 'build/linux'
+          ]
         buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
         buildPresetCmdString: "['--build', 'build/linux', '--config', 'Release']"
     - name: Run Unit Tests

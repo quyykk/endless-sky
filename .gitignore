@@ -6,6 +6,11 @@ libendless-sky.a
 *.lnk
 *.AppImage
 
+# Autogenerate files
+credits.txt
+source/Version.h
+app/endless-sky.6
+
 # dlls needed to run the binary
 *.dll
 

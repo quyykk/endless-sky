@@ -1,4 +1,4 @@
-.TH endless\-sky 6 "15 Sep 2021" "ver. 0.9.15-alpha" "Endless Sky"
+.TH endless\-sky 6 "@ES_CURRENT_DATE@" "ver. @PROJECT_VERSION@@ES_VERSION_SUFFIX@" "Endless Sky"
 
 .SH NAME
 endless\-sky \- a space exploration and combat game.
