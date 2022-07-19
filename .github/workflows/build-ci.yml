@@ -42,7 +42,7 @@ jobs:
         ccache: 'true'
         opengl: ${{ matrix.opengl }}
     - name: Run Benchmarks
-      run: ./build/linux/Release/endless-sky-tests.exe [!benchmark]
+      run: ./build/linux/Release/endless-sky-tests [!benchmark]
     - name: Package Application
       if: ${{ matrix.os == '20.04' }}
       run: ./utils/build_appimage.sh
@@ -82,7 +82,7 @@ jobs:
         ccache: 'true'
         version: ${{ matrix.mingw }}
     - name: Run Benchmarks
-      run: .\build\ming\Release\EndlessSkyTests.exe [!benchmark]
+      run: .\build\mingw\Release\EndlessSkyTests.exe [!benchmark]
     - name: Upload game binary
       if: ${{ matrix.mingw == '12.1.0' }}
       uses: actions/upload-artifact@v3
