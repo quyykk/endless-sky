@@ -91,9 +91,9 @@ jobs:
       with:
         name: binary-windows-latest
         path: |
+          credits.txt
           build/mingw/Release/EndlessSky.exe
           build/mingw/Release/*.dll
-          credits.txt
 
 
   build_macos:

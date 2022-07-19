@@ -33,7 +33,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: binary-${{ runner.os }}-${{ matrix.arch }}
-        path: ${{ env.ARTIFACT }}
+        path: |
+          ${{ env.ARTIFACT }}
+          credits.txt
 
   test_linux:
     needs: build_linux
