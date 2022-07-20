@@ -85,13 +85,16 @@ jobs:
         version: ${{ matrix.mingw }}
     - name: Run Benchmarks
       run: .\build\mingw\Release\EndlessSkyTests.exe [!benchmark]
+    - name: Prepare for upload
+      if: ${{ matrix.mingw == '12.1.0' }}
+      run: COPY credits.txt build\mingw\Release\
     - name: Upload game binary
       if: ${{ matrix.mingw == '12.1.0' }}
       uses: actions/upload-artifact@v3
       with:
         name: binary-windows-latest
         path: |
-          credits.txt
+          build/mingw/Release/credits.txt
           build/mingw/Release/EndlessSky.exe
           build/mingw/Release/*.dll
 
