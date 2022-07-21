@@ -28,7 +28,7 @@ runs:
         appendedCacheKey: ${{ inputs.version }}-${{ inputs.arch }}
     - uses: lukka/run-cmake@v10
       with:
-        configurePreset: ''
+        configurePreset: 'mingw'
         configurePresetCmdString: >
           [
           '--preset', "${{ inputs.arch == 'x64' && 'mingw' || 'mingw32' }}",
@@ -36,7 +36,7 @@ runs:
           '-DES_INCLUDE_HASH=ON',
           '-B', 'build/mingw'
           ]
-        buildPreset: ''
+        buildPreset: 'mingw-release'
         buildPresetCmdString: "['--build', 'build/mingw', '--config', 'Release']"
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
