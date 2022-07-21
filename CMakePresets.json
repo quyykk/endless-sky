@@ -139,7 +139,7 @@
     {
       "name": "xcode",
       "displayName": "Xcode",
-      "description": "Builds with XCode on MacOS",
+      "description": "Builds with Xcode on MacOS",
       "inherits": "base",
 	  "generator": "Xcode",
       "cacheVariables": {
