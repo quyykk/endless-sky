@@ -138,10 +138,10 @@
     },
     {
       "name": "xcode",
-      "displayName": "XCode",
+      "displayName": "Xcode",
       "description": "Builds with XCode on MacOS",
       "inherits": "base",
-	  "generator": "XCode",
+	  "generator": "Xcode",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
       },
