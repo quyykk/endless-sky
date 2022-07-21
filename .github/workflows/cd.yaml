@@ -40,20 +40,15 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
+      - name: Build Endless Sky
+        uses: ./.github/actions/windows
         with:
-          appendedCacheKey: msvc-win32
-      - uses: lukka/run-cmake@v10
-        with:
-          configurePreset: 'msvc32'
-          buildPreset: 'msvc32-release'
-      - name: Run Unit Tests
-        run: .\build\msvc32\Release\EndlessSkyTests.exe
+          version: '12.1.0'
+          arch: x86
       - name: Package Application
         run: |
-          COPY .\build\msvc32\Release\EndlessSky.exe .
-          COPY ".\build\msvc32\Release\*.dll" .
+          COPY .\build\mingw\Release\EndlessSky.exe .
+          COPY ".\build\mingw\Release\*.dll" .
           7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
       - name: Upload artifact
         uses: actions/upload-artifact@v3

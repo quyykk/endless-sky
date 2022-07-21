@@ -28,14 +28,16 @@ runs:
         appendedCacheKey: ${{ inputs.version }}-${{ inputs.arch }}
     - uses: lukka/run-cmake@v10
       with:
-        configurePreset: 'mingw'
+        configurePreset: ''
         configurePresetCmdString: >
           [
-          '--preset', 'mingw',
+          '--preset', "${{ inputs.arch == 'x64' && 'mingw' || 'mingw32' }}",
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
-          '-DES_INCLUDE_HASH=ON'
+          '-DES_INCLUDE_HASH=ON',
+          '-B', 'build/mingw'
           ]
-        buildPreset: 'mingw-release'
+        buildPreset: ''
+        buildPresetCmdString: "['--build', 'build/mingw', '--config', 'Release']"
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
       shell: pwsh

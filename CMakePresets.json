@@ -74,40 +74,6 @@
       }
     },
     {
-      "name": "msvc",
-      "displayName": "MSVC",
-      "description": "Builds with the MSVC compiler toolchain",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "cl"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      }
-    },
-    {
-      "name": "msvc32",
-      "displayName": "MSVC x86",
-      "description": "Builds with the x86 MSVC compiler toolchain",
-      "inherits": "base",
-	  "generator": "Visual Studio 17",
-      "architecture": {
-        "value": "Win32",
-        "strategy": "set"
-      },
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "cl",
-        "VCPKG_TARGET_TRIPLET": "x86-windows"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
-      }
-    },
-    {
       "name": "mingw",
       "displayName": "MinGW",
       "description": "Builds with the MinGW compiler toolchain",
@@ -220,34 +186,6 @@
       "name": "xcode-release",
       "displayName": "Release",
       "configurePreset": "xcode",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
-	},
-    {
-      "name": "msvc-debug",
-      "displayName": "Debug",
-      "configurePreset": "msvc",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
-	},
-    {
-      "name": "msvc-release",
-      "displayName": "Release",
-      "configurePreset": "msvc",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
-	},
-    {
-      "name": "msvc32-debug",
-      "displayName": "Debug",
-      "configurePreset": "msvc32",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
-	},
-    {
-      "name": "msvc32-release",
-      "displayName": "Release",
-      "configurePreset": "msvc32",
       "configuration": "Release",
 	  "targets": ["EndlessSky", "EndlessSkyTests"]
 	},

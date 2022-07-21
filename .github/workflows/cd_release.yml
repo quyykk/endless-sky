@@ -43,6 +43,43 @@ jobs:
           files: ${{ env.OUTPUT }}
 
 
+  windows_win32:
+    runs-on: windows-latest
+    env:
+      OUTPUT: EndlessSky-win32-${{ github.event.release.tag_name }}.zip
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw32'
+          configurePresetCmdString: >
+            [
+            '--preset', 'mingw32',
+            '-DES_RELEASE=ON'
+            ]
+          buildPreset: 'mingw32-release'
+      - name: Run Unit Tests
+        run: .\build\mingw32\Release\EndlessSkyTests.exe
+      - name: Package Application
+        run: |
+          COPY .\build\mingw32\Release\EndlessSky.exe .
+          COPY ".\build\mingw32\Release\*.dll" .
+          7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
+      - name: Upload zip
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+
   windows_win64:
     runs-on: windows-latest
     env:
@@ -78,6 +115,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.OUTPUT }}
+
 
   dmg_macos:
     runs-on: macos-latest

@@ -1,3 +1,4 @@
 [submodule "vcpkg"]
 	path = vcpkg
-	url = https://github.com/microsoft/vcpkg
+	url = https://github.com/quyykk/vcpkg
+	branch = openal-soft-mingw-x86-fix
