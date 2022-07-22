@@ -114,7 +114,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
-          appendedCacheKey: ${{ env.GCC }}-x86
+          appendedCacheKey: ${{ env.GCC }}-x64
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw'
