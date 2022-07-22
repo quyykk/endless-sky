@@ -106,20 +106,20 @@ if(APPLE)
 		    file(RELATIVE_PATH NEW_FILE "${CMAKE_CURRENT_SOURCE_DIR}" ${FILE})
 
 			# Resources belong under Resources/.
-			set_source_files_properties(${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE}")
+			set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE}")
 		endforeach()
 	endforeach()
 	# Now do the same to standone files.
 	foreach(file "license.txt" "keys.txt" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
-		set_source_files_properties(${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${file}")
+		set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${file}")
 	endforeach()
 
 	# Add the icons to the bundle.
 	target_sources(EndlessSky PRIVATE app/Images.xcassets)
-	set_source_files_properties(app/Images.xcassets PROPERTY MACOSX_PACKAGE_LOCATION Resources)
+	set_source_files_properties(app/Images.xcassets PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	target_sources(EndlessSky PRIVATE icons/endless-sky.iconset)
-	set_source_files_properties(icons/endless-sky.iconset PROPERTY MACOSX_PACKAGE_LOCATION Resources)
+	set_source_files_properties(icons/endless-sky.iconset PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 	# Add plist to bundle.
 	set_target_properties(EndlessSky PROPERTIES
