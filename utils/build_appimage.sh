@@ -6,7 +6,7 @@ set -e
 # You may have to set the ARCH environment variable to e.g. x86_64.
 
 # We need an icon file with a name matching the executable
-cp icons/icon_512x512.png endless-sky.png
+cp app/icons/icon_512x512.png endless-sky.png
 
 # Install
 DESTDIR=AppDir cmake --install build/linux --prefix /usr
