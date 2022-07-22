@@ -97,7 +97,7 @@ if(APPLE)
 
 	# MacOS bundles are a bit special and need every resource specified when
 	# creating the executable.
-	foreach(folder "data" "images" "sounds" "app/Images.xcassets" "icons/endless-sky.iconset")
+	foreach(folder "data" "images" "sounds")
 		file(GLOB_RECURSE RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${folder}/*")
 		target_sources(EndlessSky PRIVATE ${RESOURCES})
 
@@ -109,8 +109,20 @@ if(APPLE)
 			set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE}")
 		endforeach()
 	endforeach()
+
+	# Create the icns file, required for the bundle icon.
+	add_custom_command(
+		OUTPUT endless-sky.icns
+		COMMAND iconutil -c icns -o app/endless-sky.icns app/endless-sky.iconset
+		DEPENDS app/icons/icon_16x16.png app/icons/icon_16x16@2x.png
+			app/icons/icon_32x32.png app/icons/icon_32x32@2x.png
+			app/icons/icon_128x128.png app/icons/icon_128x128@2x.png
+			app/icons/icon_256x256.png app/icons/icon_256x256@2x.png
+			app/icons/icon_512x512.png app/icons/icon_512x512@2x.png
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 	# Now do the same to standone files.
-	foreach(file "license.txt" "keys.txt" "credits.txt" "copyright" "changelog")
+	foreach(file "license.txt" "icon.png" "keys.txt" "credits.txt" "copyright" "changelog" "app/endless-sky.icns")
 		target_sources(EndlessSky PRIVATE ${file})
 		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
@@ -239,7 +251,7 @@ if(UNIX AND NOT APPLE)
 	# Install icons, keeping track of all the paths.
 	# Most Ubuntu apps supply 16, 22, 24, 32, 48, and 256, and sometimes others.
 	foreach(size "16x16" "22x22" "24x24" "32x32" "48x48" "128x128" "256x256" "512x512")
-		install(FILES "icons/icon_${size}.png" DESTINATION "share/icons/hicolor/${size}/apps"
+		install(FILES "app/icons/icon_${size}.png" DESTINATION "share/icons/hicolor/${size}/apps"
 			RENAME endless-sky.png)
 	endforeach()
 
