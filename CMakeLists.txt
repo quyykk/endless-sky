@@ -97,7 +97,7 @@ if(APPLE)
 
 	# MacOS bundles are a bit special and need every resource specified when
 	# creating the executable.
-	foreach(folder "data" "images" "sounds")
+	foreach(folder "data" "images" "sounds" "app/Images.xcassets" "icons/endless-sky.iconset")
 		file(GLOB_RECURSE RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${folder}/*")
 		target_sources(EndlessSky PRIVATE ${RESOURCES})
 
@@ -112,14 +112,8 @@ if(APPLE)
 	# Now do the same to standone files.
 	foreach(file "license.txt" "keys.txt" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
-		set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${file}")
+		set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
-
-	# Add the icons to the bundle.
-	target_sources(EndlessSky PRIVATE app/Images.xcassets)
-	set_source_files_properties(app/Images.xcassets PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-	target_sources(EndlessSky PRIVATE icons/endless-sky.iconset)
-	set_source_files_properties(icons/endless-sky.iconset PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 	# Add plist to bundle.
 	set_target_properties(EndlessSky PROPERTIES
