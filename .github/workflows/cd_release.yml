@@ -186,11 +186,15 @@ jobs:
           cp -r EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
+      - name: Prepare artifact
+        run: |
+          cd build/macos10.9/Release
+          7z a ${{ github.workspace }}/EndlessSky.app.zip EndlessSky.app
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: steam-macos
-          path: build/macos10.9/Release/EndlessSky.app
+          path: EndlessSky.app.zip
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
@@ -259,8 +263,11 @@ jobs:
         rm ${{ env.linux32 }}/credits.txt
     - name: Prepare MacOS bundle
       run: |
-        rm -rf ${{ env.macos }}/EndlessSky.app/Contents/Resources/
-        mkdir ${{ env.macos }}/EndlessSky.app/Contents/Resources
+        cd ${{ env.macos }}
+        7z x EndlessSky.app.zip
+        rm EndlessSky.app.zip
+        rm -rf EndlessSky.app/Contents/Resources/
+        mkdir EndlessSky.app/Contents/Resources
     - name: Sanity check (data)
       run: tree ${{ env.data }}
     - name: Sanity check (win32)
