@@ -154,8 +154,13 @@ if(MINGW)
 	if(WIN32)
 		get_filename_component(PARENT_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
 		get_filename_component(MINGW_RUNTIME_DIR ${PARENT_DIR} DIRECTORY)
-		foreach(lib "libstdc++-6" "libwinpthread-1" "libgcc_s_seh-1")
-			file(GLOB_RECURSE FILE_PATH "${MINGW_RUNTIME_DIR}/${lib}.dll")
+
+		# MinGW doesn't have seh exceptions support for 32-bit Windows unfortunately,
+		# and requires libgcc_s_dw2-1.dll instead of libgcc_s_seh-1.dll. There's no
+		# perfect way to figure out which one to copy, so we simply copy both.
+		# The executable will choose the correct DLL anyways.
+		foreach(lib "stdc++-6" "winpthread-1" "gcc_s_seh-1" "gcc_s_dw2-1")
+			file(GLOB_RECURSE FILE_PATH "${MINGW_RUNTIME_DIR}/lib${lib}.dll")
 			if(FILE_PATH)
 				add_custom_command(TARGET EndlessSky POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FILE_PATH} $<TARGET_FILE_DIR:EndlessSky>

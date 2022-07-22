@@ -266,7 +266,10 @@ jobs:
         cd ${{ env.macos }}
         7z x EndlessSky.app.zip
         rm EndlessSky.app.zip
-        find EndlessSky.app/Contents/Resources -type f ! -name 'endless-sky.icns' -delete
+        mv EndlessSky.app/Contents/Resources/endless-sky.icns .
+        rm -rf EndlessSky.app/Contents/Resources
+        mkdir EndlessSky.app/Contents/Resources
+        mv endless-sky.icns EndlessSky.app/Contents/Resources
     - name: Sanity check (data)
       run: tree ${{ env.data }}
     - name: Sanity check (win32)
