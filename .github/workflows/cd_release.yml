@@ -89,8 +89,8 @@ jobs:
         with:
           name: steam-win32
           path: |
-            build\mingw32\Release\EndlessSky.exe
-            "build\mingw32\Release\*.dll"
+            EndlessSky.exe
+            *.dll
       - name: Upload zip
         uses: softprops/action-gh-release@v1
         with:
@@ -142,8 +142,8 @@ jobs:
         with:
           name: steam-win64
           path: |
-            build\mingw\Release\EndlessSky.exe
-            "build\mingw\Release\*.dll"
+            EndlessSky.exe
+            *.dll
       - name: Upload zip
         uses: softprops/action-gh-release@v1
         with:
@@ -266,8 +266,7 @@ jobs:
         cd ${{ env.macos }}
         7z x EndlessSky.app.zip
         rm EndlessSky.app.zip
-        rm -rf EndlessSky.app/Contents/Resources/
-        mkdir EndlessSky.app/Contents/Resources
+        find EndlessSky.app/Contents/Resources -type f ! -name 'endless-sky.icns' -delete
     - name: Sanity check (data)
       run: tree ${{ env.data }}
     - name: Sanity check (win32)

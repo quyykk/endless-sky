@@ -100,28 +100,19 @@ if(APPLE)
 	foreach(folder "data" "images" "sounds")
 		file(GLOB_RECURSE RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${folder}/*")
 		target_sources(EndlessSky PRIVATE ${RESOURCES})
-
-		foreach(FILE ${RESOURCES})
-		    # Get the relative path from the root folder to every file.
-		    file(RELATIVE_PATH NEW_FILE "${CMAKE_CURRENT_SOURCE_DIR}" ${FILE})
-
-			# Resources belong under Resources/.
-		    set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE}")
-
-			# IDE support for XCode.
-		    source_group("Resources/${NEW_FILE}" FILES "${FILE}")
-		endforeach()
+		set_target_properties(EndlessSky RESOURCE ${RESOURCES})
 	endforeach()
+
 	# Now do the same to standone files.
 	foreach(file "license.txt" "keys.txt" "icon.png" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
+		set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${file}")
 	endforeach()
 
 	# Add custom plist and iconset to bundle.
-	target_sources(EndlessSky PRIVATE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets)
+	target_sources(EndlessSky PRIVATE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets ${CMAKE_CURRENT_LIST_DIR}/icons/endless-sky.iconset)
 	set_target_properties(EndlessSky PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/app/EndlessSky-Info.plist.in
-		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets
-		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/icons/endless-sky.iconset
+		RESOURCE ${CMAKE_CURRENT_LIST_DIR}/app/Images.xcassets ${CMAKE_CURRENT_LIST_DIR}/icons/endless-sky.iconset
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME endless-sky)
 
 elseif(WIN32)
