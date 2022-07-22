@@ -32,11 +32,6 @@ jobs:
         run: ./build/linux/Release/endless-sky-tests
       - name: Package Application
         run: ./utils/build_appimage.sh
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.OUTPUT }}
-          path: ${{ env.OUTPUT }}
       - name: Upload AppImage
         uses: softprops/action-gh-release@v1
         with:
@@ -72,8 +67,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.OUTPUT }}
-          path: ${{ env.OUTPUT }}
+          name: steam-win32
+          path: |
+            build\mingw32\Release\EndlessSky.exe
+            "build\mingw32\Release\*.dll"
       - name: Upload zip
         uses: softprops/action-gh-release@v1
         with:
@@ -109,8 +106,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.OUTPUT }}
-          path: ${{ env.OUTPUT }}
+          name: steam-win64
+          path: |
+            build\mingw\Release\EndlessSky.exe
+            "build\mingw\Release\*.dll"
       - name: Upload zip
         uses: softprops/action-gh-release@v1
         with:
@@ -148,9 +147,104 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.OUTPUT }}.dmg
-          path: ${{ env.OUTPUT }}.dmg
+          name: steam-macos
+          path: build/macos10.9/${{ env.OUTPUT }}/EndlessSky.app
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.OUTPUT }}.dmg
+
+
+  build_steam_linux:
+    name: Steam Linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, x86]
+    env:
+      ARTIFACT: endless-sky
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Endless Sky
+      run: |
+        cd steam
+        docker-compose run endless-sky-${{ matrix.arch }}
+    - name: Prepare binary
+      run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
+    - name: Upload GH artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: steam-linux-${{ matrix.arch }}
+        path: |
+          ${{ env.ARTIFACT }}
+          credits.txt
+
+
+  deploy_steam:
+    name: Deploy Steam
+    needs: [build_steam_linux, windows_win32, windows_win64, dmg_macos]
+    runs-on: ubuntu-latest
+    # environment: steam
+    env:
+      data: data-depot
+      linux32: steam-Linux-x86
+      linux64: steam-Linux-x64
+      win32: steam-win32
+      win64: steam-win64
+      macos: steam-macos
+      ARTIFACT: endless-sky
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download Artifacts
+      uses: actions/download-artifact@v3
+    - name: Prepare data
+      run: |
+        mkdir ${{ env.data }}
+        mv -t ${{ env.data }} \
+          changelog \
+          copyright \
+          ${{ env.linux64 }}/credits.txt \
+          icon.png \
+          keys.txt \
+          license.txt \
+          data/ \
+          images/ \
+          sounds/
+    - name: Prepare Linux binaries
+      run: |
+        chmod +x ${{ env.linux32 }}/${{ env.ARTIFACT }}
+        chmod +x ${{ env.linux64 }}/${{ env.ARTIFACT }}
+        rm ${{ env.linux32 }}/credits.txt
+    - name: Prepare MacOS bundle
+      run: |
+        rm -rf ${{ env.macos }/EndlessSky.app/Contents/Resources/
+        mkdir ${{ env.macos }/EndlessSky.app/Contents/Resources
+    - name: Sanity check (data)
+      run: tree ${{ env.data }}
+    - name: Sanity check (win32)
+      run: tree ${{ env.win32 }}
+    - name: Sanity check (win64)
+      run: tree ${{ env.win64 }}
+    - name: Sanity check (macos)
+      run: tree ${{ env.macos }}
+    - name: Sanity check (linux32)
+      run: tree ${{ env.linux32 }}
+    - name: Sanity check (linux64)
+      run: tree ${{ env.linux64 }}
+    # - uses: game-ci/steam-deploy@v1
+    #   with:
+    #     appId: 404410
+    #     buildDescription: canary-${{ github.sha }}
+    #     username: ${{ secrets.STEAM_DEPLOY_UN }}
+    #     password: ${{ secrets.STEAM_DEPLOY_PW }}
+    #     configVdf: ${{ secrets.STEAM_DEPLOY_VDF }}
+    #     ssfnFileName: ${{ secrets.STEAM_DEPLOY_SSFN_NAME }}
+    #     ssfnFileContents: ${{ secrets.STEAM_DEPLOY_SSFN }}
+    #     rootPath: ''
+    #     depot1Path: ${{ env.data }}
+    #     depot3Path: ${{ env.win32 }}
+    #     depot4Path: ${{ env.win64 }}
+    #     depot5Path: ${{ env.macos }}
+    #     depot6Path: ${{ env.linux32 }}
+    #     depot7Path: ${{ env.linux64 }}
+    #     releaseBranch: canary

@@ -37,6 +37,7 @@ jobs:
           ${{ env.ARTIFACT }}
           credits.txt
 
+
   test_linux:
     needs: build_linux
     if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.integration_tests == 'true' }}
@@ -75,67 +76,3 @@ jobs:
       env:
           PRINT_GLXINFO: true
       run: steam-runtime/run.sh tests/integration/run_tests_headless.sh
-
-  deploy_linux:
-    needs: test_linux
-    runs-on: ubuntu-latest
-    # environment: steam
-    env:
-      dir32: binary-Linux-x86
-      dir64: binary-Linux-x64
-      ARTIFACT: endless-sky
-    steps:
-    - name: Download Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: ${{ github.workspace }}
-    - name: Prepare binary upload
-      run: |
-        chmod +x ${{ env.dir32 }}/${{ env.ARTIFACT }}
-        chmod +x ${{ env.dir64 }}/${{ env.ARTIFACT }}
-    # - uses: game-ci/steam-deploy@v0.1
-    #   with:
-    #     appId: 404410
-    #     buildDescription: canary-${{ github.sha }}
-    #     username: ${{ secrets.STEAM_DEPLOY_UN }}
-    #     password: ${{ secrets.STEAM_DEPLOY_PW }}
-    #     mfaCode: ${{ secrets.STEAM_DEPLOY_MFA }}
-    #     rootPath: ''
-    #     depot6Path: ${{ env.dir32 }}
-    #     depot7Path: ${{ env.dir64 }}
-    #     releaseBranch: canary
-
-#  deploy_data_depot:
-#    needs: changed
-#    if: needs.changed.outputs.data == 'true'
-#    runs-on: ubuntu-latest
-#    # environment: steam
-#    env:
-#      dir: data-depot
-#    steps:
-#    - uses: actions/checkout@v3
-#    - name: 'Prepare data upload'
-#      run: |
-#        mkdir ${{ env.dir }}
-#        mv -t ${{ env.dir }} \
-#          changelog \
-#          copyright \
-#          credits.txt \
-#          icon.png \
-#          keys.txt \
-#          license.txt \
-#          data/ \
-#          images/ \
-#          sounds/
-#    - name: Verify move
-#      run: head -n 13 ${{ env.dir }}/credits.txt
-    # - uses: game-ci/steam-deploy@v0.1
-    #   with:
-    #     appId: 404410
-    #     buildDescription: canary-${{ github.sha }}
-    #     username: ${{ secrets.STEAM_DEPLOY_UN }}
-    #     password: ${{ secrets.STEAM_DEPLOY_PW }}
-    #     mfaCode: ${{ secrets.STEAM_DEPLOY_MFA }}
-    #     rootPath: ''
-    #     depot1Path: ${{ env.dir }}
-    #     releaseBranch: canary
