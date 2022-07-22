@@ -181,14 +181,14 @@ jobs:
         run: |
           cd build/macos10.9/Release
           mkdir ${{ env.OUTPUT }}
-          mv EndlessSky.app ${{ env.OUTPUT }}
+          cp EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: steam-macos
-          path: build/macos10.9/${{ env.OUTPUT }}
+          path: build/macos10.9/EndlessSky.app
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
