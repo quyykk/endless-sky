@@ -23,7 +23,7 @@ runs:
       run: choco install ccache
       shell: bash
     - uses: lukka/get-cmake@latest
-    - uses: lukka/run-vcpkg@v10.2
+    - uses: lukka/run-vcpkg@v10
       with:
         appendedCacheKey: ${{ inputs.version }}-${{ inputs.arch }}
     - uses: lukka/run-cmake@v10

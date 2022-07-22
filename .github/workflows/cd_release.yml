@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-vcpkg@v10
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'linux'
@@ -59,7 +59,7 @@ jobs:
           version: ${{ env.GCC }}
           arch: x86
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-vcpkg@v10
         with:
           appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
@@ -112,7 +112,7 @@ jobs:
           version: ${{ env.GCC }}
           arch: x64
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-vcpkg@v10
         with:
           appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
@@ -159,7 +159,7 @@ jobs:
         with:
           submodules: true
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10.2
+      - uses: lukka/run-vcpkg@v10
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos10.9'
