@@ -112,13 +112,13 @@ if(APPLE)
 
 	# Create the icns file, required for the bundle icon.
 	add_custom_command(
-		OUTPUT app/endless-sky.icns
+		OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/app/endless-sky.icns
 		COMMAND iconutil -c icns -o app/endless-sky.icns app/endless-sky.iconset
-		DEPENDS app/icons/icon_16x16.png app/icons/icon_16x16@2x.png
-			app/icons/icon_32x32.png app/icons/icon_32x32@2x.png
-			app/icons/icon_128x128.png app/icons/icon_128x128@2x.png
-			app/icons/icon_256x256.png app/icons/icon_256x256@2x.png
-			app/icons/icon_512x512.png app/icons/icon_512x512@2x.png
+		DEPENDS app/endless-sky.iconset/icon_16x16.png app/endless-sky.iconset/icon_16x16@2x.png
+			app/endless-sky.iconset/icon_32x32.png app/endless-sky.iconset/icon_32x32@2x.png
+			app/endless-sky.iconset/icon_128x128.png app/endless-sky.iconset/icon_128x128@2x.png
+			app/endless-sky.iconset/icon_256x256.png app/endless-sky.iconset/icon_256x256@2x.png
+			app/endless-sky.iconset/icon_512x512.png app/endless-sky.iconset/icon_512x512@2x.png
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 	# Now do the same to standone files.
