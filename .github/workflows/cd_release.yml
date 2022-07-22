@@ -217,8 +217,8 @@ jobs:
         rm ${{ env.linux32 }}/credits.txt
     - name: Prepare MacOS bundle
       run: |
-        rm -rf ${{ env.macos }/EndlessSky.app/Contents/Resources/
-        mkdir ${{ env.macos }/EndlessSky.app/Contents/Resources
+        rm -rf ${{ env.macos }}/EndlessSky.app/Contents/Resources/
+        mkdir ${{ env.macos }}/EndlessSky.app/Contents/Resources
     - name: Sanity check (data)
       run: tree ${{ env.data }}
     - name: Sanity check (win32)
