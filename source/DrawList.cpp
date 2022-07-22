@@ -47,19 +47,25 @@ void DrawList::SetCenter(const Point &center, const Point &centerVelocity)
 // Add an object based on the Body class.
 bool DrawList::Add(const Body &body, double cloak)
 {
-	return Add(body, body.Position(), cloak);
+	Point position = body.Position() - center;
+	Point blur = body.Velocity() - centerVelocity;
+	if(Cull(body, position, blur) || cloak >= 1.)
+		return false;
+	
+	Push(body, position, blur, cloak, 1., body.GetSwizzle());
+	return true;
 }
 
 
 
-bool DrawList::Add(const Body &body, Point position, double cloak)
+bool DrawList::Add(const Body &body, Point position)
 {
 	position -= center;
 	Point blur = body.Velocity() - centerVelocity;
 	if(Cull(body, position, blur))
 		return false;
-
-	Push(body, std::move(position), std::move(blur), cloak, 1., body.GetSwizzle());
+	
+	Push(body, position, blur, 0., 1., body.GetSwizzle());
 	return true;
 }
 
@@ -71,7 +77,7 @@ bool DrawList::AddUnblurred(const Body &body)
 	Point blur;
 	if(Cull(body, position, blur))
 		return false;
-
+	
 	Push(body, position, blur, 0., 1., body.GetSwizzle());
 	return true;
 }
@@ -84,7 +90,7 @@ bool DrawList::AddSwizzled(const Body &body, int swizzle)
 	Point blur = body.Velocity() - centerVelocity;
 	if(Cull(body, position, blur))
 		return false;
-
+	
 	Push(body, position, blur, 0., 1., swizzle);
 	return true;
 }
@@ -95,11 +101,11 @@ bool DrawList::AddSwizzled(const Body &body, int swizzle)
 void DrawList::Draw() const
 {
 	SpriteShader::Bind();
-
+	
 	bool withBlur = Preferences::Has("Render motion blur");
 	for(const SpriteShader::Item &item : items)
 		SpriteShader::Add(item, withBlur);
-
+	
 	SpriteShader::Unbind();
 }
 
@@ -109,7 +115,7 @@ bool DrawList::Cull(const Body &body, const Point &position, const Point &blur) 
 {
 	if(!body.HasSprite() || !body.Zoom())
 		return true;
-
+	
 	Point unit = body.Facing().Unit();
 	// Cull sprites that are completely off screen, to reduce the number of draw
 	// calls that we issue (which may be the bottleneck on some systems).
@@ -122,7 +128,7 @@ bool DrawList::Cull(const Body &body, const Point &position, const Point &blur) 
 		return true;
 	if(topLeft.X() > Screen::Right() || topLeft.Y() > Screen::Bottom())
 		return true;
-
+	
 	return false;
 }
 
@@ -131,18 +137,18 @@ bool DrawList::Cull(const Body &body, const Point &position, const Point &blur) 
 void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, double clip, int swizzle)
 {
 	SpriteShader::Item item;
-
+	
 	item.texture = body.GetSprite()->Texture(isHighDPI);
 	item.frame = body.GetFrame(step);
 	item.frameCount = body.GetSprite()->Frames();
-
+	
 	// Get unit vectors in the direction of the object's width and height.
 	double width = body.Width();
 	double height = body.Height();
 	Point unit = body.Facing().Unit();
 	Point uw = unit * width;
 	Point uh = unit * height;
-
+	
 	item.clip = clip;
 	if(clip < 1.)
 	{
@@ -153,7 +159,7 @@ void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, doubl
 	}
 	item.position[0] = static_cast<float>(pos.X() * zoom);
 	item.position[1] = static_cast<float>(pos.Y() * zoom);
-
+	
 	// (0, -1) means a zero-degree rotation (since negative Y is up).
 	uw *= zoom;
 	uh *= zoom;
@@ -161,14 +167,14 @@ void DrawList::Push(const Body &body, Point pos, Point blur, double cloak, doubl
 	item.transform[1] = uw.X();
 	item.transform[2] = -uh.X();
 	item.transform[3] = -uh.Y();
-
+	
 	// Calculate the blur vector, in texture coordinates.
 	blur *= zoom;
 	item.blur[0] = unit.Cross(blur) / (width * 4.);
 	item.blur[1] = -unit.Dot(blur) / (height * 4.);
-
+	
 	item.alpha = 1. - cloak;
 	item.swizzle = swizzle;
-
+	
 	items.push_back(item);
 }

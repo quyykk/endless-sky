@@ -19,17 +19,15 @@ target_sources(EndlessSkyLib PRIVATE
 	BatchDrawList.h
 	BatchShader.cpp
 	BatchShader.h
-	Bitset.cpp
-	Bitset.h
 	BoardingPanel.cpp
 	BoardingPanel.h
 	Body.cpp
 	Body.h
+	CMakeLists.txt
 	CaptureOdds.cpp
 	CaptureOdds.h
 	CargoHold.cpp
 	CargoHold.h
-	CategoryTypes.h
 	ClickZone.h
 	CollisionSet.cpp
 	CollisionSet.h
@@ -45,9 +43,6 @@ target_sources(EndlessSkyLib PRIVATE
 	ConversationPanel.h
 	CoreStartData.cpp
 	CoreStartData.h
-	DamageDealt.h
-	DamageProfile.cpp
-	DamageProfile.h
 	DataFile.cpp
 	DataFile.h
 	DataNode.cpp
@@ -70,19 +65,14 @@ target_sources(EndlessSkyLib PRIVATE
 	Effect.h
 	Engine.cpp
 	Engine.h
-	EsUuid.cpp
-	EsUuid.h
 	EscortDisplay.cpp
 	EscortDisplay.h
-	ExclusiveItem.h
 	File.cpp
 	File.h
 	Files.cpp
 	Files.h
 	FillShader.cpp
 	FillShader.h
-	FireCommand.cpp
-	FireCommand.h
 	Fleet.cpp
 	Fleet.h
 	Flotsam.cpp
@@ -93,14 +83,10 @@ target_sources(EndlessSkyLib PRIVATE
 	FrameTimer.h
 	Galaxy.cpp
 	Galaxy.h
-	GameAction.cpp
-	GameAction.h
 	GameData.cpp
 	GameData.h
 	GameEvent.cpp
 	GameEvent.h
-	GameLoadingPanel.cpp
-	GameLoadingPanel.h
 	GameWindow.cpp
 	GameWindow.h
 	Government.cpp
@@ -117,8 +103,6 @@ target_sources(EndlessSkyLib PRIVATE
 	ImageBuffer.h
 	ImageSet.cpp
 	ImageSet.h
-	InfoPanelState.cpp
-	InfoPanelState.h
 	Information.cpp
 	Information.h
 	Interface.cpp
@@ -147,10 +131,6 @@ target_sources(EndlessSkyLib PRIVATE
 	MapShipyardPanel.h
 	Mask.cpp
 	Mask.h
-	MaskManager.cpp
-	MaskManager.h
-	MenuAnimationPanel.cpp
-	MenuAnimationPanel.h
 	MenuPanel.cpp
 	MenuPanel.h
 	Messages.cpp
@@ -213,7 +193,6 @@ target_sources(EndlessSkyLib PRIVATE
 	Radar.h
 	Random.cpp
 	Random.h
-	RandomEvent.h
 	Rectangle.cpp
 	Rectangle.h
 	RingShader.cpp
@@ -262,33 +241,24 @@ target_sources(EndlessSkyLib PRIVATE
 	System.h
 	Test.cpp
 	Test.h
-	TestContext.cpp
-	TestContext.h
 	TestData.cpp
 	TestData.h
-	TextReplacements.cpp
-	TextReplacements.h
 	Trade.cpp
 	Trade.h
 	TradingPanel.cpp
 	TradingPanel.h
 	UI.cpp
 	UI.h
-	UniverseObjects.cpp
-	UniverseObjects.h
-	Variant.cpp
-	Variant.h
+	Version.h.in
 	Visual.cpp
 	Visual.h
 	Weapon.cpp
 	Weapon.h
 	Weather.cpp
 	Weather.h
-	WeightedList.h
-	comparators/ByGivenOrder.h
-	comparators/ByName.h
-	opengl.cpp
-	opengl.h
+	WinApp.rc
+	gl_header.h
+	main.cpp
 	pi.h
 	shift.h
 	text/DisplayText.cpp

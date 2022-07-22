@@ -11,48 +11,31 @@
 mission "Drak guarding Korath space"
 	invisible
 	landing
-	repeat
-	to offer
-		not "Drak guarding Korath space: active"
-	to complete
-		never
-	npc save
+	npc kill
 		government Drak
-		personality heroic vindictive staying frugal forbearing
+		personality heroic vindictive staying
 		system Fasitopfar
 		ship "Archon" "Kasiliri's Folly"
-	npc save
+	npc kill
 		government Drak
-		personality heroic vindictive staying frugal forbearing
+		personality heroic vindictive staying
 		system Kasikfar
 		ship "Archon B" "Sword of Eden"
-	npc save
+	npc kill
 		government Drak
-		personality heroic vindictive staying frugal forbearing
+		personality heroic vindictive staying
 		system Peresedersi
 		ship "Archon C" "Snows of Far Door Nai"
 
 mission "Drak guarding Sayaiban"
 	invisible
 	landing
-	repeat
-	to offer
-		not "Drak guarding Sayaiban: active"
-	to complete
-		never
-	npc save
+	npc kill
 		government Drak
-		personality heroic vindictive staying frugal forbearing
+		personality heroic vindictive staying
 		system Sayaiban
 		ship "Archon" "Watchful Gravetender"
-	
-mission "Conversation on Sayaiban"
-	invisible
-	landing
-	to complete
-		never
 	on enter Sayaiban
-		fail
 		log "Factions" "Archons" `Archons consider it to be their job to enforce peace and to prevent extinction. If they are unable to prevent a species from driving itself extinct, they will still try to preserve some of what that species created as a memorial to them.`
 			`They are capable of communicating telepathically.`
 		conversation
@@ -99,13 +82,8 @@ mission "Conversation on Sayaiban"
 mission "Drak guarding Void Sprites"
 	invisible
 	landing
-	repeat
-	to offer
-		not "Drak guarding Void Sprites: active"
-	to complete
-		never
-	npc save
+	npc kill
 		government Drak
-		personality heroic vindictive staying frugal
+		personality heroic vindictive staying
 		system Nenia
 		ship "Archon (Cloaked)" "Sleeping Dragon"

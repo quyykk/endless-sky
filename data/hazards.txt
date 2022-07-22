@@ -40,17 +40,16 @@ hazard "Black Hole Accretion Disk"
 	"constant strength"
 	"range" 600
 	weapon
-		"target effect" "nano spark"
+		"hit effect" "nano spark"
 		"damage dropoff" 150 600
 		"dropoff modifier" 0
 		"relative shield damage" .0018
-		"fuel damage" -0.5
 
 hazard "Black Hole Event Horizon"
 	"constant strength"
 	"range" 150
 	weapon
-		"target effect" "nano spark"
+		"hit effect" "nano spark"
 		"damage dropoff" 0 150
 		"dropoff modifier" 0
 		"relative hull damage" .0009

@@ -24,6 +24,7 @@ class Color;
 class FillShader {
 public:
 	static void Init();
+	
 	static void Fill(const Point &center, const Point &size, const Color &color);
 };
 

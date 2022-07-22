@@ -12,8 +12,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include "Armament.h"
 
+#include "Command.h"
 #include "Files.h"
-#include "FireCommand.h"
 #include "Outfit.h"
 #include "Ship.h"
 
@@ -26,17 +26,17 @@ using namespace std;
 
 
 // Add a gun hardpoint (fixed-direction weapon).
-void Armament::AddGunPort(const Point &point, const Angle &angle, bool isParallel, bool isUnder, const Outfit *outfit)
+void Armament::AddGunPort(const Point &point, const Angle &angle, bool isParallel, const Outfit *outfit)
 {
-	hardpoints.emplace_back(point, angle, false, isParallel, isUnder, outfit);
+	hardpoints.emplace_back(point, angle, false, isParallel, outfit);
 }
 
 
 
 // Add a turret hardpoint (omnidirectional weapon).
-void Armament::AddTurret(const Point &point, bool isUnder, const Outfit *outfit)
+void Armament::AddTurret(const Point &point, const Outfit *outfit)
 {
-	hardpoints.emplace_back(point, Angle(0.), true, false, isUnder, outfit);
+	hardpoints.emplace_back(point, Angle(0.), true, false, outfit);
 }
 
 
@@ -44,22 +44,22 @@ void Armament::AddTurret(const Point &point, bool isUnder, const Outfit *outfit)
 // This must be called after all the outfit data is loaded. If you add more
 // of a given weapon than there are slots for it, the extras will not fire.
 // But, the "gun ports" attribute should keep that from happening.
-int Armament::Add(const Outfit *outfit, int count)
+void Armament::Add(const Outfit *outfit, int count)
 {
 	// Make sure this really is a weapon.
 	if(!count || !outfit || !outfit->IsWeapon())
-		return 0;
-
+		return;
+	
 	int existing = 0;
 	int added = 0;
 	bool isTurret = outfit->Get("turret mounts");
 	// Do not equip weapons that do not define how they are mounted.
 	if(!isTurret && !outfit->Get("gun ports"))
 	{
-		Files::LogError("Error: Skipping unmountable outfit \"" + outfit->Name() + "\". Weapon outfits must specify either \"gun ports\" or \"turret mounts\".");
-		return 0;
+		Files::LogError("Skipping unmountable outfit \"" + outfit->Name() + "\". Weapon outfits must specify either \"gun ports\" or \"turret mounts\".");
+		return;
 	}
-
+	
 	// To start out with, check how many instances of this weapon are already
 	// installed. If "adding" a negative number of outfits, remove the installed
 	// instances until the given number have been removed.
@@ -74,7 +74,6 @@ int Armament::Add(const Outfit *outfit, int count)
 			{
 				hardpoint.Uninstall();
 				++count;
-				--added;
 			}
 			else
 				++existing;
@@ -92,20 +91,19 @@ int Armament::Add(const Outfit *outfit, int count)
 			}
 		}
 	}
-
+	
 	// If a stream counter already exists for this outfit (because we did not
 	// just add the first one or remove the last one), do nothing.
-	if(!existing)
-	{
-		// If this weapon is streamed, create a stream counter. If it is not
-		// streamed, or if the last of this weapon has been uninstalled, erase the
-		// stream counter (if there is one).
-		if(added > 0 && outfit->IsStreamed())
-			streamReload[outfit] = 0;
-		else
-			streamReload.erase(outfit);
-	}
-	return added;
+	if(existing)
+		return;
+	
+	// If this weapon is streamed, create a stream counter. If it is not
+	// streamed, or if the last of this weapon has been uninstalled, erase the
+	// stream counter (if there is one).
+	if(added && outfit->IsStreamed())
+		streamReload[outfit] = 0;
+	else
+		streamReload.erase(outfit);
 }
 
 
@@ -117,7 +115,7 @@ void Armament::FinishLoading()
 	for(Hardpoint &hardpoint : hardpoints)
 		if(hardpoint.GetOutfit())
 			hardpoint.Install(hardpoint.GetOutfit());
-
+	
 	ReloadAll();
 }
 
@@ -131,21 +129,12 @@ void Armament::ReloadAll()
 		if(hardpoint.GetOutfit())
 		{
 			hardpoint.Reload();
-
+			
 			// If this weapon is streamed, create a stream counter.
 			const Outfit *outfit = hardpoint.GetOutfit();
 			if(outfit->IsStreamed())
 				streamReload[outfit] = 0;
 		}
-}
-
-
-
-// Uninstall all weapons (because the weapon outfits have potentially changed).
-void Armament::UninstallAll()
-{
-	for(auto &hardpoint : hardpoints)
-		hardpoint.Uninstall();
 }
 
 
@@ -161,7 +150,7 @@ void Armament::Swap(int first, int second)
 		return;
 	if(hardpoints[first].IsTurret() != hardpoints[second].IsTurret())
 		return;
-
+	
 	// Swap the weapons in the two hardpoints.
 	const Outfit *outfit = hardpoints[first].GetOutfit();
 	hardpoints[first].Install(hardpoints[second].GetOutfit());
@@ -198,7 +187,7 @@ int Armament::TurretCount() const
 
 
 // Adjust the aim of the turrets.
-void Armament::Aim(const FireCommand &command)
+void Armament::Aim(const Command &command)
 {
 	for(unsigned i = 0; i < hardpoints.size(); ++i)
 		hardpoints[i].Aim(command.Aim(i));
@@ -208,11 +197,11 @@ void Armament::Aim(const FireCommand &command)
 
 // Fire the given weapon, if it is ready. If it did not fire because it is
 // not ready, return false.
-void Armament::Fire(int index, Ship &ship, vector<Projectile> &projectiles, vector<Visual> &visuals, bool jammed)
+void Armament::Fire(int index, Ship &ship, vector<Projectile> &projectiles, vector<Visual> &visuals)
 {
 	if(static_cast<unsigned>(index) >= hardpoints.size() || !hardpoints[index].IsReady())
 		return;
-
+	
 	// A weapon that has already started a burst ignores stream timing.
 	if(!hardpoints[index].WasFiring())
 	{
@@ -224,25 +213,16 @@ void Armament::Fire(int index, Ship &ship, vector<Projectile> &projectiles, vect
 			it->second += it->first->Reload() * hardpoints[index].BurstRemaining();
 		}
 	}
-	if(jammed)
-		hardpoints[index].Jam();
-	else
-		hardpoints[index].Fire(ship, projectiles, visuals);
+	hardpoints[index].Fire(ship, projectiles, visuals);
 }
 
 
 
-bool Armament::FireAntiMissile(int index, Ship &ship, const Projectile &projectile, vector<Visual> &visuals, bool jammed)
+bool Armament::FireAntiMissile(int index, Ship &ship, const Projectile &projectile, vector<Visual> &visuals)
 {
 	if(static_cast<unsigned>(index) >= hardpoints.size() || !hardpoints[index].IsReady())
 		return false;
-
-	if(jammed)
-	{
-		hardpoints[index].Jam();
-		return false;
-	}
-
+	
 	return hardpoints[index].FireAntiMissile(ship, projectile, visuals);
 }
 
@@ -253,7 +233,7 @@ void Armament::Step(const Ship &ship)
 {
 	for(Hardpoint &hardpoint : hardpoints)
 		hardpoint.Step();
-
+	
 	for(auto &it : streamReload)
 	{
 		int count = ship.OutfitCount(it.first);

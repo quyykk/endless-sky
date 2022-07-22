@@ -34,7 +34,7 @@ if(NOT STEAM)
 		CACHE STRING "Vcpkg toolchain file")
 endif()
 
-project("Endless Sky" VERSION 0.9.15
+project("Endless Sky" VERSION 0.9.14
 	DESCRIPTION "Space exploration, trading, and combat game."
 	LANGUAGES CXX)
 
@@ -141,7 +141,7 @@ endif()
 
 # Create unit test target. The source files are populated inside tests/unit/CMakeLists.txt.
 add_executable(EndlessSkyTests EXCLUDE_FROM_ALL)
-add_subdirectory(tests/unit)
+add_subdirectory(tests/)
 
 # The 'mingw32' lib needs to appear first.
 if(MINGW)
