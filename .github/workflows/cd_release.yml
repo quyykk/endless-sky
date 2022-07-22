@@ -183,7 +183,7 @@ jobs:
         run: |
           cd build/macos10.9/Release
           mkdir ${{ env.OUTPUT }}
-          cp EndlessSky.app ${{ env.OUTPUT }}
+          cp -r EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
       - name: Upload artifact
