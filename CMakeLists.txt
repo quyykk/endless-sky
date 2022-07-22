@@ -112,7 +112,7 @@ if(APPLE)
 	# Now do the same to standone files.
 	foreach(file "license.txt" "keys.txt" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
-		set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
+		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
 
 	# Add plist to bundle.
