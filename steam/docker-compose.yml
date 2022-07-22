@@ -9,8 +9,9 @@ services:
       - |
         mkdir -p build/steam-x64
         cd build/steam-x64
-        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
-        make -j $$(nproc)
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        make -j $$(nproc) EndlessSky EndlessSkyTests
+        ./endless-sky --version
         ./endless-sky-tests
 
 
@@ -27,6 +28,7 @@ services:
       - |
         mkdir -p build/steam-x86
         cd build/steam-x86
-        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
-        make -j $$(nproc)
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        make -j $$(nproc) EndlessSky EndlessSkyTests
+        ./endless-sky --version
         ./endless-sky-tests

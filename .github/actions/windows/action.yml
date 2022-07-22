@@ -37,7 +37,13 @@ runs:
           '-B', 'build/mingw'
           ]
         buildPreset: ${{ inputs.arch == 'x64' && 'mingw-release' || 'mingw32-release' }}
-        buildPresetCmdString: "['--build', 'build/mingw', '--config', 'Release']"
+        buildPresetCmdString: >
+          [
+          '--build', 'build/mingw',
+          '--config', 'Release',
+          '-t', 'EndlessSky',
+          '-t', 'EndlessSkyTests'
+          ]
     - name: Run Unit Tests
       run: .\build\mingw\Release\EndlessSkyTests.exe
       shell: pwsh

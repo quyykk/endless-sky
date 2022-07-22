@@ -17,6 +17,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Use LTO for Release builds only.
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+# On Linux use relative RPATH.
+set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
 # Support only Debug and Release configurations, with Debug being the default.
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
@@ -27,6 +29,7 @@ endif()
 # Add our custom triplets for vcpkg and setup vcpkg. For Steam we use the system libraries.
 if(NOT STEAM)
 	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
+	set(VCPKG_DISABLE_TELEMTRY ON)
 	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 		CACHE STRING "Vcpkg toolchain file")
 endif()
@@ -129,7 +132,7 @@ else()
 endif()
 
 # Create unit test target. The source files are populated inside tests/unit/CMakeLists.txt.
-add_executable(EndlessSkyTests "")
+add_executable(EndlessSkyTests EXCLUDE_FROM_ALL)
 add_subdirectory(tests/unit)
 
 # The 'mingw32' lib needs to appear first.
@@ -154,10 +157,9 @@ if(MINGW)
 	endif()
 endif()
 
-if(STEAM)
-	target_link_libraries(EndlessSky PRIVATE EndlessSkyLib)
-else()
-	target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
+target_link_libraries(EndlessSky PRIVATE EndlessSkyLib)
+if(NOT STEAM)
+	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2main)
 endif()
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 

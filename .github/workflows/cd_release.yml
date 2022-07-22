@@ -24,10 +24,16 @@ jobs:
           configurePreset: 'linux'
           configurePresetCmdString: >
             [
-            '--preset', 'linux',
+            '--preset', '$[env.CONFIGURE_PRESET_NAME]',
             '-DES_RELEASE=ON'
             ]
           buildPreset: 'linux-release'
+          buildPresetCmdString: >
+            [
+            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
+            '-t', 'EndlessSky',
+            '-t', 'EndlessSkyTests'
+            ]
       - name: Run Unit Tests
         run: ./build/linux/Release/endless-sky-tests
       - name: Package Application
@@ -158,7 +164,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: steam-macos
-          path: build/macos10.9/${{ env.OUTPUT }}/EndlessSky.app
+          path: build/macos10.9/${{ env.OUTPUT }}
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
@@ -197,8 +203,8 @@ jobs:
     # environment: steam
     env:
       data: data-depot
-      linux32: steam-Linux-x86
-      linux64: steam-Linux-x64
+      linux32: steam-linux-x86
+      linux64: steam-linux-x64
       win32: steam-win32
       win64: steam-win64
       macos: steam-macos

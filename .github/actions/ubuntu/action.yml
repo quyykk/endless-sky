@@ -26,7 +26,13 @@ runs:
           '-B', 'build/linux'
           ]
         buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
-        buildPresetCmdString: "['--build', 'build/linux', '--config', 'Release']"
+        buildPresetCmdString: >
+          [
+          '--build', 'build/linux',
+          '--config', 'Release',
+          '-t', 'EndlessSky',
+          '-t', 'EndlessSkyTests'
+          ]
     - name: Run Unit Tests
       run: ./build/linux/Release/endless-sky-tests
       shell: bash

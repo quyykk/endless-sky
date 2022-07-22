@@ -124,99 +124,85 @@
       "name": "linux-debug",
       "displayName": "Debug",
       "configurePreset": "linux",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "linux-release",
       "displayName": "Release",
       "configurePreset": "linux",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "linux-gles-debug",
       "displayName": "Debug",
       "configurePreset": "linux-gles",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "linux-gles-release",
       "displayName": "Release",
       "configurePreset": "linux-gles",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "macos-debug",
       "displayName": "Debug",
       "configurePreset": "macos",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "macos-release",
       "displayName": "Release",
       "configurePreset": "macos",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "macos10.9-debug",
       "displayName": "Debug",
       "configurePreset": "macos10.9",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "macos10.9-release",
       "displayName": "Release",
       "configurePreset": "macos10.9",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "xcode-debug",
       "displayName": "Debug",
       "configurePreset": "xcode",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "xcode-release",
       "displayName": "Release",
       "configurePreset": "xcode",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "mingw-debug",
       "displayName": "Debug",
       "configurePreset": "mingw",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "mingw-release",
       "displayName": "Release",
       "configurePreset": "mingw",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	},
     {
       "name": "mingw32-debug",
       "displayName": "Debug",
       "configurePreset": "mingw32",
-      "configuration": "Debug",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Debug"
 	},
     {
       "name": "mingw32-release",
       "displayName": "Release",
       "configurePreset": "mingw32",
-      "configuration": "Release",
-	  "targets": ["EndlessSky", "EndlessSkyTests"]
+      "configuration": "Release"
 	}
   ]
 }
