@@ -68,6 +68,12 @@ jobs:
             '-DES_RELEASE=ON'
             ]
           buildPreset: 'mingw32-release'
+          buildPresetCmdString: >
+            [
+            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
+            '-t', 'EndlessSky',
+            '-t', 'EndlessSkyTests'
+            ]
       - name: Run Unit Tests
         run: .\build\mingw32\Release\EndlessSkyTests.exe
       - name: Package Application
@@ -112,6 +118,12 @@ jobs:
             '-DES_RELEASE=ON'
             ]
           buildPreset: 'mingw-release'
+          buildPresetCmdString: >
+            [
+            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
+            '-t', 'EndlessSky',
+            '-t', 'EndlessSkyTests'
+            ]
       - name: Run Unit Tests
         run: .\build\mingw\Release\EndlessSkyTests.exe
       - name: Package Application
@@ -151,6 +163,12 @@ jobs:
             '-DES_RELEASE=ON'
             ]
           buildPreset: 'macos10.9-release'
+          buildPresetCmdString: >
+            [
+            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
+            '-t', 'EndlessSky',
+            '-t', 'EndlessSkyTests'
+            ]
       - name: Run Unit Tests
         run: ./build/macos10.9/Release/EndlessSkyTests
       - name: Package Application
