@@ -48,6 +48,7 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win32-${{ github.event.release.tag_name }}.zip
+      GCC: 12.1.0
     steps:
       - uses: actions/checkout@v3
         with:
@@ -55,10 +56,12 @@ jobs:
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
         with:
-          version: 12.1.0
+          version: ${{ env.GCC }}
           arch: x86
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
+        with:
+          appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw32'
@@ -98,6 +101,7 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win64-${{ github.event.release.tag_name }}.zip
+      GCC: 12.1.0
     steps:
       - uses: actions/checkout@v3
         with:
@@ -105,10 +109,12 @@ jobs:
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
         with:
-          version: 12.1.0
+          version: ${{ env.GCC }}
           arch: x64
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10.2
+        with:
+          appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw'
