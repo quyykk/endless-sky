@@ -31,7 +31,7 @@ runs:
         configurePreset: ${{ inputs.arch == 'x64' && 'mingw' || 'mingw32' }}
         configurePresetCmdString: >
           [
-          '--preset', '${{ env.CONFIGURE_PRESET_NAME }}',
+          '--preset', '$[env.CONFIGURE_PRESET_NAME]',
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
           '-DES_INCLUDE_HASH=ON',
           '-B', 'build/mingw'

@@ -20,7 +20,7 @@ runs:
         configurePreset: ${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}
         configurePresetCmdString: >
           [
-          '--preset', '${{ env.CONFIGURE_PRESET_NAME }}',
+          '--preset', '$[env.CONFIGURE_PRESET_NAME]',
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
           '-DES_INCLUDE_HASH=ON',
           '-B', 'build/linux'
