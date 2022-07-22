@@ -190,7 +190,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: steam-macos
-          path: build/macos10.9/EndlessSky.app
+          path: build/macos10.9/Release/EndlessSky.app
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
