@@ -120,6 +120,7 @@ if(APPLE)
 			app/icons/icon_256x256.png app/icons/icon_256x256@2x.png
 			app/icons/icon_512x512.png app/icons/icon_512x512@2x.png
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	target_sources(EndlessSky PRIVATE endless-sky.icns)
 
 	# Now do the same to standone files.
 	foreach(file "license.txt" "icon.png" "keys.txt" "credits.txt" "copyright" "changelog" "app/endless-sky.icns")
