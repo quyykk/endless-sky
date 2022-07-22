@@ -29,7 +29,7 @@ endif()
 # Add our custom triplets for vcpkg and setup vcpkg. For Steam we use the system libraries.
 if(NOT STEAM)
 	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
-	set(VCPKG_DISABLE_TELEMTRY ON)
+	set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 		CACHE STRING "Vcpkg toolchain file")
 endif()
