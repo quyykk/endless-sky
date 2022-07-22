@@ -21,7 +21,7 @@ runs:
         configurePreset: ${{ inputs.maverics == 'true' && 'macos10.9' || 'macos' }}
         configurePresetCmdString: >
           [
-          '--preset', "${{ inputs.mavericks == 'true' && 'macos10.9' || 'macos' }}",
+          '--preset', '${{ env.CONFIGURE_PRESET_NAME }}',
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
           '-DES_INCLUDE_HASH=ON',
           '-B', 'build/macos'

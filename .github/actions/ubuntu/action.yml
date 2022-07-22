@@ -17,15 +17,15 @@ runs:
     - uses: lukka/run-vcpkg@v10.2
     - uses: lukka/run-cmake@v10
       with:
-        configurePreset: 'linux'
+        configurePreset: ${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}
         configurePresetCmdString: >
           [
-          '--preset', "${{ inputs.opengl == 'desktop' && 'linux' || 'linux-gles' }}",
+          '--preset', '${{ env.CONFIGURE_PRESET_NAME }}',
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
           '-DES_INCLUDE_HASH=ON',
           '-B', 'build/linux'
           ]
-        buildPreset: 'linux-release'
+        buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
         buildPresetCmdString: "['--build', 'build/linux', '--config', 'Release']"
     - name: Run Unit Tests
       run: ./build/linux/Release/endless-sky-tests
