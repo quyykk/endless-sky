@@ -100,9 +100,12 @@ if(APPLE)
 	foreach(folder "data" "images" "sounds")
 		file(GLOB_RECURSE RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${folder}/*")
 		target_sources(EndlessSky PRIVATE ${RESOURCES})
-		set_target_properties(EndlessSky RESOURCE ${RESOURCES})
-	endforeach()
 
+		foreach(FILE ${RESOURCES})
+			# Resources belong under Resources/.
+			set_target_properties(EndlessSky RESOURCE ${FILE})
+		endforeach()
+	endforeach()
 	# Now do the same to standone files.
 	foreach(file "license.txt" "keys.txt" "icon.png" "credits.txt" "copyright" "changelog")
 		target_sources(EndlessSky PRIVATE ${file})
