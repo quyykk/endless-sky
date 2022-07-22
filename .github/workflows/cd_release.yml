@@ -160,6 +160,8 @@ jobs:
           submodules: true
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
+        with:
+          appendedCacheKey: 10.9
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos10.9'

@@ -16,6 +16,8 @@ runs:
       shell: bash
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10
+      with:
+        appendedCacheKey: ${{ inputs.maverics == 'true' && '10.9' || '' }}
     - uses: lukka/run-cmake@v10
       with:
         configurePreset: ${{ inputs.maverics == 'true' && 'macos10.9' || 'macos' }}
