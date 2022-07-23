@@ -47,7 +47,7 @@ jobs:
   windows_win32:
     runs-on: windows-latest
     env:
-      OUTPUT: EndlessSky-win32-${{ github.event.release.tag_name }}.zip
+      OUTPUT: endless-sky-win32-${{ github.event.release.tag_name }}.zip
       GCC: 12.1.0
     steps:
       - uses: actions/checkout@v3
@@ -100,7 +100,7 @@ jobs:
   windows_win64:
     runs-on: windows-latest
     env:
-      OUTPUT: EndlessSky-win64-${{ github.event.release.tag_name }}.zip
+      OUTPUT: endless-sky-win64-${{ github.event.release.tag_name }}.zip
       GCC: 12.1.0
     steps:
       - uses: actions/checkout@v3
@@ -282,6 +282,38 @@ jobs:
       run: tree ${{ env.linux32 }}
     - name: Sanity check (linux64)
       run: tree ${{ env.linux64 }}
+    - name: Prepare data depot
+      run: 7z a ${{ env.data }}.zip ${{ env.data }}
+    - name: Upload data depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-data-depot
+        path: ${{ env.data }}.zip
+    - name: Upload win32 depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-win32-depot
+        path: ${{ env.win32 }}
+    - name: Upload win64 depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-win64-depot
+        path: ${{ env.win64 }}
+    - name: Upload macos depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-macos-depot
+        path: ${{ env.macos }}
+    - name: Upload linux32 depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-linux32-depot
+        path: ${{ env.linux32 }}
+    - name: Upload linux64 depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-linux64-depot
+        path: ${{ env.linux64 }}
     # - uses: game-ci/steam-deploy@v1
     #   with:
     #     appId: 404410
