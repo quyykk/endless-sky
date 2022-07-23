@@ -283,7 +283,9 @@ jobs:
     - name: Sanity check (linux64)
       run: tree ${{ env.linux64 }}
     - name: Prepare data depot
-      run: 7z a ${{ env.data }}.zip ${{ env.data }}/*
+      run: |
+        cd ${{ env.data }}
+        7z a ../${{ env.data }}.zip *
     - name: Upload data depot
       uses: actions/upload-artifact@v3
       with:
