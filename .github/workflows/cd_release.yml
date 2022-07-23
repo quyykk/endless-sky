@@ -84,10 +84,10 @@ jobs:
           COPY .\build\mingw32\Release\EndlessSky.exe .
           COPY ".\build\mingw32\Release\*.dll" .
           7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
-      - name: Upload artifact
+      - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
-          name: steam-win32
+          name: steam-win32-depot
           path: |
             EndlessSky.exe
             *.dll
@@ -137,13 +137,19 @@ jobs:
           COPY .\build\mingw\Release\EndlessSky.exe .
           COPY ".\build\mingw\Release\*.dll" .
           7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
-      - name: Upload artifact
+      - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
-          name: steam-win64
+          name: steam-win64-depot
           path: |
             EndlessSky.exe
             *.dll
+      - name: Upload credits.txt
+        uses: actions/upload-artifact@v3
+        with:
+          name: credits.txt
+          path:
+            credits.txt
       - name: Upload zip
         uses: softprops/action-gh-release@v1
         with:
@@ -186,15 +192,19 @@ jobs:
           cp -r EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
-      - name: Prepare artifact
+      - name: Prepare Steam Depot
         run: |
           cd build/macos10.9/Release
-          7z a ${{ github.workspace }}/EndlessSky.app.zip EndlessSky.app
-      - name: Upload artifact
+          mv EndlessSky.app/Contents/Resources/endless-sky.icns .
+          rm -rf EndlessSky.app/Contents/Resources
+          mkdir EndlessSky.app/Contents/Resources
+          mv endless-sky.icns EndlessSky.app/Contents/Resources
+          mv EndlessSky.app/ ../../../
+      - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
-          name: steam-macos
-          path: EndlessSky.app.zip
+          name: steam-macos-depot
+          path: EndlessSky.app
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
@@ -217,13 +227,11 @@ jobs:
         docker-compose run endless-sky-${{ matrix.arch }}
     - name: Prepare binary
       run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
-    - name: Upload GH artifact
+    - name: Upload Steam Depot
       uses: actions/upload-artifact@v2
       with:
-        name: steam-linux-${{ matrix.arch }}
-        path: |
-          ${{ env.ARTIFACT }}
-          credits.txt
+        name: steam-linux${{ matrix.arch == 'x64' && '64' || '32' }}-depot
+        path: ${{ env.ARTIFACT }}
 
 
   deploy_steam:
@@ -241,81 +249,24 @@ jobs:
       ARTIFACT: endless-sky
     steps:
     - uses: actions/checkout@v3
-    - name: Download Artifacts
+    - name: Download credits.txt
       uses: actions/download-artifact@v3
-    - name: Prepare data
-      run: |
-        mkdir ${{ env.data }}
-        mv -t ${{ env.data }} \
-          changelog \
-          copyright \
-          ${{ env.linux64 }}/credits.txt \
-          icon.png \
-          keys.txt \
-          license.txt \
-          data/ \
-          images/ \
-          sounds/
-    - name: Prepare Linux binaries
-      run: |
-        chmod +x ${{ env.linux32 }}/${{ env.ARTIFACT }}
-        chmod +x ${{ env.linux64 }}/${{ env.ARTIFACT }}
-        rm ${{ env.linux32 }}/credits.txt
-    - name: Prepare MacOS bundle
-      run: |
-        cd ${{ env.macos }}
-        7z x EndlessSky.app.zip
-        rm EndlessSky.app.zip
-        mv EndlessSky.app/Contents/Resources/endless-sky.icns .
-        rm -rf EndlessSky.app/Contents/Resources
-        mkdir EndlessSky.app/Contents/Resources
-        mv endless-sky.icns EndlessSky.app/Contents/Resources
-    - name: Sanity check (data)
-      run: tree ${{ env.data }}
-    - name: Sanity check (win32)
-      run: tree ${{ env.win32 }}
-    - name: Sanity check (win64)
-      run: tree ${{ env.win64 }}
-    - name: Sanity check (macos)
-      run: tree ${{ env.macos }}
-    - name: Sanity check (linux32)
-      run: tree ${{ env.linux32 }}
-    - name: Sanity check (linux64)
-      run: tree ${{ env.linux64 }}
-    - name: Prepare data depot
-      run: |
-        cd ${{ env.data }}
-        7z a ../${{ env.data }}.zip *
-    - name: Upload data depot
+      with:
+        name: credits.txt
+    - name: Upload Steam Depot
       uses: actions/upload-artifact@v3
       with:
         name: steam-data-depot
-        path: ${{ env.data }}.zip
-    - name: Upload win32 depot
-      uses: actions/upload-artifact@v3
-      with:
-        name: steam-win32-depot
-        path: ${{ env.win32 }}
-    - name: Upload win64 depot
-      uses: actions/upload-artifact@v3
-      with:
-        name: steam-win64-depot
-        path: ${{ env.win64 }}
-    - name: Upload macos depot
-      uses: actions/upload-artifact@v3
-      with:
-        name: steam-macos-depot
-        path: ${{ env.macos }}
-    - name: Upload linux32 depot
-      uses: actions/upload-artifact@v3
-      with:
-        name: steam-linux32-depot
-        path: ${{ env.linux32 }}
-    - name: Upload linux64 depot
-      uses: actions/upload-artifact@v3
-      with:
-        name: steam-linux64-depot
-        path: ${{ env.linux64 }}
+        path: |
+          changelog
+          copyright
+          credits.txt
+          icon.png
+          keys.txt
+          license.txt
+          data/
+          images/
+          sounds/
     # - uses: game-ci/steam-deploy@v1
     #   with:
     #     appId: 404410
