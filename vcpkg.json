@@ -13,10 +13,6 @@
 		{
 			"name": "libuuid",
 			"platform": "!windows & !osx"
-		},
-		{
-			"name": "alsa",
-			"platform": "!windows & !osx"
 		}
 	]
 }
