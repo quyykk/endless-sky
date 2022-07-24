@@ -199,12 +199,13 @@ jobs:
           rm -rf EndlessSky.app/Contents/Resources
           mkdir EndlessSky.app/Contents/Resources
           mv endless-sky.icns EndlessSky.app/Contents/Resources
-          mv EndlessSky.app/ ../../../
+          mkdir ../../../depot
+          mv EndlessSky.app/ ../../../depot
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
           name: steam-macos-depot
-          path: EndlessSky.app
+          path: depot
       - name: Upload disk image
         uses: softprops/action-gh-release@v1
         with:
