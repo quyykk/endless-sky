@@ -218,7 +218,7 @@ else()
 		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
 	elseif(APPLE)
 		find_library(OPENGL OpenGL)
-		target_link_libraries(EndlessSky PRIVATE ${OpenGL})
+		target_link_libraries(EndlessSky PRIVATE ${OPENGL})
 		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
 		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
 	elseif(STEAM)
