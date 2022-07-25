@@ -260,8 +260,14 @@ if(UNIX AND NOT APPLE)
 			RENAME endless-sky.png)
 	endforeach()
 
-	# TODO: update icon cache as well?
-	# TODO: Install the man page.
+	# Gzip and install man file.
+	add_custom_command(
+		OUTPUT endless-sky.6.gz
+		COMMAND gzip -c app/endless-sky.6 > ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz
+		DEPENDS app/endless-sky.6
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	target_sources(EndlessSky PRIVATE endless-sky.6.gz)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz DESTINATION share/man/man6)
 
 	# Install the data files.
 	install(DIRECTORY data DESTINATION share/games/endless-sky)
