@@ -9,7 +9,10 @@
 		"libpng",
 		"libjpeg-turbo",
 		"libmad",
-		"glew",
+		{
+			"name": "glew",
+			"platform": "!osx"
+		},
 		{
 			"name": "libuuid",
 			"platform": "!windows & !osx"
