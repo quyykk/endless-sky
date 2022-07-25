@@ -102,11 +102,13 @@ if(APPLE)
 		target_sources(EndlessSky PRIVATE ${RESOURCES})
 
 		foreach(FILE ${RESOURCES})
-		    # Get the relative path from the root folder to every file.
+		    # Get the relative path from the root folder to the current file.
 		    file(RELATIVE_PATH NEW_FILE "${CMAKE_CURRENT_SOURCE_DIR}" ${FILE})
+			# Get the parent directory for the new location.
+			get_filename_component(FILE_PATH ${NEW_FILE} DIRECTORY)
 
 			# Resources belong under Resources/.
-			set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${NEW_FILE}")
+			set_source_files_properties(${FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${FILE_PATH}")
 		endforeach()
 	endforeach()
 
