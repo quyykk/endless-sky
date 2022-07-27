@@ -1,6 +1,6 @@
 {
 	"name": "endless-sky",
-	"version": "0.9.15",
+	"version-string": "continuous",
 	"homepage": "https://endless-sky.github.io",
 	"description": "Space exploration, trading, and combat game.",
 	"dependencies": [
