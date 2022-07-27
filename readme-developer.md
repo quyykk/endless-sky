@@ -27,16 +27,16 @@ Use your favorite package manager to install the following (version numbers may 
 g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl libasound2-dev
 ```
 
-It is recommended to use a newish CMake, although CMake 3.10 is the lowest supported. You can get an updated version from the [offical website](https://cmake.org/download/).
-
-</details>
-
 <details>
 <summary>RPM-based distros</summary>
 
 ```
 gcc-c++ cmake ninja-build mesa-libGL-devel autoconf libtool libXext-devel mesa-libGLU-devel alsa-lib-devel
 ```
+
+</details>
+
+It is recommended to use a newish CMake, although CMake 3.16 is the lowest supported. You can get the latest version from the [offical website](https://cmake.org/download/). To follow the instructions written below, you will need at least CMake 3.21.
 
 </details>
 

@@ -1,8 +1,4 @@
-# The lowest supported CMake is the one from Ubuntu 18, CMake 3.10.
-cmake_minimum_required(VERSION 3.10...3.23)
-if(${CMAKE_VERSION} VERSION_LESS 3.12)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
+cmake_minimum_required(VERSION 3.16...3.23)
 
 # Some options.
 option(GLES "Build the game with OpenGL ES on Linux" OFF)

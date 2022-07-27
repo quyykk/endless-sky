@@ -278,6 +278,7 @@ target_sources(EndlessSkyLib PRIVATE
 	UniverseObjects.h
 	Variant.cpp
 	Variant.h
+	Version.h
 	Visual.cpp
 	Visual.h
 	Weapon.cpp
