@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16...3.23)
+cmake_minimum_required(VERSION 3.12...3.23)
 
 # Some options.
 option(GLES "Build the game with OpenGL ES on Linux" OFF)
@@ -86,7 +86,7 @@ else()
 endif()
 
 # Create library target. The source files are populated inside source/CMakeLists.txt.
-add_library(EndlessSkyLib STATIC "")
+add_library(EndlessSkyLib STATIC)
 add_subdirectory(source)
 
 # Create game target.
@@ -179,9 +179,9 @@ target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 # Choose the correct libraries for the target platform. If we're building without vcpkg link
 # the corresponding system libraries as well.
 if(STEAM)
-	target_link_libraries(EndlessSkyLib PUBLIC ${SDL2} ${PNG} ${JPEG} ${OpenAL} ${LIBMAD} pthread)
+	target_link_libraries(EndlessSky PRIVATE ${SDL2} ${PNG} ${JPEG} ${OpenAL} ${LIBMAD} pthread)
 else()
-	target_link_libraries(EndlessSkyLib PUBLIC SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
+	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
 		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
 	target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR})
 	target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
