@@ -8,7 +8,15 @@
 		"system-libs": {
 			"description": "System libraries required to build ES.",
 			"dependencies": [
-				"sdl2",
+				{
+					"name": "sdl2",
+					"features": ["x11"],
+					"platform": "linux"
+				},
+				{
+					"name": "sdl2",
+					"platform": "!linux"
+				},
 				"openal-soft",
 				"libpng",
 				"libjpeg-turbo",
