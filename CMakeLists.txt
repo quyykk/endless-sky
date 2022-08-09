@@ -23,14 +23,11 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
 endif()
 
-# For now, we can't use vcpkg inside the Steam runtime because its glibc is way too old.
-if(NOT ES_STEAM)
-	# Add our custom triplets for vcpkg and setup vcpkg.
-	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
-	set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
-	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-		CACHE STRING "Vcpkg toolchain file")
-endif()
+# Add our custom triplets for vcpkg and setup vcpkg.
+set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
+set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+	CACHE STRING "Vcpkg toolchain file")
 
 # Using system libraries instead of vcpkg libraries is only supported on Linux.
 if(ES_USE_SYSTEM_LIBRARIES AND NOT UNIX)
