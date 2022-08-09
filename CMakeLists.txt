@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.12...3.23)
 
 # Some options.
-option(GLES "Build the game with OpenGL ES on Linux" OFF)
-option(STEAM "Build the game in a way that will make it run inside the Steam Linux runtime" OFF)
+option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
+option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
+option(ES_USE_SYSTEM_LIBRARIES "For Linux use the distro system libraries instead of the vcpkg ones." ON)
 option(ES_RELEASE "Whether the current version is a published release" OFF)
 option(ES_INCLUDE_HASH "Whether to include the current git hash as part of the version. Doesn't update unless you regenerate!" OFF)
 
@@ -22,12 +23,28 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
 endif()
 
-# Add our custom triplets for vcpkg and setup vcpkg. For Steam we use the system libraries.
-if(NOT STEAM)
+# For now, we can't use vcpkg inside the Steam runtime because its glibc is way too old.
+if(NOT ES_STEAM)
+	# Add our custom triplets for vcpkg and setup vcpkg.
 	set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
 	set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 		CACHE STRING "Vcpkg toolchain file")
+endif()
+
+# Using system libraries instead of vcpkg libraries is only supported on Linux.
+if(ES_USE_SYSTEM_LIBRARIES AND NOT UNIX)
+	set(ES_USE_SYSTEM_LIBRARIES OFF)
+endif()
+
+if(ES_USE_SYSTEM_LIBRARIES)
+	# If using the system libraries from the distro, statically link every other library needed.
+	# This is to make sure that the resulting binary has no dependencies on libraries (other than
+	# the system ones) and can thus be distributed as a simple binary.
+	set(VCPKG_TARGET_TRIPLET "x64-linux")
+else()
+	# Tell vcpkg to use the required libraries.
+	list(APPEND VCPKG_MANIFEST_FEATURES "system-libs")
 endif()
 
 project("Endless Sky" VERSION 0.9.15
@@ -64,13 +81,19 @@ configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONL
 configure_file("./app/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/app/endless-sky.6" @ONLY)
 
 # Steam uses the system libraries for dependencies, instead of the ones provided by vcpkg.
-if(STEAM)
+if(ES_USE_SYSTEM_LIBRARIES)
 	find_library(SDL2 SDL2)
 	find_library(OpenAL openal)
 	find_library(PNG png)
 	find_library(JPEG jpeg)
 	find_library(GLEW GLEW)
-	find_library(LIBMAD NAMES libmad.a)
+
+	# For Steam we need to statically link to libmad.
+	if(ES_STEAM)
+		find_library(LIBMAD NAMES libmad.a)
+	else()
+		find_library(LIBMAD mad)
+	endif()
 else()
 	find_package(SDL2 CONFIG REQUIRED)
 	find_package(OpenAL CONFIG REQUIRED)
@@ -171,14 +194,14 @@ if(MINGW)
 endif()
 
 target_link_libraries(EndlessSky PRIVATE EndlessSkyLib)
-if(NOT STEAM)
+if(NOT ES_USE_SYSTEM_LIBRARIES)
 	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2main)
 endif()
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 
 # Choose the correct libraries for the target platform. If we're building without vcpkg link
 # the corresponding system libraries as well.
-if(STEAM)
+if(ES_USE_SYSTEM_LIBRARIES)
 	target_link_libraries(EndlessSky PRIVATE ${SDL2} ${PNG} ${JPEG} ${OpenAL} ${LIBMAD} pthread)
 else()
 	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
@@ -196,7 +219,7 @@ else()
 		find_path(UUID_INCLUDE uuid/uuid.h /usr/local/include /usr/include)
 		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 		target_include_directories(EndlessSkyLib PUBLIC ${UUID_INCLUDE})
-	elseif(STEAM)
+	elseif(ES_USE_SYSTEM_LIBRARIES)
 		find_library(UUID_LIB uuid)
 		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 	else()
@@ -217,7 +240,7 @@ else()
 		target_link_libraries(EndlessSky PRIVATE ${OPENGL})
 		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
 		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
-	elseif(STEAM)
+	elseif(ES_USE_SYSTEM_LIBRARIES)
 		target_link_libraries(EndlessSky PRIVATE GL ${GLEW})
 	else()
 		target_link_libraries(EndlessSky PRIVATE GL GLEW::GLEW)

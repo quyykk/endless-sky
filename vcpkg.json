@@ -3,19 +3,25 @@
 	"version-string": "continuous",
 	"homepage": "https://endless-sky.github.io",
 	"description": "Space exploration, trading, and combat game.",
-	"dependencies": [
-		"sdl2",
-		"openal-soft",
-		"libpng",
-		"libjpeg-turbo",
-		"libmad",
-		{
-			"name": "glew",
-			"platform": "!osx"
-		},
-		{
-			"name": "libuuid",
-			"platform": "!windows & !osx"
+	"dependencies": [],
+	"features": {
+		"system-libs": {
+			"description": "System libraries required to build ES.",
+			"dependencies": [
+				"sdl2",
+				"openal-soft",
+				"libpng",
+				"libjpeg-turbo",
+				"libmad",
+				{
+					"name": "glew",
+					"platform": "!osx"
+				},
+				{
+					"name": "libuuid",
+					"platform": "!windows & !osx"
+				}
+			]
 		}
-	]
+	}
 }

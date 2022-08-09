@@ -1,6 +1,9 @@
 services:
   endless-sky-x64:
-    build: .
+    build:
+      context: .
+      args:
+        runtime: scout
     volumes:
       - '../.:/endless-sky'
     command:
@@ -9,7 +12,7 @@ services:
       - |
         mkdir -p build/steam-x64
         cd build/steam-x64
-        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DES_STEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
         make -j $$(nproc) EndlessSky EndlessSkyTests
         ./endless-sky --version
         ./endless-sky-tests
@@ -20,6 +23,7 @@ services:
       context: .
       args:
         arch: /i386
+        runtime: scout
     volumes:
       - '../.:/endless-sky'
     command:
@@ -28,7 +32,7 @@ services:
       - |
         mkdir -p build/steam-x86
         cd build/steam-x86
-        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DSTEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DES_STEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie
         make -j $$(nproc) EndlessSky EndlessSkyTests
         ./endless-sky --version
         ./endless-sky-tests
