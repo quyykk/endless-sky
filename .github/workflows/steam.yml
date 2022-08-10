@@ -32,8 +32,6 @@ jobs:
       run: |
         STEAM_VERSION=$(curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/latest-container-runtime-depot/VERSION.txt --output -)
         echo "::set-output name=RT_VERSION::$STEAM_VERSION"
-    - name: Cache Docker image
-      uses: satackey/action-docker-layer-caching@v0.0.11
     - name: Build Endless Sky
       run: |
         cd steam
