@@ -21,10 +21,19 @@ jobs:
         arch: [x64, x86]
     env:
       ARTIFACT: endless-sky
+    outputs:
+      RT_VERSION: ${{ steps.steamrt-version.outputs.RT_VERSION }}
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: true
+    - name: Save Steam runtime version
+      id: steamrt-version
+      run: |
+        STEAM_VERSION=$(curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/latest-container-runtime-depot/VERSION.txt --output -)
+        echo "::set-output name=RT_VERSION::$STEAM_VERSION"
+    - name: Cache Docker image
+      uses: satackey/action-docker-layer-caching@v0.0.11
     - name: Build Endless Sky
       run: |
         cd steam
@@ -48,14 +57,28 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-latest]
     env:
-      snapshot: latest-steam-client-general-availability
-      tarball: steam-runtime.tar.xz
+      snapshot: latest-container-runtime-depot
+      runtime: steam-container-runtime.tar.gz
+      platform: com.valvesoftware.SteamRuntime.Platform-amd64,i386-sniper-runtime.tar.gz
     steps:
     - uses: actions/checkout@v3
+    - name: Restore cached Steam Runtime environment
+      id: cache-runtime
+      uses: actions/cache@v3
+      with:
+        path: |
+          ${{ env.runtime }}
+          ${{ env.platform }}
+        key: steamrt-${{ needs.build_linux.outputs.RT_VERSION }}
     - name: Download Steam Runtime environment
-      run: curl -sSf https://repo.steampowered.com/steamrt-images-scout/snapshots/${{ env.snapshot }}/${{ env.tarball }} > ${{ env.tarball }}
+      if: steps.cache-runtime.outputs.cache-hit != 'true'
+      run: |
+        curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/${{ env.snapshot }}/${{ env.runtime }} > ${{ env.runtime }}
+        curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/${{ env.snapshot }}/${{ env.platform }} > ${{ env.platform }}
     - name: Extract Steam Runtime
-      run: tar -xf ${{ env.tarball }}
+      run: |
+        tar -xf ${{ env.runtime }}
+        tar -xf ${{ env.platform }} -C steam-container-runtime/depot/sniper_platform_*/
     - name: Download Endless Sky binary
       uses: actions/download-artifact@v3
       with:
@@ -65,16 +88,16 @@ jobs:
       run: |
         sudo apt-get update -q
         sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils
-    - name: Pin Steam libraries
-      run: steam-runtime/setup.sh
-    - run: chmod +x endless-sky
-    - run: steam-runtime/run.sh ./endless-sky -v
+    - name: Test executable
+      run: |
+        chmod +x endless-sky
+        steam-container-runtime/depot/run-in-sniper ./endless-sky -v
     - name: Execute data parsing test
-      run: steam-runtime/run.sh ./utils/test_parse.sh ./endless-sky
+      run: steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh ./endless-sky
     # NOTE: As with the non-Steam integration tests, on Ubuntu 18.04 the call to SDL_GL_CreateContext fails
     # with SDL error "Could not create GL Context: BadValue (integer parameter out of range for operation)"
     - name: Execute integration tests
       if: matrix.os != 'ubuntu-18.04'
       env:
           PRINT_GLXINFO: true
-      run: steam-runtime/run.sh tests/integration/run_tests_headless.sh
+      run: steam-container-runtime-/depot/run-in-sniper tests/integration/run_tests_headless.sh
