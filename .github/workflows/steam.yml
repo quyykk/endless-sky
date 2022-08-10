@@ -37,7 +37,7 @@ jobs:
     - name: Build Endless Sky
       run: |
         cd steam
-        docker-compose up endless-sky-${{ matrix.arch }} --build
+        docker-compose up --build endless-sky-${{ matrix.arch }}
     - name: Prepare binary
       run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
     - name: Upload GH artifact
