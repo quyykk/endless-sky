@@ -23,6 +23,7 @@ runs:
           '--preset', '$[env.CONFIGURE_PRESET_NAME]',
           "${{ inputs.ccache == 'true' && '-DCMAKE_CXX_COMPILER_LAUNCHER=ccache' || '' }}",
           '-DES_INCLUDE_HASH=ON',
+          '-DES_USE_SYSTEM_LIBRARIES=OFF',
           '-B', 'build/linux'
           ]
         buildPreset: ${{ inputs.opengl == 'desktop' && 'linux-release' || 'linux-gles-release' }}
