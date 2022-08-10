@@ -91,9 +91,9 @@ jobs:
     - name: Test executable
       run: |
         chmod +x endless-sky
-        steam-container-runtime/depot/run-in-sniper ./endless-sky -v
+        steam-container-runtime/depot/run-in-sniper ./endless-sky -- -v
     - name: Execute data parsing test
-      run: steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh ./endless-sky
+      run: steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh -- ./endless-sky
     # NOTE: As with the non-Steam integration tests, on Ubuntu 18.04 the call to SDL_GL_CreateContext fails
     # with SDL error "Could not create GL Context: BadValue (integer parameter out of range for operation)"
     - name: Execute integration tests
