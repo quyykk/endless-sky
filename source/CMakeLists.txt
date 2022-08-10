@@ -141,6 +141,8 @@ target_sources(EndlessSkyLib PRIVATE
 	MapOutfitterPanel.h
 	MapPanel.cpp
 	MapPanel.h
+	MapPlanetCard.cpp
+	MapPlanetCard.h
 	MapSalesPanel.cpp
 	MapSalesPanel.h
 	MapShipyardPanel.cpp
