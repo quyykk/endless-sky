@@ -27,4 +27,4 @@ fi
 # Force OpenGL software mode
 export LIBGL_ALWAYS_SOFTWARE=1
 
-exec xvfb-run --auto-servernum --server-args="+extension GLX +render -noreset" ./run_tests.sh "${EXECUTABLE}" "${RESOURCES}"
+exec xvfb-run --auto-servernum --server-args="+extension GLX +render -noreset" $1 ./run_tests.sh "${EXECUTABLE}" "${RESOURCES}"

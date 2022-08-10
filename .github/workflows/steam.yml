@@ -98,4 +98,4 @@ jobs:
       if: matrix.os != 'ubuntu-18.04'
       env:
           PRINT_GLXINFO: true
-      run: steam-container-runtime/depot/run-in-sniper tests/integration/run_tests_headless.sh
+      run: tests/integration/run_tests_headless.sh ./steam-container-runtime/depot/run-in-sniper
