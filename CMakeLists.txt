@@ -30,7 +30,7 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems
 	CACHE STRING "Vcpkg toolchain file")
 
 # Using system libraries instead of vcpkg libraries is only supported on Linux.
-if(ES_USE_SYSTEM_LIBRARIES AND NOT UNIX)
+if(ES_USE_SYSTEM_LIBRARIES AND (NOT UNIX OR APPLE))
 	set(ES_USE_SYSTEM_LIBRARIES OFF)
 endif()
 
