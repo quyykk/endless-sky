@@ -1,6 +1,6 @@
-# A Dockerfile that prepares the Steam Scout environment to build Endless Sky from source.
+# A Dockerfile that prepares the Steam Sniper environment to build Endless Sky from source.
 
-# Use the latest Scout environment from Steam.
+# Use the latest Sniper environment from Steam.
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
 
 ARG arch
