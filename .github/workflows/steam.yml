@@ -53,7 +53,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest]
+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-latest]
     env:
       snapshot: latest-container-runtime-depot
       runtime: steam-container-runtime.tar.gz
