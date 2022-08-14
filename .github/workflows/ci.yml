@@ -173,10 +173,19 @@ jobs:
     if: ${{ needs.changed.outputs.copyright == 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
+    - uses: actions/checkout@v3
     - name: Install dependencies
       run: python3 -m pip install --user python-debian
     - name: Validate copyright file
       run: python3 ./utils/check_copyright.py
+
+
+  validate-cmake:
+    needs: changed
+    name: Validate CMake Project
+    if: ${{ needs.changed.outputs.game_code == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Validate CMake project
+      run: ./utils/check_cmake.sh

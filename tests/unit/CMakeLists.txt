@@ -24,6 +24,11 @@ target_sources(EndlessSkyTests PRIVATE
 	src/test_ship.cpp
 	src/test_template.txt
 	src/test_weightedList.cpp
+	src/text/test_alignment.cpp
+	src/text/test_displaytext.cpp
+	src/text/test_format.cpp
+	src/text/test_layout.cpp
+	src/text/test_truncate.cpp
 )
 
 target_include_directories(EndlessSkyTests PRIVATE include)
