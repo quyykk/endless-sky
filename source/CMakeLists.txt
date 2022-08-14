@@ -125,6 +125,8 @@ target_sources(EndlessSkyLib PRIVATE
 	Interface.h
 	ItemInfoDisplay.cpp
 	ItemInfoDisplay.h
+	Logger.cpp
+	Logger.h
 	LineShader.cpp
 	LineShader.h
 	LoadPanel.cpp
