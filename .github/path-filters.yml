@@ -34,13 +34,5 @@ parse_script:
 codespell:
   - .codespell.exclude
 
-xcode_files:
-  - 'EndlessSky.xcodeproj/**'
-  - 'utils/check_xcode.sh'
-
-codeblocks_files:
-  - '*.cbp'
-  - 'utils/check_codeblocks.sh'
-
 copyright:
   - 'copyright'
