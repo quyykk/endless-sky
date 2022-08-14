@@ -15,9 +15,6 @@ app/endless-sky.icns
 # dlls needed to run the binary
 *.dll
 
-# Files::LogError output from unit tests
-errors.txt
-
 # Build Directories and toolchain-generated files
 build/
 obj/
