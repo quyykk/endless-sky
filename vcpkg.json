@@ -15,7 +15,12 @@
 				},
 				{
 					"name": "openal-soft",
-					"features": ["pipewire"]
+					"features": ["pipewire"],
+					"platform": "linux"
+				},
+				{
+					"name": "openal-soft",
+					"platform": "!linux"
 				},
 				"libpng",
 				"libjpeg-turbo",
