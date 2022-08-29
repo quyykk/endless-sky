@@ -6,7 +6,7 @@ set -e
 # You may have to set the ARCH environment variable to e.g. x86_64.
 
 # We need an icon file with a name matching the executable
-cp app/icons/icon_512x512.png endless-sky.png
+cp resources/icons/icon_512x512.png endless-sky.png
 
 # Install
 DESTDIR=AppDir cmake --install build/linux --prefix /usr
@@ -17,7 +17,7 @@ mv AppDir/usr/share/games/endless-sky/* AppDir/
 
 # Now build the actual AppImage
 curl -sSL https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -o linuxdeploy && chmod +x linuxdeploy
-./linuxdeploy --appdir AppDir -e build/linux/Release/endless-sky -d app/endless-sky.desktop -i endless-sky.png --output appimage
+./linuxdeploy --appdir AppDir -e build/linux/Release/endless-sky -d resources/endless-sky.desktop -i endless-sky.png --output appimage
 
 # Clean up
 rm -rf AppDir linuxdeploy endless-sky.png

@@ -1,8 +1,4 @@
 {
-	"name": "endless-sky",
-	"version-string": "continuous",
-	"homepage": "https://endless-sky.github.io",
-	"description": "Space exploration, trading, and combat game.",
 	"dependencies": [],
 	"features": {
 		"system-libs": {
@@ -17,7 +13,10 @@
 					"name": "sdl2",
 					"platform": "!linux"
 				},
-				"openal-soft",
+				{
+					"name": "openal-soft",
+					"features": ["pipewire"]
+				},
 				"libpng",
 				"libjpeg-turbo",
 				"libmad",

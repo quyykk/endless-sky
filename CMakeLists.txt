@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.12...3.23)
 
-# Some options.
 option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
 option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
 option(ES_USE_SYSTEM_LIBRARIES "For Linux use the distro system libraries instead of the vcpkg ones." ON)
@@ -23,8 +22,9 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
 endif()
 
-# Add our custom triplets for vcpkg and setup vcpkg.
-set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/custom-triplets")
+# Add our overlays  for vcpkg and setup vcpkg.
+set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
+set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 	CACHE STRING "Vcpkg toolchain file")
@@ -75,7 +75,7 @@ if(NOT ES_RELEASE)
 endif()
 configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Version.h" @ONLY)
 configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
-configure_file("./app/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/app/endless-sky.6" @ONLY)
+configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.6" @ONLY)
 
 # Steam uses the system libraries for dependencies, instead of the ones provided by vcpkg.
 if(ES_USE_SYSTEM_LIBRARIES)
@@ -132,24 +132,24 @@ if(APPLE)
 
 	# Create the icns file, required for the bundle icon.
 	add_custom_command(
-		OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/app/endless-sky.icns
-		COMMAND iconutil -c icns -o app/endless-sky.icns app/endless-sky.iconset
-		DEPENDS app/endless-sky.iconset/icon_16x16.png app/endless-sky.iconset/icon_16x16@2x.png
-			app/endless-sky.iconset/icon_32x32.png app/endless-sky.iconset/icon_32x32@2x.png
-			app/endless-sky.iconset/icon_128x128.png app/endless-sky.iconset/icon_128x128@2x.png
-			app/endless-sky.iconset/icon_256x256.png app/endless-sky.iconset/icon_256x256@2x.png
-			app/endless-sky.iconset/icon_512x512.png app/endless-sky.iconset/icon_512x512@2x.png
+		OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.icns
+		COMMAND iconutil -c icns -o resources/endless-sky.icns resources/endless-sky.iconset
+		DEPENDS resources/endless-sky.iconset/icon_16x16.png resources/endless-sky.iconset/icon_16x16@2x.png
+			resources/endless-sky.iconset/icon_32x32.png resources/endless-sky.iconset/icon_32x32@2x.png
+			resources/endless-sky.iconset/icon_128x128.png resources/endless-sky.iconset/icon_128x128@2x.png
+			resources/endless-sky.iconset/icon_256x256.png resources/endless-sky.iconset/icon_256x256@2x.png
+			resources/endless-sky.iconset/icon_512x512.png resources/endless-sky.iconset/icon_512x512@2x.png
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 	# Now do the same to standone files.
-	foreach(file "license.txt" "icon.png" "keys.txt" "credits.txt" "copyright" "changelog" "app/endless-sky.icns")
+	foreach(file "license.txt" "icon.png" "keys.txt" "credits.txt" "copyright" "changelog" "resources/endless-sky.icns")
 		target_sources(EndlessSky PRIVATE ${file})
 		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
 
 	# Add plist to bundle.
 	set_target_properties(EndlessSky PROPERTIES
-		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/app/EndlessSky-Info.plist.in
+		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/resources/EndlessSky-Info.plist.in
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME endless-sky)
 
 elseif(WIN32)
@@ -268,23 +268,23 @@ if(UNIX AND NOT APPLE)
 	install(TARGETS EndlessSky CONFIGURATIONS Release RUNTIME DESTINATION games)
 
 	# Install the desktop file.
-	install(FILES app/endless-sky.desktop DESTINATION share/applications)
+	install(FILES resources/endless-sky.desktop DESTINATION share/applications)
 
 	# Install app center metadata.
-	install(FILES app/endless-sky.appdata.xml DESTINATION share/metainfo)
+	install(FILES resources/endless-sky.appdata.xml DESTINATION share/metainfo)
 
 	# Install icons, keeping track of all the paths.
 	# Most Ubuntu apps supply 16, 22, 24, 32, 48, and 256, and sometimes others.
 	foreach(size "16x16" "22x22" "24x24" "32x32" "48x48" "128x128" "256x256" "512x512")
-		install(FILES "app/icons/icon_${size}.png" DESTINATION "share/icons/hicolor/${size}/apps"
+		install(FILES "resources/icons/icon_${size}.png" DESTINATION "share/icons/hicolor/${size}/apps"
 			RENAME endless-sky.png)
 	endforeach()
 
 	# Gzip and install man file.
 	add_custom_command(
 		OUTPUT endless-sky.6.gz
-		COMMAND gzip -c app/endless-sky.6 > ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz
-		DEPENDS app/endless-sky.6
+		COMMAND gzip -c resources/endless-sky.6 > ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz
+		DEPENDS resources/endless-sky.6
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	target_sources(EndlessSky PRIVATE endless-sky.6.gz)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz DESTINATION share/man/man6)
