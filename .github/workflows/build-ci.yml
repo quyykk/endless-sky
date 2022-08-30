@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-${{ matrix.os }}
     strategy:
       matrix:
-        os: [22.04, 20.04, 18.04]
+        os: [22.04, 20.04]
         opengl: [desktop, gles]
     env:
       ARCH: x86_64
@@ -44,11 +44,8 @@ jobs:
     - name: Run Benchmarks
       run: ./build/linux/Release/endless-sky-tests [!benchmark]
     - name: Package Application
-      if: ${{ matrix.os != '18.04' }}
       run: ./utils/build_appimage.sh
     - name: Upload game binary
-      # The integration tests which use this artifact don't support Ubuntu 18.04.
-      if: ${{ matrix.os != '18.04' }}
       uses: actions/upload-artifact@v3
       with:
         name: binary-ubuntu-${{ matrix.os }}-${{ matrix.opengl }}
