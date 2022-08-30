@@ -1,11 +1,9 @@
 services:
   endless-sky-x64:
-    build:
-      context: .
-      args:
-        arch: amd64
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
     volumes:
-      - '../.:/endless-sky'
+      - '.:/endless-sky'
+    working_dir: /endless-sky
     command:
       - '/bin/bash'
       - '-c'
@@ -19,19 +17,17 @@ services:
 
 
   endless-sky-x86:
-    build:
-      context: .
-      args:
-        arch: i386
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+    working_dir: /endless-sky
     volumes:
-      - '../.:/endless-sky'
+      - '.:/endless-sky'
     command:
       - '/bin/bash'
       - '-c'
       - |
         mkdir -p build/steam-x86
         cd build/steam-x86
-        cmake ../../ -GNinja -DES_STEAM=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32 -DVCPKG_CXX_FLAGS=-m32
+        cmake ../../ -GNinja -DES_STEAM_X86=ON -DES_RELEASE=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32
         ninja EndlessSky EndlessSkyTests
         ./endless-sky --version
         ./endless-sky-tests

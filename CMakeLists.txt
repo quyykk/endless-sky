@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12...3.23)
 
 option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
 option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
+option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF)
 option(ES_USE_SYSTEM_LIBRARIES "For Linux use the distro system libraries instead of the vcpkg ones." ON)
 option(ES_RELEASE "Whether the current version is a published release" OFF)
 option(ES_INCLUDE_HASH "Whether to include the current git hash as part of the version. Doesn't update unless you regenerate!" OFF)
@@ -44,6 +45,15 @@ else()
 	list(APPEND VCPKG_MANIFEST_FEATURES "system-libs")
 endif()
 
+# Some system libraries aren't available on the default Sniper runtime and need to be built from source.
+if(ES_STEAM OR ES_STEAM_X86)
+	set(ES_STEAM ON)
+	list(APPEND VCPKG_MANIFEST_FEATURES "steam-libs")
+	if(ES_STEAM_X86)
+		set(VCPKG_TARGET_TRIPLET "x86-linux")
+	endif()
+endif()
+
 project("Endless Sky" VERSION 0.9.15
 	DESCRIPTION "Space exploration, trading, and combat game."
 	LANGUAGES CXX)
@@ -77,7 +87,7 @@ configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Versi
 configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
 configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.6" @ONLY)
 
-# Steam uses the system libraries for dependencies, instead of the ones provided by vcpkg.
+# Use the system libraries if specified and if not use the ones built from vcpkg.
 if(ES_USE_SYSTEM_LIBRARIES)
 	find_library(SDL2 SDL2)
 	find_library(OpenAL openal)
@@ -85,10 +95,7 @@ if(ES_USE_SYSTEM_LIBRARIES)
 	find_library(JPEG jpeg)
 	find_library(GLEW GLEW)
 
-	# For Steam we need to statically link to libmad.
-	if(ES_STEAM)
-		find_library(LIBMAD NAMES libmad.a)
-	else()
+	if(NOT ES_STEAM)
 		find_library(LIBMAD mad)
 	endif()
 else()
@@ -99,6 +106,9 @@ else()
 	if(NOT APPLE)
 		find_package(GLEW REQUIRED)
 	endif()
+endif()
+
+if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
 	# libmad doesn't provide native cmake support.
 	find_path(LIBMAD_INCLUDE_DIR mad.h)
 	find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib" NO_DEFAULT_PATH)
@@ -199,11 +209,17 @@ target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 # Choose the correct libraries for the target platform. If we're building without vcpkg link
 # the corresponding system libraries as well.
 if(ES_USE_SYSTEM_LIBRARIES)
-	target_link_libraries(EndlessSky PRIVATE ${SDL2} ${PNG} ${JPEG} ${OpenAL} ${LIBMAD} pthread)
+	target_link_libraries(EndlessSky PRIVATE ${SDL2} ${PNG} ${JPEG} ${OpenAL} pthread)
+	if(NOT ES_STEAM)
+		target_link_libraries(EndlessSky PRIVATE ${LIBMAD})
+	endif()
 else()
-	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
-		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
+	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL)
 	target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR})
+endif()
+if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
+	target_link_libraries(EndlessSky PRIVATE
+		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
 	target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
 endif()
 
