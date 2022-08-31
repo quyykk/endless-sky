@@ -18,31 +18,49 @@ Next you will need to install a couple of dependencies to build the game.
 
 ## Linux
 
-Use your favorite package manager to install the following (version numbers may vary depending on your distribution):
+If you use a reasonably up-to-date distro (Fedora, latest Ubuntu, Arch, openSUSE Tumbleweed), then you can use your favorite package manager to install the needed dependencies:
 
 <details>
 <summary>DEB-based distros</summary>
-
 ```
-g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl libasound2-dev
+g++ cmake ninja-build libsdl2-dev libpng-dev libjpeg-dev libgl1-mesa-dev libglew-dev libopenal-dev libmad0-dev uuid-dev
 ```
+</details>
 
 <details>
 <summary>RPM-based distros</summary>
-
 ```
-gcc-c++ cmake ninja-build mesa-libGL-devel autoconf libtool libXext-devel mesa-libGLU-devel alsa-lib-devel
+gcc-c++ cmake ninja-build SDL2-devel libpng-devel libjpeg-turbo-devel mesa-libGL-devel glew-devel openal-soft-devel libmad-devel libuuid-devel
 ```
-
 </details>
 
 It is recommended to use a newish CMake, although CMake 3.16 is the lowest supported. You can get the latest version from the [offical website](https://cmake.org/download/). To follow the instructions written below, you will need at least CMake 3.21.
+
+**Note**: If your distro does not provide up-to-date version of the needed libraries, you will need to tell CMake to build the libraries from source by passing `-DES_USE_SYSTEM_LIBRARIES=OFF` to the first cmake command under the command line build instructions.
+
+<details>
+<summary>Packages needed to build the libraries from source</summary>
+
+<details>
+<summary>DEB-based distros</summary>
+```
+g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl
+```
+</details>
+<details>
+<summary>RPM-based distros</summary>
+```
+gcc-c++ cmake ninja-build mesa-libGL-devel autoconf libtool libXext-devel mesa-libGLU-devel
+```
+</details>
 
 </details>
 
 ## Windows
 
-Currently, only the MinGW compiler toolchain is supported on Windows. You can download the [MinGW Winlibs](https://winlibs.com/#download-release) build, which also includes various tools you'll need to build the game as well. It is possible to use other MinGW builds as well.
+On Windows, you have the choice between MinGW and ClangCL. If you want to use Visual Studio, skip these instructions and go directly to the [Visual Studio instructions](#building-with-visual-studio).
+
+You can download the [MinGW Winlibs](https://winlibs.com/#download-release) build, which also includes various tools you'll need to build the game as well. It is possible to use other MinGW builds as well.
 
 You'll need the MSVCRT runtime version, 64-bit. The latest version is currently gcc 12 ([direct link](https://github.com/brechtsanders/winlibs_mingw/releases/download/12.1.0-14.0.4-10.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-12.1.0-mingw-w64msvcrt-10.0.0-r2.zip)).
 
@@ -93,6 +111,19 @@ If you want to use the Code::Blocks IDE, from the root of the project folder exe
 
 With `<preset>` being one of the available presets (see above for a list). For Windows for example you'd want `mingw`. Now there will be a Code::Blocks project inside `build\mingw`.
 
+
+## Building with Visual Studio
+
+You will need to install the [Clang component for Visual Studio](https://docs.microsoft.com/en-us/cpp/build/clang-support-msbuild). Next, open a terminal inside the root of the project:
+
+```powershell
+> mkdir build
+> cmake build -G"Visual Studio 17" -T ClangCL
+```
+
+`"Visual Studio 17"` is Visual Studio 2022. If you are using an older version of VS, you will need to adjust the string. Now you will find a complete solution in the `build/` folder. Find the solution and open it and you're good to go!
+
+**Note**: Using MSVC to compile Endless Sky is not supported. If you try, you will get a tons of warnings (and maybe even a couple of errors) during compilation.
 
 ## Building with XCode
 
