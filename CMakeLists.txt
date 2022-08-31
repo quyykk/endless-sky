@@ -262,9 +262,8 @@ endif()
 
 # Set the appropriate compiler flags.
 if(MSVC)
-	target_compile_options(EndlessSkyLib PUBLIC "/W3" "/permissive-" "/wd4267" "/wd4244" "/wd4804" "/wd4805"
-		"/wd4305" "/wd4068" "/wd4018" "/Gm-" "/sdl" "/GR-" "/MP" "/analyze-"
-		"$<$<CONFIG:Release>:/Gy;/WX;/Oi>")
+	target_compile_options(EndlessSkyLib PUBLIC "/W3" "/permissive-" "/Gm-" "/sdl" "/GR-" "/MP" "/analyze-"
+		"-Wno-nonportable-include-path" "$<$<CONFIG:Release>:/Gy;/WX;/Oi>")
 	target_compile_definitions(EndlessSkyLib PUBLIC "_UNICODE" "UNICODE" "$<IF:$<CONFIG:Debug>,_DEBUG,NDEBUG>")
 else()
 	target_compile_options(EndlessSkyLib PUBLIC "-Wall" "-fno-rtti" "$<$<CONFIG:Release>:-Werror>")
