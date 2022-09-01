@@ -30,8 +30,6 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 namespace es_uuid {
 namespace detail {
-constexpr std::size_t UUID_BUFFER_LENGTH = 37;
-
 #if defined(_WIN32)
 // Get a version 4 (random) Universally Unique Identifier (see IETF RFC 4122).
 EsUuid::UuidType MakeUuid()
@@ -88,6 +86,8 @@ signed int Compare(const EsUuid::UuidType &a, const EsUuid::UuidType &b)
 	return result;
 }
 #else
+constexpr std::size_t UUID_BUFFER_LENGTH = 37;
+
 // Get a version 4 (random) Universally Unique Identifier (see IETF RFC 4122).
 EsUuid::UuidType MakeUuid()
 {
