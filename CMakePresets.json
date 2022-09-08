@@ -12,7 +12,8 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_COLORS_DIAGNOSTICS": "ON"
       }
     },
     {
@@ -117,6 +118,22 @@
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
       }
+    },
+    {
+      "name": "vs",
+      "displayName": "Visual Studio",
+      "description": "Builds with clang-cl as a VS 2022 project",
+      "inherits": "base",
+	  "generator": "Visual Studio 17",
+	  "toolset": "ClangCL",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
     }
   ],
   "buildPresets": [
@@ -202,6 +219,18 @@
       "name": "mingw32-release",
       "displayName": "Release",
       "configurePreset": "mingw32",
+      "configuration": "Release"
+	},
+    {
+      "name": "vs-debug",
+      "displayName": "Debug",
+      "configurePreset": "vs",
+      "configuration": "Debug"
+	},
+    {
+      "name": "vs-release",
+      "displayName": "Release",
+      "configurePreset": "vs",
       "configuration": "Release"
 	}
   ]
