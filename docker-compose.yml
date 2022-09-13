@@ -1,5 +1,5 @@
 services:
-  endless-sky-x64:
+  steam-x64:
     image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
     volumes:
       - '.:/endless-sky'
@@ -16,7 +16,7 @@ services:
         ./endless-sky-tests
 
 
-  endless-sky-x86:
+  steam-x86:
     image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
     working_dir: /endless-sky
     volumes:
