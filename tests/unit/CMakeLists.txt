@@ -12,6 +12,7 @@ target_sources(EndlessSkyTests PRIVATE
 	src/test_angle.cpp
 	src/test_bitset.cpp
 	src/test_conditionSet.cpp
+	src/test_conditionsStore.cpp
 	src/test_datafile.cpp
 	src/test_datanode.cpp
 	src/test_esuuid.cpp
