@@ -33,9 +33,7 @@ jobs:
         STEAM_VERSION=$(curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/latest-container-runtime-depot/VERSION.txt --output -)
         echo "::set-output name=RT_VERSION::$STEAM_VERSION"
     - name: Build Endless Sky
-      run: |
-        cd steam
-        docker-compose up --build endless-sky-${{ matrix.arch }}
+      run: docker-compose run steam-${{ matrix.arch }}
     - name: Prepare binary
       run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
     - name: Upload GH artifact
