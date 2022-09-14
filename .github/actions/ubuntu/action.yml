@@ -14,6 +14,7 @@ runs:
       run: |
         sudo add-apt-repository universe
         sudo apt install libfuse2
+      shell: bash
     - name: Install development dependencies
       run: >
         sudo apt install -y --no-install-recommends
