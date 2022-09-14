@@ -39,6 +39,8 @@ target_sources(EndlessSkyLib PRIVATE
 	Command.h
 	ConditionSet.cpp
 	ConditionSet.h
+	ConditionsStore.cpp
+	ConditionsStore.h
 	Conversation.cpp
 	Conversation.h
 	ConversationPanel.cpp
