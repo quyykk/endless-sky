@@ -69,6 +69,7 @@ void GameLoop(PlayerInfo &player, const Conversation &conversation, const string
 Conversation LoadConversation();
 void PrintShipTable();
 void PrintTestsTable();
+void PrintTestsList();
 void PrintWeaponTable();
 #ifdef _WIN32
 void InitConsole();
@@ -89,6 +90,7 @@ int main(int argc, char *argv[])
 	bool loadOnly = false;
 	bool printShips = false;
 	bool printTests = false;
+	bool printTestsNamesOnly = false;
 	bool printWeapons = false;
 	string testToRunName = "";
 
@@ -118,6 +120,8 @@ int main(int argc, char *argv[])
 			testToRunName = *it;
 		else if(arg == "--tests")
 			printTests = true;
+		else if(arg == "--tests-names-only")
+			printTestsNamesOnly = true;
 		else if(arg == "-s" || arg == "--ships")
 			printShips = true;
 		else if(arg == "-w" || arg == "--weapons")
@@ -127,7 +131,7 @@ int main(int argc, char *argv[])
 
 	try {
 		// Begin loading the game data.
-		bool isConsoleOnly = loadOnly || printShips || printTests || printWeapons;
+		bool isConsoleOnly = loadOnly || printShips || printTests || printTestsNamesOnly || printWeapons;
 		future<void> dataLoading = GameData::BeginLoad(isConsoleOnly, debugMode);
 
 		// If we are not using the UI, or performing some automated task, we should load
@@ -141,12 +145,14 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 
-		if(printShips || printTests || printWeapons)
+		if(printShips || printTests || printTestsNamesOnly || printWeapons)
 		{
 			if(printShips)
 				PrintShipTable();
 			if(printTests)
 				PrintTestsTable();
+			if(printTestsNamesOnly)
+				PrintTestsList();
 			if(printWeapons)
 				PrintWeaponTable();
 			return 0;
@@ -191,8 +197,13 @@ int main(int argc, char *argv[])
 	catch(const runtime_error &error)
 	{
 		Audio::Quit();
-		bool doPopUp = testToRunName.empty();
-		GameWindow::ExitWithError(error.what(), doPopUp);
+		bool isTest = !testToRunName.empty();
+		GameWindow::ExitWithError(error.what(), !isTest);
+
+		// When a integration tests fails, it should only return an error
+		// if the test isn't a known failure.
+		if(isTest)
+			return GameData::Tests().Get(testToRunName)->GetStatus() < Test::Status::BROKEN;
 		return 1;
 	}
 
@@ -426,6 +437,7 @@ void PrintHelp()
 	cerr << "    -d, --debug: turn on debugging features (e.g. Caps Lock slows down instead of speeds up)." << endl;
 	cerr << "    -p, --parse-save: load the most recent saved game and inspect it for content errors." << endl;
 	cerr << "    --tests: print table of available tests, then exit." << endl;
+	cerr << "    --tests-names-only: print list of every test, then exit." << endl;
 	cerr << "    --test <name>: run given test from resources directory." << endl;
 	cerr << endl;
 	cerr << "Report bugs to: <https://github.com/endless-sky/endless-sky/issues>" << endl;
@@ -493,6 +505,17 @@ void PrintTestsTable()
 		cout << test.StatusText() << '\t';
 		cout << "\"" << test.Name() << "\"" << '\n';
 	}
+	cout.flush();
+}
+
+
+
+// This prints out a list of every test.
+void PrintTestsList()
+{
+	for(auto &it : GameData::Tests())
+		if(it.second.GetStatus() != Test::Status::PARTIAL)
+			cout << it.second.Name() << '\n';
 	cout.flush();
 }
 

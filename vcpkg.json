@@ -1,5 +1,7 @@
 {
-	"dependencies": [],
+	"dependencies": [
+		"catch2"
+	],
 	"features": {
 		"system-libs": {
 			"description": "System libraries required to build ES.",

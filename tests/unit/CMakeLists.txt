@@ -1,7 +1,6 @@
 # Every source file (and header file) should be listed here.
 # If you add a new file, add it to this list.
 target_sources(EndlessSkyTests PRIVATE
-	include/catch.hpp
 	include/datanode-factory.h
 	include/es-test.hpp
 	include/output-capture.hpp
@@ -33,3 +32,13 @@ target_sources(EndlessSkyTests PRIVATE
 )
 
 target_include_directories(EndlessSkyTests PRIVATE include)
+
+list(APPEND INTEGRATION_TESTS
+	tests_common.txt
+	tests_disown.txt
+	tests_flagship_model_condition.txt
+	tests_framework.txt
+	tests_save_load.txt
+	tests_ship_sale.txt
+	tests_wormhole_navigation.txt
+)

@@ -115,6 +115,8 @@ if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
 	find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" NO_DEFAULT_PATH)
 endif()
 
+find_package(Catch2 CONFIG REQUIRED)
+
 # Create library target. The source files are populated inside source/CMakeLists.txt.
 add_library(EndlessSkyLib STATIC)
 add_subdirectory(source)
@@ -169,9 +171,30 @@ else()
 	add_executable(EndlessSky source/main.cpp)
 endif()
 
-# Create unit test target. The source files are populated inside tests/unit/CMakeLists.txt.
+# The unit tests target.
 add_executable(EndlessSkyTests EXCLUDE_FROM_ALL)
 add_subdirectory(tests/unit)
+
+# CTest integration
+include(CTest)
+include(Catch)
+catch_discover_tests(EndlessSkyTests
+	PROPERTIES LABELS unit)
+catch_discover_tests(EndlessSkyTests
+	TEST_SPEC [!benchmark]
+	PROPERTIES LABELS benchmark)
+
+# Integration tests.
+if(UNIX AND NOT APPLE)
+	add_custom_target(IntegrationTests
+		COMMAND ${CMAKE_COMMAND} -DES=$<TARGET_FILE:EndlessSky>
+			-DBINARY_PATH="${CMAKE_CURRENT_BINARY_DIR}"
+			-P ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
+		DEPENDS ${INTEGRATION_TESTS} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	add_dependencies(IntegrationTests EndlessSky)
+	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake")
+endif()
 
 # The 'mingw32' lib needs to appear first.
 if(MINGW)
@@ -222,6 +245,7 @@ if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
 		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
 	target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
 endif()
+target_link_libraries(EndlessSkyTests PRIVATE Catch2::Catch2)
 
 if(WIN32)
 	target_link_libraries(EndlessSkyLib PUBLIC rpcrt4 Winmm)
@@ -273,8 +297,11 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EndlessSky)
 
-# Only install on Linux.
-if(UNIX AND NOT APPLE)
+# Installation configurations.
+if(APPLE)
+elseif(WIN32)
+
+elseif(UNIX)
 	# Use lowercase target name on Linux.
 	set_target_properties(EndlessSky PROPERTIES OUTPUT_NAME "endless-sky")
 	set_target_properties(EndlessSkyTests PROPERTIES OUTPUT_NAME "endless-sky-tests")

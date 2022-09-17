@@ -37,7 +37,7 @@
       "inherits": "base",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic",
-		"ES_GLES": "ON"
+        "ES_GLES": "ON"
       },
       "condition": {
         "type": "equals",
@@ -109,7 +109,7 @@
       "displayName": "Xcode",
       "description": "Builds with Xcode on MacOS",
       "inherits": "base",
-	  "generator": "Xcode",
+      "generator": "Xcode",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
       },
@@ -124,8 +124,8 @@
       "displayName": "Visual Studio",
       "description": "Builds with clang-cl as a VS 2022 project",
       "inherits": "base",
-	  "generator": "Visual Studio 17",
-	  "toolset": "ClangCL",
+      "generator": "Visual Studio 17",
+      "toolset": "ClangCL",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-windows"
       },
@@ -138,100 +138,329 @@
   ],
   "buildPresets": [
     {
+      "name": "debug",
+      "hidden": true,
+      "configuration": "Debug"
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "configuration": "Release"
+    },
+    {
+      "name": "test",
+      "hidden": true,
+      "inherits": "release",
+      "targets": "EndlessSkyTests"
+    },
+    {
+      "name": "test-integration",
+      "hidden": true,
+      "inherits": "release",
+      "targets": [
+        "EndlessSky",
+        "EndlessSkyTests",
+        "IntegrationTests"
+      ]
+    },
+    {
       "name": "linux-debug",
       "displayName": "Debug",
       "configurePreset": "linux",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "linux-release",
       "displayName": "Release",
       "configurePreset": "linux",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "linux-test",
+      "displayName": "Tests",
+      "configurePreset": "linux",
+      "inherits": "test-integration"
+    },
     {
       "name": "linux-gles-debug",
       "displayName": "Debug",
       "configurePreset": "linux-gles",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "linux-gles-release",
       "displayName": "Release",
       "configurePreset": "linux-gles",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "linux-gles-test",
+      "displayName": "Tests",
+      "configurePreset": "linux-gles",
+      "inherits": "test-integration"
+    },
     {
       "name": "macos-debug",
       "displayName": "Debug",
       "configurePreset": "macos",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "macos-release",
       "displayName": "Release",
       "configurePreset": "macos",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "macos-test",
+      "displayName": "Tests",
+      "configurePreset": "macos",
+      "inherits": "test"
+    },
     {
       "name": "macos10.9-debug",
       "displayName": "Debug",
       "configurePreset": "macos10.9",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "macos10.9-release",
       "displayName": "Release",
       "configurePreset": "macos10.9",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "macos10.9-test",
+      "displayName": "Tests",
+      "configurePreset": "macos10.9",
+      "inherits": "test"
+    },
     {
       "name": "xcode-debug",
       "displayName": "Debug",
       "configurePreset": "xcode",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "xcode-release",
       "displayName": "Release",
       "configurePreset": "xcode",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "xcode-test",
+      "displayName": "Tests",
+      "configurePreset": "xcode",
+      "inherits": "test"
+    },
     {
       "name": "mingw-debug",
       "displayName": "Debug",
       "configurePreset": "mingw",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "mingw-release",
       "displayName": "Release",
       "configurePreset": "mingw",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "mingw-test",
+      "displayName": "Tests",
+      "configurePreset": "mingw",
+      "inherits": "test"
+    },
     {
       "name": "mingw32-debug",
       "displayName": "Debug",
       "configurePreset": "mingw32",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "mingw32-release",
       "displayName": "Release",
       "configurePreset": "mingw32",
-      "configuration": "Release"
-	},
+      "inherits": "release"
+    },
+    {
+      "name": "mingw32-test",
+      "displayName": "Tests",
+      "configurePreset": "mingw32",
+      "inherits": "test"
+    },
     {
       "name": "vs-debug",
       "displayName": "Debug",
       "configurePreset": "vs",
-      "configuration": "Debug"
-	},
+      "inherits": "debug"
+    },
     {
       "name": "vs-release",
       "displayName": "Release",
       "configurePreset": "vs",
-      "configuration": "Release"
-	}
+      "inherits": "release"
+    },
+    {
+      "name": "vs-test",
+      "displayName": "Tests",
+      "configurePreset": "vs",
+      "inherits": "test"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test",
+      "hidden": true,
+      "configuration": "Release",
+      "output": {
+        "shortProgress": true,
+		"outputOnFailure": true
+      },
+      "filter": {
+        "include": {
+          "label": "unit"
+        }
+      }
+    },
+    {
+      "name": "benchmark",
+      "hidden": true,
+      "configuration": "Release",
+      "output": {
+        "verbosity": "verbose",
+		"outputOnFailure": true
+      },
+      "filter": {
+        "include": {
+          "label": "benchmark"
+        }
+      }
+    },
+    {
+      "name": "integration",
+      "hidden": true,
+      "configuration": "Release",
+      "output": {
+        "shortProgress": true,
+		"outputOnFailure": true
+      },
+      "filter": {
+        "include": {
+          "label": "integration"
+        }
+      },
+	  "execution": {
+		  "timeout": 120
+	  }
+    },
+    {
+      "name": "linux-test",
+      "displayName": "Unit Tests",
+      "configurePreset": "linux",
+      "inherits": "test"
+    },
+    {
+      "name": "linux-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "linux",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "linux-integration",
+      "displayName": "Integration Tests",
+      "configurePreset": "linux",
+      "inherits": "integration"
+    },
+    {
+      "name": "linux-gles-test",
+      "displayName": "Tests",
+      "configurePreset": "linux-gles",
+      "inherits": "test"
+    },
+    {
+      "name": "linux-gles-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "linux-gles",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "linux-gles-integration",
+      "displayName": "Integration Tests",
+      "configurePreset": "linux-gles",
+      "inherits": "integration"
+    },
+    {
+      "name": "macos-test",
+      "displayName": "Tests",
+      "configurePreset": "macos",
+      "inherits": "test"
+    },
+    {
+      "name": "macos-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "macos",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "macos10.9-test",
+      "displayName": "Tests",
+      "configurePreset": "macos10.9",
+      "inherits": "test"
+    },
+    {
+      "name": "macos10.9-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "macos10.9",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "xcode-test",
+      "displayName": "Tests",
+      "configurePreset": "xcode",
+      "inherits": "test"
+    },
+    {
+      "name": "xcode-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "xcode",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "mingw-test",
+      "displayName": "Tests",
+      "configurePreset": "mingw",
+      "inherits": "test"
+    },
+    {
+      "name": "mingw-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "mingw",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "mingw32-test",
+      "displayName": "Tests",
+      "configurePreset": "mingw32",
+      "inherits": "test"
+    },
+    {
+      "name": "mingw32-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "mingw32",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "vs-test",
+      "displayName": "Tests",
+      "configurePreset": "vs",
+      "inherits": "test"
+    },
+    {
+      "name": "vs-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "vs",
+      "inherits": "benchmark"
+    }
   ]
 }
