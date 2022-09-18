@@ -27,6 +27,8 @@ endif()
 set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON) 
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 	CACHE STRING "Vcpkg toolchain file")
 
@@ -154,7 +156,7 @@ if(APPLE)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 	# Now do the same to standone files.
-	foreach(file "license.txt" "icon.png" "keys.txt" "credits.txt" "copyright" "changelog" "resources/endless-sky.icns")
+	foreach(file "license.txt" "keys.txt" "credits.txt" "copyright" "changelog" "resources/endless-sky.icns")
 		target_sources(EndlessSky PRIVATE ${file})
 		set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/")
 	endforeach()
@@ -218,6 +220,9 @@ if(MINGW)
 				add_custom_command(TARGET EndlessSky POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FILE_PATH} $<TARGET_FILE_DIR:EndlessSky>
 					COMMAND_EXPAND_LISTS)
+
+				# Add an install rule for this DLLs, so that it is also included when installing.
+				install(FILES ${FILE_PATH} DESTINATION .)
 			endif()
 		endforeach()
 	endif()
@@ -299,8 +304,21 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT E
 
 # Installation configurations.
 if(APPLE)
+	install(TARGETS EndlessSky CONFIGURATIONS Release BUNDLE DESTINATION /Applications)
 elseif(WIN32)
+	# Install the binary.
+	install(TARGETS EndlessSky CONFIGURATIONS Release RUNTIME DESTINATION .)
 
+	# The MinGW DLLs needed were already installed above, and vcpkg installs the library DLLs.
+
+	# Install the resouce files.
+	install(DIRECTORY data DESTINATION .)
+	install(DIRECTORY images DESTINATION .)
+	install(DIRECTORY sounds DESTINATION .)
+	install(FILES credits.txt DESTINATION .)
+	install(FILES keys.txt DESTINATION .)
+	install(FILES copyright DESTINATION .)
+	install(FILES changelog DESTINATION .)
 elseif(UNIX)
 	# Use lowercase target name on Linux.
 	set_target_properties(EndlessSky PROPERTIES OUTPUT_NAME "endless-sky")
@@ -331,7 +349,7 @@ elseif(UNIX)
 	target_sources(EndlessSky PRIVATE endless-sky.6.gz)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/endless-sky.6.gz DESTINATION share/man/man6)
 
-	# Install the data files.
+	# Install the resouce files.
 	install(DIRECTORY data DESTINATION share/games/endless-sky)
 	install(DIRECTORY images DESTINATION share/games/endless-sky)
 	install(DIRECTORY sounds DESTINATION share/games/endless-sky)

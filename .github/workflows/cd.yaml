@@ -51,9 +51,8 @@ jobs:
           arch: x86
       - name: Package Application
         run: |
-          COPY .\build\mingw\Release\EndlessSky.exe .
-          COPY ".\build\mingw\Release\*.dll" .
-          7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
+          cmake --install build/mingw
+          7z a ${{ env.OUTPUT }} "./install/mingw/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -76,9 +75,8 @@ jobs:
           version: '12.1.0'
       - name: Package Application
         run: |
-          COPY .\build\mingw\Release\EndlessSky.exe .
-          COPY ".\build\mingw\Release\*.dll" .
-          7z a ${{ env.OUTPUT }} .\sounds\ .\images\ .\data\ *.dll license.txt keys.txt icon.png EndlessSky.exe credits.txt copyright changelog
+          cmake --install build/mingw
+          7z a ${{ env.OUTPUT }} "./install/mingw/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -101,9 +99,8 @@ jobs:
           mavericks: 'true'
       - name: Package Application
         run: |
-          cd build/macos/Release
-          ls -la
-          7z a ${{ github.workspace }}/${{ env.OUTPUT }} EndlessSky.app
+          cmake --install build/macos
+          7z a ${{ env.OUTPUT }} "./install/macos/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
