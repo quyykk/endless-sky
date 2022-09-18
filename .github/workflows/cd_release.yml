@@ -38,8 +38,7 @@ jobs:
             '-t', 'EndlessSky',
             '-t', 'EndlessSkyTests'
             ]
-      - name: Run Unit Tests
-        run: ./build/linux/Release/endless-sky-tests
+          testPreset: 'linux-test'
       - name: Package Application
         run: ./utils/build_appimage.sh
       - name: Upload Release
@@ -81,8 +80,7 @@ jobs:
             '-t', 'EndlessSky',
             '-t', 'EndlessSkyTests'
             ]
-      - name: Run Unit Tests
-        run: .\build\mingw32\Release\EndlessSkyTests.exe
+          testPreset: 'mingw32-test'
       - name: Package Application
         run: |
           cmake --install build/mingw
@@ -133,8 +131,7 @@ jobs:
             '-t', 'EndlessSky',
             '-t', 'EndlessSkyTests'
             ]
-      - name: Run Unit Tests
-        run: .\build\mingw\Release\EndlessSkyTests.exe
+          testPreset: 'mingw-test'
       - name: Package Application
         run: |
           cmake --install build/mingw
@@ -185,8 +182,7 @@ jobs:
             '-t', 'EndlessSky',
             '-t', 'EndlessSkyTests'
             ]
-      - name: Run Unit Tests
-        run: ./build/macos10.9/Release/EndlessSkyTests
+          testPreset: 'macos10.9-test'
       - name: Package Application
         run: |
           cd build/macos10.9/Release

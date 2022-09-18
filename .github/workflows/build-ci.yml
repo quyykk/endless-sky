@@ -42,7 +42,7 @@ jobs:
         ccache: 'true'
         opengl: ${{ matrix.opengl }}
     - name: Run Benchmarks
-      run: ./build/linux/Release/endless-sky-tests [!benchmark]
+      run: ctest --preset linux-benchmark
     - name: Package Application
       run: ./utils/build_appimage.sh
     - name: Upload game binary
@@ -81,7 +81,7 @@ jobs:
         ccache: 'true'
         version: ${{ matrix.mingw }}
     - name: Run Benchmarks
-      run: .\build\mingw\Release\EndlessSkyTests.exe [!benchmark]
+      run: ctest --preset mingw-benchmark
     - name: Prepare for upload
       if: ${{ matrix.mingw == '12.1.0' }}
       run: COPY credits.txt build\mingw\Release\
@@ -120,4 +120,4 @@ jobs:
     - name: Build Endless Sky
       uses: ./.github/actions/macos
     - name: Run Benchmarks
-      run: ./build/macos/Release/EndlessSkyTests [!benchmark]
+      run: ctest --preset macos-benchmark

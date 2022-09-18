@@ -42,6 +42,4 @@ runs:
           '-t', 'EndlessSky',
           '-t', 'EndlessSkyTests'
           ]
-    - name: Run Unit Tests
-      run: ./build/linux/Release/endless-sky-tests
-      shell: bash
+        testPreset: 'linux-test'

@@ -44,6 +44,4 @@ runs:
           '-t', 'EndlessSky',
           '-t', 'EndlessSkyTests'
           ]
-    - name: Run Unit Tests
-      run: .\build\mingw\Release\EndlessSkyTests.exe
-      shell: pwsh
+        testPreset: 'mingw-test'
