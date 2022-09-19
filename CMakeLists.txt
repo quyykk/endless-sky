@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.23)
+cmake_minimum_required(VERSION 3.12...3.24)
 
 option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
 option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
