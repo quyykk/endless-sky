@@ -58,6 +58,7 @@ endif()
 
 project("Endless Sky" VERSION 0.9.15
 	DESCRIPTION "Space exploration, trading, and combat game."
+	HOMEPAGE_URL https://endless-sky.github.io/
 	LANGUAGES CXX)
 
 # Configure various files that reference the current version number.
