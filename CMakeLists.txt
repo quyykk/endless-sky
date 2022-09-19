@@ -28,7 +28,7 @@ set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON) 
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 	CACHE STRING "Vcpkg toolchain file")
 
@@ -197,6 +197,9 @@ if(UNIX AND NOT APPLE)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	add_dependencies(IntegrationTests EndlessSky)
 	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake")
+
+	# If the target is not run, simply don't provide any integration tests instead of erroring out.
+	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake" "")
 endif()
 
 # The 'mingw32' lib needs to appear first.
