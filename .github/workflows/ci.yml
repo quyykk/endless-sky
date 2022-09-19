@@ -85,7 +85,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install xvfb runtime dependencies
-      run: sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils libglvnd0 # TODO: ALSA mocking?
+      run: sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils libglvnd-dev # TODO: ALSA mocking?
     # If no code changes occurred then we can download the latest continuous.
     - name: Download latest continuous
       if: ${{ needs.changed.outputs.game_code == 'false' && needs.changed.outputs.cmake == 'false' }}
