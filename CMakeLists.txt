@@ -304,7 +304,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT E
 
 # Installation configurations.
 if(APPLE)
-	install(TARGETS EndlessSky CONFIGURATIONS Release BUNDLE DESTINATION /Applications)
+	install(TARGETS EndlessSky CONFIGURATIONS Release BUNDLE DESTINATION .)
 elseif(WIN32)
 	# Install the binary.
 	install(TARGETS EndlessSky CONFIGURATIONS Release RUNTIME DESTINATION .)
