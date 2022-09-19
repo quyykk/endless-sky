@@ -84,7 +84,7 @@ jobs:
       - name: Package Application
         run: |
           cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw/*"
+          7z a ${{ env.OUTPUT }} "./install/mingw32/*"
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:

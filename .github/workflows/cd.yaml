@@ -52,7 +52,7 @@ jobs:
       - name: Package Application
         run: |
           cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw/*"
+          7z a ${{ env.OUTPUT }} "./install/mingw32/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -100,7 +100,7 @@ jobs:
       - name: Package Application
         run: |
           cmake --install build/macos
-          7z a ${{ env.OUTPUT }} "./install/macos/*"
+          7z a ${{ env.OUTPUT }} "./install/macos10.9/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
