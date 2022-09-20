@@ -23,6 +23,8 @@ jobs:
           python-version: '3.10'
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'linux'
@@ -64,6 +66,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
+          vcpkgJsonGlob: 'vcpkg.json'
           appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
@@ -115,6 +118,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
+          vcpkgJsonGlob: 'vcpkg.json'
           appendedCacheKey: ${{ env.GCC }}-x64
       - uses: lukka/run-cmake@v10
         with:
@@ -166,6 +170,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
+          vcpkgJsonGlob: 'vcpkg.json'
           appendedCacheKey: 10.9
       - uses: lukka/run-cmake@v10
         with:

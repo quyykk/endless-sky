@@ -25,6 +25,7 @@ runs:
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10
       with:
+        vcpkgJsonGlob: 'vcpkg.json'
         appendedCacheKey: ${{ inputs.version }}-${{ inputs.arch }}
     - uses: lukka/run-cmake@v10
       with:

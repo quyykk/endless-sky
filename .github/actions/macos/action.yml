@@ -17,6 +17,7 @@ runs:
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10
       with:
+        vcpkgJsonGlob: 'vcpkg.json'
         appendedCacheKey: ${{ inputs.mavericks == 'true' && '10.9' || '' }}
     - uses: lukka/run-cmake@v10
       with:
