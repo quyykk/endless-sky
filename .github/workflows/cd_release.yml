@@ -31,7 +31,8 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', '$[env.CONFIGURE_PRESET_NAME]',
-            '-DES_RELEASE=ON'
+            '-DES_RELEASE=ON',
+            '-DES_USE_SYSTEM_LIBRARIES=OFF'
             ]
           buildPreset: 'linux-release'
           buildPresetCmdString: >
@@ -178,7 +179,8 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', 'macos10.9',
-            '-DES_RELEASE=ON'
+            '-DES_RELEASE=ON',
+            '-DES_USE_SYSTEM_LIBRARIES=OFF'
             ]
           buildPreset: 'macos10.9-release'
           buildPresetCmdString: >

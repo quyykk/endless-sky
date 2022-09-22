@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12...3.24)
 option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
 option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
 option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF)
-option(ES_USE_SYSTEM_LIBRARIES "For Linux use the distro system libraries instead of the vcpkg ones." ON)
+option(ES_USE_SYSTEM_LIBRARIES "Use system libraries instead of the vcpkg ones." ON)
 option(ES_RELEASE "Whether the current version is a published release" OFF)
 option(ES_INCLUDE_HASH "Whether to include the current git hash as part of the version. Doesn't update unless you regenerate!" OFF)
 
@@ -32,16 +32,18 @@ set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 	CACHE STRING "Vcpkg toolchain file")
 
-# Using system libraries instead of vcpkg libraries is only supported on Linux.
-if(ES_USE_SYSTEM_LIBRARIES AND (NOT UNIX OR APPLE))
+# Using system libraries instead of vcpkg libraries is not supported on Windows.
+if(ES_USE_SYSTEM_LIBRARIES AND WIN32)
 	set(ES_USE_SYSTEM_LIBRARIES OFF)
 endif()
 
 if(ES_USE_SYSTEM_LIBRARIES)
-	# If using the system libraries from the distro, statically link every other library needed.
-	# This is to make sure that the resulting binary has no dependencies on libraries (other than
-	# the system ones) and can thus be distributed as a simple binary.
-	set(VCPKG_TARGET_TRIPLET "x64-linux")
+	if(UNIX AND NOT APPLE)
+		# If using the system libraries from a Linux distro, statically link every other library needed.
+		# This is to make sure that the resulting binary has no dependencies on libraries (other than
+		# the system ones) and can thus be distributed as a simple binary.
+		set(VCPKG_TARGET_TRIPLET "x64-linux")
+	endif()
 else()
 	# Tell vcpkg to use the required libraries.
 	list(APPEND VCPKG_MANIFEST_FEATURES "system-libs")
