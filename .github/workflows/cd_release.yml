@@ -230,9 +230,7 @@ jobs:
       with:
         submodules: true
     - name: Build Endless Sky
-      run: |
-        cd steam
-        docker-compose run steam-${{ matrix.arch }}
+      run: docker-compose run steam-${{ matrix.arch }}
     - name: Prepare binary
       run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
     - name: Upload Steam Depot
