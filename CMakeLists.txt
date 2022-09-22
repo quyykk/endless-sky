@@ -90,35 +90,21 @@ configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Versi
 configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
 configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.6" @ONLY)
 
-# Use the system libraries if specified and if not use the ones built from vcpkg.
-if(ES_USE_SYSTEM_LIBRARIES)
-	find_library(SDL2 SDL2)
-	find_library(OpenAL openal)
-	find_library(PNG png)
-	find_library(JPEG jpeg)
-	find_library(GLEW GLEW)
-
-	if(NOT ES_STEAM)
-		find_library(LIBMAD mad)
-	endif()
-else()
-	find_package(SDL2 CONFIG REQUIRED)
-	find_package(OpenAL CONFIG REQUIRED)
-	find_package(PNG REQUIRED)
-	find_package(JPEG REQUIRED)
-	if(NOT APPLE)
-		find_package(GLEW REQUIRED)
-	endif()
-endif()
-
-if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
-	# libmad doesn't provide native cmake support.
-	find_path(LIBMAD_INCLUDE_DIR mad.h)
-	find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib" NO_DEFAULT_PATH)
-	find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" NO_DEFAULT_PATH)
-endif()
-
+# Find the needed library dependencies.
 find_package(Catch2 CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(JPEG REQUIRED)
+if(NOT APPLE)
+	find_package(GLEW REQUIRED)
+endif()
+
+# libmad doesn't provide native cmake support.
+find_path(LIBMAD_INCLUDE_DIR mad.h)
+find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
+find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+
 
 # Create library target. The source files are populated inside source/CMakeLists.txt.
 add_library(EndlessSkyLib STATIC)
@@ -232,45 +218,29 @@ if(MINGW)
 	endif()
 endif()
 
-target_link_libraries(EndlessSky PRIVATE EndlessSkyLib)
-if(NOT ES_USE_SYSTEM_LIBRARIES)
-	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2main)
-endif()
-target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
+# Link with the library dependencies.
+target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
+target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib Catch2::Catch2)
 
-# Choose the correct libraries for the target platform. If we're building without vcpkg link
-# the corresponding system libraries as well.
-if(ES_USE_SYSTEM_LIBRARIES)
-	target_link_libraries(EndlessSky PRIVATE ${SDL2} ${PNG} ${JPEG} ${OpenAL} pthread)
-	if(NOT ES_STEAM)
-		target_link_libraries(EndlessSky PRIVATE ${LIBMAD})
-	endif()
-else()
-	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL)
-	target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR})
-endif()
-if(NOT ES_USE_SYSTEM_LIBRARIES OR ES_STEAM)
-	target_link_libraries(EndlessSky PRIVATE
-		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
-	target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
-endif()
-target_link_libraries(EndlessSkyTests PRIVATE Catch2::Catch2)
+target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR} ${LIBMAD_INCLUDE_DIR})
+target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
+	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
 
+# Link the needed OS-specific dependencies, if any.
 if(WIN32)
 	target_link_libraries(EndlessSkyLib PUBLIC rpcrt4 Winmm)
-else()
-	if(APPLE)
-		# Use the system uuid library.
-		find_library(UUID_LIB NAMES System PATHS /lib /usr/lib /usr/local/lib)
-		find_path(UUID_INCLUDE uuid/uuid.h /usr/local/include /usr/include)
-		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
-		target_include_directories(EndlessSkyLib PUBLIC ${UUID_INCLUDE})
-	elseif(ES_USE_SYSTEM_LIBRARIES)
+else(UNIX AND NOT APPLE)
+	target_link_libraries(EndlessSkyLib PUBLIC pthread)
+endif()
+
+# Link with the UUID library, which is different for each OS.
+if(UNIX)
+	if(ES_USE_SYSTEM_LIBRARIES OR APPLE)
 		find_library(UUID_LIB uuid)
 		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 	else()
 		find_package(unofficial-libuuid CONFIG REQUIRED)
-		target_link_libraries(EndlessSkyLib PUBLIC unofficial::UUID::uuid pthread)
+		target_link_libraries(EndlessSkyLib PUBLIC unofficial::UUID::uuid)
 	endif()
 endif()
 
@@ -288,14 +258,11 @@ else()
 	find_package(OpenGL REQUIRED)
 	target_link_libraries(EndlessSky PRIVATE OpenGL::GL)
 
-	if(WIN32)
-		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
-	elseif(APPLE)
+	if(APPLE)
 		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
 		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
-	elseif(ES_USE_SYSTEM_LIBRARIES)
-		target_link_libraries(EndlessSky PRIVATE ${GLEW})
 	else()
+		# GLEW is only needed on Linux and Windows.
 		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
 	endif()
 endif()
