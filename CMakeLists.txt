@@ -237,7 +237,12 @@ endif()
 
 # Link with the UUID library, which is different for each OS.
 if(UNIX)
-	if(ES_USE_SYSTEM_LIBRARIES OR APPLE)
+	if(APPLE)
+		find_library(UUID_LIB NAMES System PATHS /lib /usr/lib /usr/local/lib)
+		find_path(UUID_INCLUDE uuid/uuid.h /usr/local/include /usr/include)
+		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
+		target_include_directories(EndlessSkyLib PUBLIC ${UUID_INCLUDE})
+	elseif(ES_USE_SYSTEM_LIBRARIES)
 		find_library(UUID_LIB uuid)
 		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
 	else()
