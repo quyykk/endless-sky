@@ -31,7 +31,7 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', '$[env.CONFIGURE_PRESET_NAME]',
-            '-DES_RELEASE=ON',
+            '-DES_VERSION_TYPE=release',
             '-DES_USE_SYSTEM_LIBRARIES=OFF'
             ]
           buildPreset: 'linux-release'
@@ -75,7 +75,7 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', 'mingw32',
-            '-DES_RELEASE=ON'
+            '-DES_VERSION_TYPE=release'
             ]
           buildPreset: 'mingw32-release'
           buildPresetCmdString: >
@@ -127,7 +127,7 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', 'mingw',
-            '-DES_RELEASE=ON'
+            '-DES_VERSION_TYPE=release'
             ]
           buildPreset: 'mingw-release'
           buildPresetCmdString: >
@@ -179,7 +179,7 @@ jobs:
           configurePresetCmdString: >
             [
             '--preset', 'macos10.9',
-            '-DES_RELEASE=ON',
+            '-DES_VERSION_TYPE=release',
             '-DES_USE_SYSTEM_LIBRARIES=OFF'
             ]
           buildPreset: 'macos10.9-release'
