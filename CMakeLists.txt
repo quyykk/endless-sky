@@ -10,6 +10,9 @@ option(ES_USE_SYSTEM_LIBRARIES "Use system libraries instead of the vcpkg ones."
 set(ES_VERSION_TYPE "alpha" CACHE STRING "What kind of version is being built. Controls the version string.")
 set_property(CACHE ES_VERSION_TYPE PROPERTY STRINGS "alpha" "hash" "release")
 
+# Support Debug and Release configurations.
+set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" CACHE STRING "" FORCE)
+
 # Use C++11 without any compiler specific extensions.
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
