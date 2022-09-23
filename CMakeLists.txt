@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12...3.24)
+cmake_minimum_required(VERSION 3.13)
 
 include(CMakeDependentOption)
 cmake_dependent_option(ES_GLES "Build the game with OpenGL ES" OFF UNIX OFF)
@@ -88,11 +88,19 @@ configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resou
 # Find the needed library dependencies.
 find_package(Catch2 CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
-find_package(OpenAL CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
+endif()
+
+# Only very new versions of OpenAL provide a config package, so try to find it manually.
+find_package(OpenAL CONFIG QUIET)
+if(NOT OpenAL_FOUND)
+	find_library(OPENAL openal REQUIRED)
+	add_library(OpenAL UNKNOWN IMPORTED)
+	add_library(OpenAL::OpenAL ALIAS OpenAL)
+	set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION ${OPENAL})
 endif()
 
 # libmad doesn't provide native cmake support.
@@ -146,7 +154,6 @@ if(APPLE)
 	set_target_properties(EndlessSky PROPERTIES
 		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/resources/EndlessSky-Info.plist.in
 		XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME endless-sky)
-
 elseif(WIN32)
 	add_executable(EndlessSky WIN32 source/main.cpp)
 	target_sources(EndlessSky PRIVATE source/WinApp.rc)
@@ -175,6 +182,7 @@ if(UNIX AND NOT APPLE)
 			-P ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
 		DEPENDS ${INTEGRATION_TESTS} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+	set_target_properties(IntegrationTests PROPERTIES EXCLUDE_FROM_ALL ON)
 	add_dependencies(IntegrationTests EndlessSky)
 	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake")
 
@@ -216,8 +224,8 @@ endif()
 target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib Catch2::Catch2)
 
-target_include_directories(EndlessSkyLib PUBLIC ${JPEG_INCLUDE_DIR} ${LIBMAD_INCLUDE_DIR})
-target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG ${JPEG_LIBRARIES} OpenAL::OpenAL
+target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
+target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL
 	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
 
 # Link the needed OS-specific dependencies, if any.
@@ -240,7 +248,7 @@ endif()
 
 # Use OpenGL or OpenGL ES.
 if(ES_GLES)
-	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
+	find_package(OpenGL REQUIRED OpenGL EGL)
 	target_link_libraries(EndlessSky PRIVATE OpenGL::OpenGL OpenGL::EGL)
 	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
 else()
