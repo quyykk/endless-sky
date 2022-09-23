@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.12...3.24)
 
-option(ES_GLES "Build the game with OpenGL ES on Linux" OFF)
-option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
-option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF)
+include(CMakeDependentOption)
+cmake_dependent_option(ES_GLES "Build the game with OpenGL ES" OFF UNIX OFF)
+cmake_dependent_option(ES_STEAM "Build the game for the Steam Linux runtime" OFF UNIX OFF)
+cmake_dependent_option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF UNIX OFF)
+
 option(ES_USE_SYSTEM_LIBRARIES "Use system libraries instead of the vcpkg ones." ${UNIX})
-option(ES_RELEASE "Whether the current version is a published release" OFF)
-option(ES_INCLUDE_HASH "Whether to include the current git hash as part of the version. Doesn't update unless you regenerate!" OFF)
+
+set(ES_VERSION_TYPE "alpha" CACHE STRING "What kind of version is being built. Controls the version string.")
+set_property(CACHE ES_VERSION_TYPE PROPERTY STRINGS "alpha" "hash" "release")
 
 # Use C++11 without any compiler specific extensions.
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "")
@@ -24,7 +27,7 @@ set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-	CACHE STRING "Vcpkg toolchain file")
+	CACHE STRING "Vcpkg toolchain file" FORCE)
 
 if(ES_USE_SYSTEM_LIBRARIES)
 	if(UNIX AND NOT APPLE)
@@ -54,28 +57,26 @@ project("Endless Sky" VERSION 0.9.15
 
 # Configure various files that reference the current version number.
 string(TIMESTAMP ES_CURRENT_DATE "%d %b %Y")
-if(NOT ES_RELEASE)
-	if(ES_INCLUDE_HASH)
-		# Figure out the hash of the current commit. This won't change unless you recreate the
-		# CMake build!
-		execute_process(COMMAND git rev-parse --short HEAD
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-			OUTPUT_VARIABLE ES_HASH
-			OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(ES_VERSION_TYPE STREQUAL "hash")
+	# Figure out the hash of the current commit. This won't change unless you recreate the
+	# CMake build!
+	execute_process(COMMAND git rev-parse --short HEAD
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE ES_HASH
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-		set(ES_VERSION_SUFFIX "-alpha (${ES_HASH})")
+	set(ES_VERSION_SUFFIX "-alpha (${ES_HASH})")
 
-		# Also add an expanded commit description inside credits.txt.
-		execute_process(COMMAND git --no-pager log "--pretty=Last change by %an: %n %s" -1
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-			OUTPUT_VARIABLE ES_LAST_CHANGE
-			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	# Also add an expanded commit description inside credits.txt.
+	execute_process(COMMAND git --no-pager log "--pretty=Last change by %an: %n %s" -1
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE ES_LAST_CHANGE
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-		string(TIMESTAMP ES_BUILT_DATE "%Y-%m-%d %H-%M UTC" UTC)
-		set(ES_CREDITS_CHANGE "\nBuilt: ${ES_BUILT_DATE}\n${ES_LAST_CHANGE}\n")
-	else()
-		set(ES_VERSION_SUFFIX "-alpha")
-	endif()
+	string(TIMESTAMP ES_BUILT_DATE "%Y-%m-%d %H-%M UTC" UTC)
+	set(ES_CREDITS_CHANGE "\nBuilt: ${ES_BUILT_DATE}\n${ES_LAST_CHANGE}\n")
+elseif(ES_VERSION_SUFFIX STREQUAL "alpha")
+	set(ES_VERSION_SUFFIX "-alpha")
 endif()
 configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Version.h" @ONLY)
 configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
@@ -96,9 +97,8 @@ find_path(LIBMAD_INCLUDE_DIR mad.h)
 find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
 find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
 
-
 # Create library target. The source files are populated inside source/CMakeLists.txt.
-add_library(EndlessSkyLib STATIC)
+add_library(EndlessSkyLib STATIC EXCLUDE_FROM_ALL)
 add_subdirectory(source)
 
 # Create game target.
@@ -236,7 +236,7 @@ if(UNIX)
 endif()
 
 # Use OpenGL or OpenGL ES.
-if(ES_GLES AND UNIX AND NOT APPLE)
+if(ES_GLES)
 	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
 	target_link_libraries(EndlessSky PRIVATE OpenGL::OpenGL OpenGL::EGL)
 	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
@@ -270,6 +270,7 @@ endif()
 # Various helpful options for IDEs.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EndlessSky)
+set_property(TARGET EndlessSkyLib EndlessSky EndlessSkyTests PROPERTY VS_JUST_MY_CODE_DEBUGGING ON)
 
 # Installation configurations.
 if(APPLE)
