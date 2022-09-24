@@ -93,4 +93,4 @@ jobs:
     - name: Execute integration tests
       env:
           PRINT_GLXINFO: true
-      run: ./tests/integration/run_tests_headless.sh ${{ github.workspace }}/steam-container-runtime/depot/run-in-sniper
+      run: ./steam-container-runtime/depot/run-in-sniper ctest -- --preset linux-integration

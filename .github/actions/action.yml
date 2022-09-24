@@ -1,0 +1,24 @@
+name: Install Development Dependencies
+description: Install the correct dependencies to build the game
+runs:
+  using: 'composite'
+  steps:
+    - if: ${{ env.RUNNER_OS == 'Linux' }}
+      run: |
+        sudo add-apt-repository universe
+        sudo apt install libfuse2
+      shell: bash
+    - if: ${{ env.RUNNER_OS == 'Linux' }}
+      run: >
+        sudo apt install -y --no-install-recommends
+          libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev
+          libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev ccache
+      shell: bash
+
+    - if: ${{ env.RUNNER_OS == 'Windows' }}
+      run: choco install ccache
+      shell: bash
+
+    - if: ${{ env.RUNNER_OS == 'macOS' }}
+      run: brew install ccache
+      shell: bash
