@@ -3,7 +3,7 @@ name: Steam
 on:
   push:
     branches:
-      - master
+      - 0.9.15-release
       - cmake
       - releases/v[0-9]+.[0-9]+.[0-9]+
 

@@ -129,7 +129,7 @@ jobs:
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos-ci'
-          buildPreset: 'macos-ci-ci'
+          buildPreset: 'macos-ci'
       - name: Package Application
         run: |
           cmake --install build/ci
