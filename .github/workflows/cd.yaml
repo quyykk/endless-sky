@@ -35,7 +35,7 @@ jobs:
           configurePreset: 'linux-ci'
           buildPreset: 'linux-ci'
       - name: Package Application
-        run: ./utils/build_appimage.sh
+        run: ./utils/build_appimage.sh build/ci
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -65,12 +65,12 @@ jobs:
           appendedCacheKey: 12.1.0-x86
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'mingw32-ci'
-          buildPreset: 'mingw32-ci'
+          configurePreset: 'mingw32-release'
+          buildPreset: 'mingw32-ci-release'
       - name: Package Application
         run: |
-          cmake --install build/ci
-          7z a ${{ env.OUTPUT }} "./install/ci/*"
+          cmake --install build/release
+          7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -122,8 +122,6 @@ jobs:
           submodules: true
       - name: Install development dependencies
         uses: ./.github/dependencies
-      - name: Get MinGW
-        uses: quyykk/get-winlibs-mingw@v1
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
