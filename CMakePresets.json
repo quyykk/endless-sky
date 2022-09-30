@@ -17,6 +17,50 @@
       }
     },
     {
+      "name": "ci",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ci",
+      "installDir": "${sourceDir}/install/ci",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_BUILD_TYPE": "Release",
+        "ES_VERSION_TYPE": "hash",
+        "ES_USE_SYSTEM_LIBRARIES": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{CI}",
+        "rhs": "true"
+      }
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "installDir": "${sourceDir}/install/release",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_BUILD_TYPE": "Release",
+        "ES_VERSION_TYPE": "release",
+        "ES_USE_SYSTEM_LIBRARIES": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{CI}",
+        "rhs": "true"
+      }
+    },
+    {
       "name": "linux",
       "displayName": "Linux",
       "description": "Builds with the default host compiler on Linux",
@@ -52,21 +96,6 @@
       "inherits": "base",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Darwin"
-      }
-    },
-    {
-      "name": "macos10.9",
-      "displayName": "MacOS 10.9",
-      "description": "Builds with the default host compiler for MacOS 10.9",
-      "inherits": "macos",
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-osx10.9-dynamic",
-        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
       },
       "condition": {
         "type": "equals",
@@ -134,6 +163,97 @@
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       }
+    },
+    {
+      "name": "linux-ci",
+      "displayName": "Linux CI",
+      "description": "Builds for Linux for CI purposes",
+      "inherits": "ci",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "description": "Builds for Linux like an official release",
+      "inherits": "release",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
+      }
+    },
+    {
+      "name": "linux-gles-ci",
+      "displayName": "Linux GLES CI",
+      "description": "Builds for Linux GLES for CI purposes",
+      "inherits": "ci",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic",
+        "ES_GLES": "ON"
+      }
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS CI",
+      "description": "Builds for MacOS for CI purposes",
+      "inherits": "ci",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-osx10.9-dynamic",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
+      }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "MacOS Release",
+      "description": "Builds for MacOS like an official release",
+      "inherits": "release",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-osx10.9-dynamic",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
+      }
+    },
+    {
+      "name": "mingw-ci",
+      "displayName": "MinGW CI",
+      "description": "Builds with MinGW for CI purposes",
+      "inherits": "ci",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_AR": "x86_64-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "x86_64-w64-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic"
+      }
+    },
+    {
+      "name": "mingw-release",
+      "displayName": "MinGW Release",
+      "description": "Builds with MinGW like an official release",
+      "inherits": "release",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_AR": "x86_64-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "x86_64-w64-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic"
+      }
+    },
+    {
+      "name": "mingw32-release",
+      "displayName": "MinGW x86 Release",
+      "description": "Builds with x86 MinGW like an official release",
+      "inherits": "release",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_AR": "i686-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "i686-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x86-mingw-dynamic"
+      }
     }
   ],
   "buildPresets": [
@@ -146,6 +266,19 @@
       "name": "release",
       "hidden": true,
       "configuration": "Release"
+    },
+    {
+      "name": "ci",
+      "hidden": true,
+      "targets": [
+        "EndlessSky",
+        "EndlessSkyTests"
+      ],
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{CI}",
+        "rhs": "true"
+      }
     },
     {
       "name": "test",
@@ -215,24 +348,6 @@
       "name": "macos-test",
       "displayName": "Tests",
       "configurePreset": "macos",
-      "inherits": "test"
-    },
-    {
-      "name": "macos10.9-debug",
-      "displayName": "Debug",
-      "configurePreset": "macos10.9",
-      "inherits": "debug"
-    },
-    {
-      "name": "macos10.9-release",
-      "displayName": "Release",
-      "configurePreset": "macos10.9",
-      "inherits": "release"
-    },
-    {
-      "name": "macos10.9-test",
-      "displayName": "Tests",
-      "configurePreset": "macos10.9",
       "inherits": "test"
     },
     {
@@ -306,6 +421,69 @@
       "displayName": "Tests",
       "configurePreset": "vs",
       "inherits": "test"
+    },
+    {
+      "name": "linux-ci",
+      "displayName": "Linux CI build",
+      "configurePreset": "linux-ci",
+      "inherits": "ci",
+      "targets": [
+        "EndlessSky",
+        "EndlessSkyTests",
+        "IntegrationTests"
+      ]
+    },
+    {
+      "name": "linux-ci-release",
+      "displayName": "Linux release build",
+      "configurePreset": "linux-release",
+      "inherits": "ci",
+      "targets": [
+        "EndlessSky",
+        "EndlessSkyTests",
+        "IntegrationTests"
+      ]
+    },
+    {
+      "name": "linux-gles-ci",
+      "displayName": "Linux GLES CI build",
+      "configurePreset": "linux-gles-ci",
+      "inherits": "ci",
+      "targets": [
+        "EndlessSky",
+        "EndlessSkyTests",
+        "IntegrationTests"
+      ]
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS CI build",
+      "configurePreset": "macos-ci",
+      "inherits": "ci"
+    },
+    {
+      "name": "macos-ci-release",
+      "displayName": "MacOS release build",
+      "configurePreset": "macos-release",
+      "inherits": "ci"
+    },
+    {
+      "name": "mingw-ci",
+      "displayName": "MinGW CI build",
+      "configurePreset": "mingw-ci",
+      "inherits": "ci"
+    },
+    {
+      "name": "mingw-ci-release",
+      "displayName": "MinGW release build",
+      "configurePreset": "mingw-release",
+      "inherits": "ci"
+    },
+    {
+      "name": "mingw32-ci-release",
+      "displayName": "MinGW x86 release build",
+      "configurePreset": "mingw32-release",
+      "inherits": "ci"
     }
   ],
   "testPresets": [
@@ -315,7 +493,7 @@
       "configuration": "Release",
       "output": {
         "shortProgress": true,
-		"outputOnFailure": true
+        "outputOnFailure": true
       },
       "filter": {
         "include": {
@@ -329,7 +507,7 @@
       "configuration": "Release",
       "output": {
         "verbosity": "verbose",
-		"outputOnFailure": true
+        "outputOnFailure": true
       },
       "filter": {
         "include": {
@@ -343,16 +521,39 @@
       "configuration": "Release",
       "output": {
         "shortProgress": true,
-		"outputOnFailure": true
+        "outputOnFailure": true
       },
       "filter": {
         "include": {
           "label": "integration"
         }
       },
-	  "execution": {
-		  "timeout": 120
-	  }
+      "execution": {
+        "timeout": 120
+      }
+    },
+    {
+      "name": "ci",
+      "hidden": true,
+      "configuration": "Release",
+      "inherits": [
+        "test",
+        "benchmark"
+      ],
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{CI}",
+        "rhs": "true"
+      }
+    },
+    {
+      "name": "ci-integration",
+      "hidden": true,
+      "configuration": "Release",
+      "inherits": [
+        "ci",
+        "integration"
+      ]
     },
     {
       "name": "linux-test",
@@ -403,18 +604,6 @@
       "inherits": "benchmark"
     },
     {
-      "name": "macos10.9-test",
-      "displayName": "Tests",
-      "configurePreset": "macos10.9",
-      "inherits": "test"
-    },
-    {
-      "name": "macos10.9-benchmark",
-      "displayName": "Benchmarks",
-      "configurePreset": "macos10.9",
-      "inherits": "benchmark"
-    },
-    {
       "name": "xcode-test",
       "displayName": "Tests",
       "configurePreset": "xcode",
@@ -461,6 +650,30 @@
       "displayName": "Benchmarks",
       "configurePreset": "vs",
       "inherits": "benchmark"
+    },
+    {
+      "name": "linux-ci",
+      "displayName": "Linux CI Tests",
+      "configurePreset": "linux-ci",
+      "inherits": "ci-integration"
+    },
+    {
+      "name": "linux-gles-ci-tes",
+      "displayName": "Linux GLES CI Tests",
+      "configurePreset": "linux-gles-ci",
+      "inherits": "ci-integration"
+    },
+    {
+      "name": "macos-ci",
+      "displayName": "MacOS CI Tests",
+      "configurePreset": "macos-ci",
+      "inherits": "ci"
+    },
+    {
+      "name": "mingw-ci",
+      "displayName": "Mingw CI Tests",
+      "configurePreset": "mingw-ci",
+      "inherits": "ci"
     }
   ]
 }

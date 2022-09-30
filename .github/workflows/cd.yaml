@@ -12,10 +12,10 @@ on:
 jobs:
   ubuntu_x86_64:
     name: Ubuntu x64
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARCH: x86_64
-      OUTPUT: endless-sky-x86_64-continuous.AppImage
+      OUTPUT: EndlessSky-x86_64-continuous.AppImage
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,8 +24,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Build Endless Sky
-        uses: ./.github/actions/ubuntu
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'linux-ci'
+          buildPreset: 'linux-ci'
       - name: Package Application
         run: ./utils/build_appimage.sh
       - name: Upload artifact
@@ -44,15 +52,25 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build Endless Sky
-        uses: ./.github/actions/windows
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - name: Get MinGW
+        uses: quyykk/get-winlibs-mingw@v1
         with:
-          version: '12.1.0'
           arch: x86
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+          appendedCacheKey: 12.1.0-x86
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw32-ci'
+          buildPreset: 'mingw32-ci'
       - name: Package Application
         run: |
-          cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw32/*"
+          cmake --install build/ci
+          7z a ${{ env.OUTPUT }} "./install/ci/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -69,14 +87,23 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build Endless Sky
-        uses: ./.github/actions/windows
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - name: Get MinGW
+        uses: quyykk/get-winlibs-mingw@v1
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
         with:
-          version: '12.1.0'
+          vcpkgJsonGlob: 'vcpkg.json'
+          appendedCacheKey: 12.1.0-x86
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw-ci'
+          buildPreset: 'mingw-ci'
       - name: Package Application
         run: |
-          cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw/*"
+          cmake --install build/ci
+          7z a ${{ env.OUTPUT }} "./install/ci/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -93,14 +120,22 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build Endless Sky
-        uses: ./.github/actions/macos
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - name: Get MinGW
+        uses: quyykk/get-winlibs-mingw@v1
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
         with:
-          mavericks: 'true'
+          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'macos-ci'
+          buildPreset: 'macos-ci-ci'
       - name: Package Application
         run: |
-          cmake --install build/macos
-          7z a ${{ env.OUTPUT }} "./install/macos10.9/*"
+          cmake --install build/ci
+          7z a ${{ env.OUTPUT }} "./install/ci/*"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -118,7 +153,7 @@ jobs:
       - macos_x86_64
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      OUTPUT_UBUNTU: endless-sky-x86_64-continuous.AppImage
+      OUTPUT_UBUNTU: EndlessSky-x86_64-continuous.AppImage
       OUTPUT_WIN32: EndlessSky-win32-continuous.zip
       OUTPUT_WIN64: EndlessSky-win64-continuous.zip
       OUTPUT_MACOS: EndlessSky-macOS-continuous.zip
