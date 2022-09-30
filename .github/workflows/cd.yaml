@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     branches:
-      - master
+      - 0.9.15-release
   pull_request:
     types:
       - synchronize
