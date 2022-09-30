@@ -1,6 +1,6 @@
 services:
   steam-x64:
-    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+    image: registry.gitlab.steamos.cloud/steamrt/scout/sdk:latest
     volumes:
       - '.:/endless-sky'
     working_dir: /endless-sky
@@ -8,16 +8,19 @@ services:
       - '/bin/bash'
       - '-c'
       - |
+        apt-get install -yq --no-install-recommends libmad0-dev
+        wget https://github.com/catchorg/Catch2/releases/download/v2.13.9/catch.hpp
+        mv catch.hpp tests/unit/include
         mkdir -p build/steam-x64
         cd build/steam-x64
-        cmake ../../ -GNinja -DES_STEAM=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release
-        ninja EndlessSky EndlessSkyTests
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DES_STEAM=ON -DES_VERSION_TYPE="release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie -DCMAKE_TOOLCHAIN_FILE=""
+        make -j $$(nproc) EndlessSky EndlessSkyTests
         ./endless-sky --version
         ./endless-sky-tests
 
 
   steam-x86:
-    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+    image: registry.gitlab.steamos.cloud/steamrt/scout/sdk/i386:latest
     working_dir: /endless-sky
     volumes:
       - '.:/endless-sky'
@@ -25,9 +28,12 @@ services:
       - '/bin/bash'
       - '-c'
       - |
+        apt-get install -yq --no-install-recommends libmad0-dev
+        wget https://github.com/catchorg/Catch2/releases/download/v2.13.9/catch.hpp
+        mv catch.hpp tests/unit/include
         mkdir -p build/steam-x86
         cd build/steam-x86
-        cmake ../../ -GNinja -DES_STEAM_X86=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32
-        ninja EndlessSky EndlessSkyTests
+        cmake ../../ -DCMAKE_CXX_COMPILER=g++-9 -DES_STEAM=ON -DES_VERSION_TYPE="release" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-no-pie -DCMAKE_TOOLCHAIN_FILE=""
+        make -j $$(nproc) EndlessSky EndlessSkyTests
         ./endless-sky --version
         ./endless-sky-tests

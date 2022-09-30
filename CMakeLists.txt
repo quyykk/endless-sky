@@ -30,7 +30,7 @@ set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-	CACHE STRING "Vcpkg toolchain file" FORCE)
+	CACHE STRING "Vcpkg toolchain file")
 
 if(ES_USE_SYSTEM_LIBRARIES)
 	if(UNIX AND NOT APPLE)
@@ -86,7 +86,9 @@ configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONL
 configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.6" @ONLY)
 
 # Find the needed library dependencies.
-find_package(Catch2 CONFIG REQUIRED)
+if(NOT ES_STEAM)
+	find_package(Catch2 CONFIG REQUIRED)
+endif()
 find_package(SDL2 CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
@@ -95,18 +97,26 @@ if(NOT APPLE)
 endif()
 
 # Only very new versions of OpenAL provide a config package, so try to find it manually.
-find_package(OpenAL CONFIG QUIET)
-if(NOT OpenAL_FOUND)
-	find_library(OPENAL openal REQUIRED)
-	add_library(OpenAL UNKNOWN IMPORTED)
-	add_library(OpenAL::OpenAL ALIAS OpenAL)
-	set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION ${OPENAL})
+if(ES_STEAM)
+	find_library(OPENAL openal)
+else()
+	find_package(OpenAL CONFIG QUIET)
+	if(NOT OpenAL_FOUND)
+		find_library(OPENAL openal REQUIRED)
+		add_library(OpenAL UNKNOWN IMPORTED)
+		add_library(OpenAL::OpenAL ALIAS OpenAL)
+		set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION ${OPENAL})
+	endif()
 endif()
 
 # libmad doesn't provide native cmake support.
-find_path(LIBMAD_INCLUDE_DIR mad.h)
-find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
-find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+if(NOT ES_STEAM)
+	find_path(LIBMAD_INCLUDE_DIR mad.h)
+	find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
+	find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
+else()
+	find_library(LIBMAD libmad.a)
+endif()
 
 # Create library target. The source files are populated inside source/CMakeLists.txt.
 add_library(EndlessSkyLib STATIC EXCLUDE_FROM_ALL)
@@ -166,16 +176,18 @@ add_executable(EndlessSkyTests EXCLUDE_FROM_ALL)
 add_subdirectory(tests/unit)
 
 # CTest integration
-include(CTest)
-include(Catch)
-catch_discover_tests(EndlessSkyTests
-	PROPERTIES LABELS unit)
-catch_discover_tests(EndlessSkyTests
-	TEST_SPEC [!benchmark]
-	PROPERTIES LABELS benchmark)
+if(NOT ES_STEAM)
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(EndlessSkyTests
+		PROPERTIES LABELS unit)
+	catch_discover_tests(EndlessSkyTests
+		TEST_SPEC [!benchmark]
+		PROPERTIES LABELS benchmark)
+endif()
 
 # Integration tests.
-if(UNIX AND NOT APPLE)
+if(NOT ES_STEAM AND UNIX AND NOT APPLE)
 	add_custom_target(IntegrationTests
 		COMMAND ${CMAKE_COMMAND} -DES=$<TARGET_FILE:EndlessSky>
 			-DBINARY_PATH="${CMAKE_CURRENT_BINARY_DIR}"
@@ -222,11 +234,18 @@ endif()
 
 # Link with the library dependencies.
 target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
-target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib Catch2::Catch2)
+target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
+if(NOT ES_STEAM)
+	target_link_libraries(EndlessSkyTests PRIVATE Catch2::Catch2)
+endif()
 
 target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
-target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL
-	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
+if(NOT ES_STEAM)
+	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL
+		$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
+else()
+	target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG ${OPENAL} ${LIBMAD})
+endif()
 
 # Link the needed OS-specific dependencies, if any.
 if(WIN32)
