@@ -84,6 +84,7 @@ endif()
 configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Version.h" @ONLY)
 configure_file("./credits.txt.in" "${CMAKE_CURRENT_SOURCE_DIR}/credits.txt" @ONLY)
 configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.6" @ONLY)
+configure_file("./resources/endless-sky.exe.manifest.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.exe.manifest" @ONLY)
 
 # Find the needed library dependencies.
 if(NOT ES_STEAM)
