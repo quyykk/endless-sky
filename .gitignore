@@ -11,6 +11,7 @@ credits.txt
 source/Version.h
 resources/endless-sky.6
 resources/endless-sky.icns
+resources/endless-sky.exe.manifest
 
 # dlls needed to run the binary
 *.dll
