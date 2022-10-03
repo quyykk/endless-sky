@@ -95,7 +95,7 @@ jobs:
       - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          prependedCacheKey: 12.1.0-x86
+          prependedCacheKey: 12.1.0-x64
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw-ci'
