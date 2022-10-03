@@ -602,7 +602,7 @@
       "inherits": "test"
     },
     {
-      "name": "linux-gles-ci-tes",
+      "name": "linux-gles-ci",
       "displayName": "Linux GLES CI Tests",
       "configurePreset": "linux-gles-ci",
       "inherits": "ci-integration"
