@@ -70,8 +70,8 @@ jobs:
         with:
           name: steam-win32-depot
           path: |
-            ./install/mingw/EndlessSky.exe
-            ./install/mingw/*.dll
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
@@ -109,8 +109,8 @@ jobs:
         with:
           name: steam-win64-depot
           path: |
-            ./install/mingw/EndlessSky.exe
-            ./install/mingw/*.dll
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
       - name: Upload credits.txt
         uses: actions/upload-artifact@v3
         with:
