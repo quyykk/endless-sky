@@ -270,31 +270,12 @@
     {
       "name": "ci",
       "hidden": true,
-      "targets": [
-        "EndlessSky",
-        "EndlessSkyTests"
-      ],
+      "configuration": "Release",
       "condition": {
         "type": "equals",
         "lhs": "$env{CI}",
         "rhs": "true"
       }
-    },
-    {
-      "name": "test",
-      "hidden": true,
-      "inherits": "release",
-      "targets": "EndlessSkyTests"
-    },
-    {
-      "name": "test-integration",
-      "hidden": true,
-      "inherits": "release",
-      "targets": [
-        "EndlessSky",
-        "EndlessSkyTests",
-        "IntegrationTests"
-      ]
     },
     {
       "name": "linux-debug",
@@ -309,12 +290,6 @@
       "inherits": "release"
     },
     {
-      "name": "linux-test",
-      "displayName": "Tests",
-      "configurePreset": "linux",
-      "inherits": "test-integration"
-    },
-    {
       "name": "linux-gles-debug",
       "displayName": "Debug",
       "configurePreset": "linux-gles",
@@ -325,12 +300,6 @@
       "displayName": "Release",
       "configurePreset": "linux-gles",
       "inherits": "release"
-    },
-    {
-      "name": "linux-gles-test",
-      "displayName": "Tests",
-      "configurePreset": "linux-gles",
-      "inherits": "test-integration"
     },
     {
       "name": "macos-debug",
@@ -345,12 +314,6 @@
       "inherits": "release"
     },
     {
-      "name": "macos-test",
-      "displayName": "Tests",
-      "configurePreset": "macos",
-      "inherits": "test"
-    },
-    {
       "name": "xcode-debug",
       "displayName": "Debug",
       "configurePreset": "xcode",
@@ -361,12 +324,6 @@
       "displayName": "Release",
       "configurePreset": "xcode",
       "inherits": "release"
-    },
-    {
-      "name": "xcode-test",
-      "displayName": "Tests",
-      "configurePreset": "xcode",
-      "inherits": "test"
     },
     {
       "name": "mingw-debug",
@@ -381,12 +338,6 @@
       "inherits": "release"
     },
     {
-      "name": "mingw-test",
-      "displayName": "Tests",
-      "configurePreset": "mingw",
-      "inherits": "test"
-    },
-    {
       "name": "mingw32-debug",
       "displayName": "Debug",
       "configurePreset": "mingw32",
@@ -397,12 +348,6 @@
       "displayName": "Release",
       "configurePreset": "mingw32",
       "inherits": "release"
-    },
-    {
-      "name": "mingw32-test",
-      "displayName": "Tests",
-      "configurePreset": "mingw32",
-      "inherits": "test"
     },
     {
       "name": "vs-debug",
@@ -417,43 +362,22 @@
       "inherits": "release"
     },
     {
-      "name": "vs-test",
-      "displayName": "Tests",
-      "configurePreset": "vs",
-      "inherits": "test"
-    },
-    {
       "name": "linux-ci",
       "displayName": "Linux CI build",
       "configurePreset": "linux-ci",
-      "inherits": "ci",
-      "targets": [
-        "EndlessSky",
-        "EndlessSkyTests",
-        "IntegrationTests"
-      ]
+      "inherits": "ci"
     },
     {
       "name": "linux-ci-release",
       "displayName": "Linux release build",
       "configurePreset": "linux-release",
-      "inherits": "ci",
-      "targets": [
-        "EndlessSky",
-        "EndlessSkyTests",
-        "IntegrationTests"
-      ]
+      "inherits": "ci"
     },
     {
       "name": "linux-gles-ci",
       "displayName": "Linux GLES CI build",
       "configurePreset": "linux-gles-ci",
-      "inherits": "ci",
-      "targets": [
-        "EndlessSky",
-        "EndlessSkyTests",
-        "IntegrationTests"
-      ]
+      "inherits": "ci"
     },
     {
       "name": "macos-ci",
@@ -490,7 +414,6 @@
     {
       "name": "test",
       "hidden": true,
-      "configuration": "Release",
       "output": {
         "shortProgress": true,
         "outputOnFailure": true
@@ -504,7 +427,6 @@
     {
       "name": "benchmark",
       "hidden": true,
-      "configuration": "Release",
       "output": {
         "verbosity": "verbose",
         "outputOnFailure": true
@@ -518,7 +440,6 @@
     {
       "name": "integration",
       "hidden": true,
-      "configuration": "Release",
       "output": {
         "shortProgress": true,
         "outputOnFailure": true
@@ -535,7 +456,6 @@
     {
       "name": "ci",
       "hidden": true,
-      "configuration": "Release",
       "inherits": [
         "test",
         "benchmark"
@@ -549,7 +469,6 @@
     {
       "name": "ci-integration",
       "hidden": true,
-      "configuration": "Release",
       "inherits": [
         "ci",
         "integration"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.13..3.24)
 
 include(CMakeDependentOption)
 cmake_dependent_option(ES_GLES "Build the game with OpenGL ES" OFF UNIX OFF)
@@ -52,6 +52,11 @@ if(ES_STEAM OR ES_STEAM_X86)
 		set(VCPKG_TARGET_TRIPLET "x86-linux")
 	endif()
 endif()
+
+# Various helpful options for IDEs.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EndlessSky)
+set(CMAKE_VS_JUST_MY_CODE_DEBUGGING ON)
 
 project("Endless Sky" VERSION 0.9.15
 	DESCRIPTION "Space exploration, trading, and combat game."
@@ -108,9 +113,13 @@ find_path(LIBMAD_INCLUDE_DIR mad.h)
 find_library(LIBMAD_LIB_DEBUG NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib")
 find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib")
 
-# Create library target. The source files are populated inside source/CMakeLists.txt.
-add_library(EndlessSkyLib STATIC EXCLUDE_FROM_ALL)
+# Add the library target.
 add_subdirectory(source)
+# Setup for the testing frameworks.
+include(CTest)
+if(BUILD_TESTING)
+	add_subdirectory(tests)
+endif()
 
 # Create game target.
 if(APPLE)
@@ -159,42 +168,36 @@ elseif(WIN32)
 	target_sources(EndlessSky PRIVATE source/WinApp.rc)
 else()
 	add_executable(EndlessSky source/main.cpp)
+	set_target_properties(EndlessSky PROPERTIES OUTPUT_NAME "endless-sky")
 endif()
 
-# The unit tests target.
-add_executable(EndlessSkyTests EXCLUDE_FROM_ALL)
-add_subdirectory(tests/unit)
+# Link with the library dependencies.
+target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
 
-# CTest integration
-include(CTest)
-include(Catch)
-catch_discover_tests(EndlessSkyTests
-	PROPERTIES LABELS unit)
-catch_discover_tests(EndlessSkyTests
-	TEST_SPEC [!benchmark]
-	PROPERTIES LABELS benchmark)
+# Link with OpenGL or OpenGL ES.
+if(ES_GLES)
+	find_package(OpenGL REQUIRED OpenGL EGL)
+	target_link_libraries(EndlessSky PRIVATE OpenGL::OpenGL OpenGL::EGL)
+	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
+else()
+	# The Steam runtime can't rely on GLVND being available, so link against the legacy interface.
+	if(ES_STEAM)
+		set(OpenGL_GL_PREFERENCE "LEGACY")
+	endif()
 
-# Integration tests.
-if(UNIX AND NOT APPLE)
-	add_custom_target(IntegrationTests
-		COMMAND ${CMAKE_COMMAND} -DES=$<TARGET_FILE:EndlessSky>
-			-DBINARY_PATH="${CMAKE_CURRENT_BINARY_DIR}"
-			-P ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
-		DEPENDS ${INTEGRATION_TESTS} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/IntegrationTests.cmake
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	set_target_properties(IntegrationTests PROPERTIES EXCLUDE_FROM_ALL ON)
-	add_dependencies(IntegrationTests EndlessSky)
-	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake")
+	find_package(OpenGL REQUIRED)
+	target_link_libraries(EndlessSky PRIVATE OpenGL::GL)
 
-	# If the target is not run, simply don't provide any integration tests instead of erroring out.
-	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake" "")
+	if(APPLE)
+		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
+		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
+	else()
+		# GLEW is only needed on Linux and Windows.
+		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
+	endif()
 endif()
 
-# The 'mingw32' lib needs to appear first.
 if(MINGW)
-	target_link_libraries(EndlessSky PRIVATE mingw32)
-	target_link_libraries(EndlessSkyTests PRIVATE mingw32)
-
 	# On Windows copy the MinGW runtime DLLs to the output folder as well.
 	# This is to avoid the situation where a user has other MinGW runtime DLLs
 	# in their PATH that are incompatible with the MinGW used to compile ES.
@@ -220,74 +223,6 @@ if(MINGW)
 	endif()
 endif()
 
-# Link with the library dependencies.
-target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
-target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib Catch2::Catch2)
-
-target_include_directories(EndlessSkyLib PUBLIC ${LIBMAD_INCLUDE_DIR})
-target_link_libraries(EndlessSky PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL
-	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
-
-# Link the needed OS-specific dependencies, if any.
-if(WIN32)
-	target_link_libraries(EndlessSkyLib PUBLIC rpcrt4 Winmm)
-else(UNIX AND NOT APPLE)
-	target_link_libraries(EndlessSkyLib PUBLIC pthread)
-endif()
-
-# Link with the UUID library, which is different for each OS.
-if(UNIX)
-	if(APPLE)
-		find_library(UUID_LIB NAMES System PATHS /lib /usr/lib /usr/local/lib)
-		find_path(UUID_INCLUDE uuid/uuid.h /usr/local/include /usr/include)
-		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
-		target_include_directories(EndlessSkyLib PUBLIC ${UUID_INCLUDE})
-	elseif(ES_USE_SYSTEM_LIBRARIES)
-		find_library(UUID_LIB uuid)
-		target_link_libraries(EndlessSkyLib PUBLIC ${UUID_LIB})
-	else()
-		find_package(unofficial-libuuid CONFIG REQUIRED)
-		target_link_libraries(EndlessSkyLib PUBLIC unofficial::UUID::uuid)
-	endif()
-endif()
-
-# Use OpenGL or OpenGL ES.
-if(ES_GLES)
-	find_package(OpenGL REQUIRED OpenGL EGL)
-	target_link_libraries(EndlessSky PRIVATE OpenGL::OpenGL OpenGL::EGL)
-	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
-else()
-	# The Steam runtime can't rely on GLVND being available, so link against the legacy interface.
-	if(ES_STEAM)
-		set(OpenGL_GL_PREFERENCE "LEGACY")
-	endif()
-
-	find_package(OpenGL REQUIRED)
-	target_link_libraries(EndlessSky PRIVATE OpenGL::GL)
-
-	if(APPLE)
-		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
-		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
-	else()
-		# GLEW is only needed on Linux and Windows.
-		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
-	endif()
-endif()
-
-# Set the appropriate compiler flags.
-if(MSVC)
-	target_compile_options(EndlessSkyLib PUBLIC "/W3" "/permissive-" "/Gm-" "/sdl" "/GR-" "/MP" "/analyze-"
-		"-Wno-nonportable-include-path" "$<$<CONFIG:Release>:/Gy;/WX;/Oi>")
-	target_compile_definitions(EndlessSkyLib PUBLIC "_UNICODE" "UNICODE" "$<IF:$<CONFIG:Debug>,_DEBUG,NDEBUG>")
-else()
-	target_compile_options(EndlessSkyLib PUBLIC "-Wall" "-fno-rtti" "$<$<CONFIG:Release>:-Werror>")
-endif()
-
-# Various helpful options for IDEs.
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EndlessSky)
-set_property(TARGET EndlessSkyLib EndlessSky EndlessSkyTests PROPERTY VS_JUST_MY_CODE_DEBUGGING ON)
-
 # Installation configurations.
 if(APPLE)
 	install(TARGETS EndlessSky CONFIGURATIONS Release BUNDLE DESTINATION .)
@@ -306,10 +241,6 @@ elseif(WIN32)
 	install(FILES copyright DESTINATION .)
 	install(FILES changelog DESTINATION .)
 elseif(UNIX)
-	# Use lowercase target name on Linux.
-	set_target_properties(EndlessSky PROPERTIES OUTPUT_NAME "endless-sky")
-	set_target_properties(EndlessSkyTests PROPERTIES OUTPUT_NAME "endless-sky-tests")
-
 	# Install the binary.
 	install(TARGETS EndlessSky CONFIGURATIONS Release RUNTIME DESTINATION games)
 

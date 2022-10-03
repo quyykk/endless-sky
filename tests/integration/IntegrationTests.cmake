@@ -1,4 +1,4 @@
-set(ES_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/config")
+set(ES_CONFIG "${CMAKE_CURRENT_SOURCE_DIR}/integration/config")
 
 # Get all the tests to run.
 execute_process(
