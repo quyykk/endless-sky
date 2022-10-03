@@ -239,6 +239,19 @@
       }
     },
     {
+      "name": "mingw32-ci",
+      "displayName": "MinGW x86 CI",
+      "description": "Builds with MinGW x86 for CI purposes",
+      "inherits": "ci",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_AR": "i686-w64-mingw32-gcc-ar",
+        "CMAKE_RANLIB": "i686-mingw32-gcc-ranlib",
+        "VCPKG_TARGET_TRIPLET": "x86-mingw-dynamic"
+      }
+    },
+    {
       "name": "mingw32-release",
       "displayName": "MinGW x86 Release",
       "description": "Builds with x86 MinGW like an official release",
@@ -401,6 +414,12 @@
       "name": "mingw-ci-release",
       "displayName": "MinGW release build",
       "configurePreset": "mingw-release",
+      "inherits": "ci"
+    },
+    {
+      "name": "mingw32-ci",
+      "displayName": "MinGW x86 CI build",
+      "configurePreset": "mingw32-ci",
       "inherits": "ci"
     },
     {
