@@ -63,7 +63,7 @@ jobs:
           buildPreset: 'mingw32-ci-release'
       - name: Package Application
         run: |
-          cmake --install build/mingw
+          cmake --install build/release
           7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
@@ -102,7 +102,7 @@ jobs:
           buildPreset: 'mingw-ci-release'
       - name: Package Application
         run: |
-          cmake --install build/mingw
+          cmake --install build/release
           7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
