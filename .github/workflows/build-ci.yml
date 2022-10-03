@@ -1,12 +1,5 @@
 name: Build CI
 
-# TODO:
-# - Construct even more intelligent workflows
-#    e.g.
-#      data/* -> use "latest" build for triggering branch, only run parse and/or acceptance tests
-#      source/* -> build new binary, run all tests, cache binary
-#      PR opened -> upload artifact ZIPs to PR as comment, and edit/replace as new commits come in
-
 on:
   workflow_call:
 
@@ -20,8 +13,6 @@ jobs:
         os: [20.04, 22.04]
         opengl: [desktop, gles]
     env:
-      ARCH: x86_64
-      OUTPUT: endless-sky-x86_64-continuous.AppImage
       CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
     - uses: actions/checkout@v3
@@ -39,7 +30,7 @@ jobs:
     - name: Install development dependencies
       uses: ./.github/dependencies
     - name: Install runtime dependencies
-      run: sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils libglvnd-dev
+      run: sudo apt install -y --no-install-recommends libosmesa6 mesa-utils libglvnd-dev
     - uses: lukka/get-cmake@latest
     - uses: lukka/run-vcpkg@v10
       with:

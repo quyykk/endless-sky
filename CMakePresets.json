@@ -577,6 +577,12 @@
       "inherits": "ci-integration"
     },
     {
+      "name": "linux-cd",
+      "displayName": "Linux CD Tests",
+      "configurePreset": "linux-ci",
+      "inherits": "test"
+    },
+    {
       "name": "linux-gles-ci-tes",
       "displayName": "Linux GLES CI Tests",
       "configurePreset": "linux-gles-ci",
@@ -589,10 +595,28 @@
       "inherits": "ci"
     },
     {
+      "name": "macos-cd",
+      "displayName": "MacOS CD Tests",
+      "configurePreset": "macos-ci",
+      "inherits": "test"
+    },
+    {
       "name": "mingw-ci",
       "displayName": "Mingw CI Tests",
       "configurePreset": "mingw-ci",
       "inherits": "ci"
+    },
+    {
+      "name": "mingw32-cd",
+      "displayName": "Mingw32 CD Tests",
+      "configurePreset": "mingw32-ci",
+      "inherits": "test"
+    },
+    {
+      "name": "mingw-cd",
+      "displayName": "Mingw CD Tests",
+      "configurePreset": "mingw-ci",
+      "inherits": "test"
     }
   ]
 }

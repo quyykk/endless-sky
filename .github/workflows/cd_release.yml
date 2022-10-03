@@ -27,23 +27,10 @@ jobs:
           vcpkgJsonGlob: 'vcpkg.json'
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'linux'
-          configurePresetCmdString: >
-            [
-            '--preset', '$[env.CONFIGURE_PRESET_NAME]',
-            '-DES_VERSION_TYPE=release',
-            '-DES_USE_SYSTEM_LIBRARIES=OFF'
-            ]
-          buildPreset: 'linux-release'
-          buildPresetCmdString: >
-            [
-            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
-            '-t', 'EndlessSky',
-            '-t', 'EndlessSkyTests'
-            ]
-          testPreset: 'linux-test'
+          configurePreset: 'linux-release'
+          buildPreset: 'linux-ci-release'
       - name: Package Application
-        run: ./utils/build_appimage.sh
+        run: ./utils/build_appimage.sh build/release
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
@@ -71,31 +58,19 @@ jobs:
           appendedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'mingw32'
-          configurePresetCmdString: >
-            [
-            '--preset', 'mingw32',
-            '-DES_VERSION_TYPE=release'
-            ]
-          buildPreset: 'mingw32-release'
-          buildPresetCmdString: >
-            [
-            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
-            '-t', 'EndlessSky',
-            '-t', 'EndlessSkyTests'
-            ]
-          testPreset: 'mingw32-test'
+          configurePreset: 'mingw32-release'
+          buildPreset: 'mingw32-ci-release'
       - name: Package Application
         run: |
-          cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw32/*"
+          cmake --install build/release
+          7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
           name: steam-win32-depot
           path: |
-            ./install/mingw/EndlessSky.exe
-            ./install/mingw/*.dll
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
@@ -115,7 +90,6 @@ jobs:
         uses: quyykk/get-winlibs-mingw@v1
         with:
           version: ${{ env.GCC }}
-          arch: x64
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
@@ -123,31 +97,19 @@ jobs:
           appendedCacheKey: ${{ env.GCC }}-x64
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'mingw'
-          configurePresetCmdString: >
-            [
-            '--preset', 'mingw',
-            '-DES_VERSION_TYPE=release'
-            ]
-          buildPreset: 'mingw-release'
-          buildPresetCmdString: >
-            [
-            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
-            '-t', 'EndlessSky',
-            '-t', 'EndlessSkyTests'
-            ]
-          testPreset: 'mingw-test'
+          configurePreset: 'mingw-release'
+          buildPreset: 'mingw-ci-release'
       - name: Package Application
         run: |
-          cmake --install build/mingw
-          7z a ${{ env.OUTPUT }} "./install/mingw/*"
+          cmake --install build/release
+          7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
           name: steam-win64-depot
           path: |
-            ./install/mingw/EndlessSky.exe
-            ./install/mingw/*.dll
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
       - name: Upload credits.txt
         uses: actions/upload-artifact@v3
         with:
@@ -175,37 +137,24 @@ jobs:
           appendedCacheKey: 10.9
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'macos10.9'
-          configurePresetCmdString: >
-            [
-            '--preset', 'macos10.9',
-            '-DES_VERSION_TYPE=release',
-            '-DES_USE_SYSTEM_LIBRARIES=OFF'
-            ]
-          buildPreset: 'macos10.9-release'
-          buildPresetCmdString: >
-            [
-            '--build', '--preset', '$[env.BUILD_PRESET_NAME]',
-            '-t', 'EndlessSky',
-            '-t', 'EndlessSkyTests'
-            ]
-          testPreset: 'macos10.9-test'
+          configurePreset: 'macos-release'
+          buildPreset: 'macos-ci-release'
       - name: Package Application
         run: |
-          cd build/macos10.9/Release
+          cd build/release
           mkdir ${{ env.OUTPUT }}
           cp -r EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
       - name: Prepare Steam Depot
         run: |
-          cd build/macos10.9/Release
+          cd build/release
           mv EndlessSky.app/Contents/Resources/endless-sky.icns .
           rm -rf EndlessSky.app/Contents/Resources
           mkdir EndlessSky.app/Contents/Resources
           mv endless-sky.icns EndlessSky.app/Contents/Resources
-          mkdir ../../../depot
-          mv EndlessSky.app/ ../../../depot
+          mkdir ../../depot
+          mv EndlessSky.app/ ../../depot
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:
