@@ -10,7 +10,7 @@ cd "${HERE}"/.. || exit
 
 ESTOP=$(pwd)
 LIBLIST="${ESTOP}/source/CMakeLists.txt"
-TESTLIST="${ESTOP}/tests/unit/CMakeLists.txt"
+TESTLIST="${ESTOP}/tests/CMakeLists.txt"
 
 RESULT=0
 
