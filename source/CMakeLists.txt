@@ -215,6 +215,8 @@ target_sources(EndlessSkyLib PRIVATE
 	Preferences.h
 	PreferencesPanel.cpp
 	PreferencesPanel.h
+	PrintData.cpp
+	PrintData.h
 	Projectile.cpp
 	Projectile.h
 	Radar.cpp
