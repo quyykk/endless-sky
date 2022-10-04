@@ -94,7 +94,6 @@ jobs:
       run: |
         COPY '.\build\ci\EndlessSky.exe' .
         COPY '.\build\ci\*.dll' .
-        COPY '.\build\ci\credits.txt' .
     - name: Parse Datafiles
       run: .\utils\test_parse.ps1 EndlessSky.exe
 
