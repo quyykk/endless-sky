@@ -20,44 +20,30 @@ jobs:
       matrix:
         arch: [x64, x86]
     env:
-      ARTIFACT: endless-sky
-    outputs:
-      RT_VERSION: ${{ steps.steamrt-version.outputs.RT_VERSION }}
+      snapshot: latest-container-runtime-depot
+      runtime: steam-container-runtime.tar.gz
+      platform: com.valvesoftware.SteamRuntime.Platform-amd64,i386-sniper-runtime.tar.gz
+    container:
+      images: ubuntu:22.04
+      volumes:
+        - '.:/endless-sky'
     steps:
     - uses: actions/checkout@v3
       with:
         submodules: true
+
+    # Build the binary
     - name: Save Steam runtime version
       id: steamrt-version
       run: |
         STEAM_VERSION=$(curl -sSf https://repo.steampowered.com/steamrt-images-sniper/snapshots/latest-container-runtime-depot/VERSION.txt --output -)
-        echo "::set-output name=RT_VERSION::$STEAM_VERSION"
+        echo "RT_VERSION=$STEAM_VERSION" >> $GITHUB_ENV
     - name: Build Endless Sky
       run: docker-compose run steam-${{ matrix.arch }}
-    - name: Prepare binary
-      run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
-    - name: Upload GH artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: binary-${{ runner.os }}-${{ matrix.arch }}
-        path: |
-          ${{ env.ARTIFACT }}
-          credits.txt
 
-
-  test_linux:
-    needs: build_linux
-    if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.integration_tests == 'true' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
-    env:
-      snapshot: latest-container-runtime-depot
-      runtime: steam-container-runtime.tar.gz
-      platform: com.valvesoftware.SteamRuntime.Platform-amd64,i386-sniper-runtime.tar.gz
-    steps:
-    - uses: actions/checkout@v3
+    # Test the binary
+    - name: Install xvfb runtime dependencies
+      run: sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils
     - name: Restore cached Steam Runtime environment
       id: cache-runtime
       uses: actions/cache@v3
@@ -65,7 +51,7 @@ jobs:
         path: |
           ${{ env.runtime }}
           ${{ env.platform }}
-        key: steamrt-${{ needs.build_linux.outputs.RT_VERSION }}
+        key: steamrt-${{ env.RT_VERSION }}
     - name: Download Steam Runtime environment
       if: steps.cache-runtime.outputs.cache-hit != 'true'
       run: |
@@ -75,22 +61,13 @@ jobs:
       run: |
         tar -xf ${{ env.runtime }}
         tar -xf ${{ env.platform }} -C steam-container-runtime/depot/sniper_platform_*/
-    - name: Download Endless Sky binary
-      uses: actions/download-artifact@v3
-      with:
-        name: binary-${{ runner.os }}-x64
-        path: .
-    - name: Install xvfb runtime dependencies
-      run: |
-        sudo apt-get update -q
-        sudo apt-get install -y --no-install-recommends libosmesa6 mesa-utils
     - name: Test executable
-      run: |
-        chmod +x endless-sky
-        ./steam-container-runtime/depot/run-in-sniper ./endless-sky -- -v
+      run: ./steam-container-runtime/depot/run-in-sniper ./build/steam-${{ matrix.arch }}/endless-sky -- -v
     - name: Execute data parsing test
-      run: ./steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh -- ./endless-sky
+      run: ./steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh -- ./build/steam-${{ matrix.arch }}/endless-sky
     - name: Execute integration tests
       env:
           PRINT_GLXINFO: true
-      run: ./steam-container-runtime/depot/run-in-sniper ctest -- --preset linux-integration
+      run: |
+        cd build/steam-${{ matrix.arch }}
+        ES_INTEGRATION_PREFIX=./steam-container-runtime/depot/run-in-sniper ctest --label-regex integration

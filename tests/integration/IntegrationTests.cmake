@@ -22,7 +22,7 @@ foreach(test ${INTEGRATION_TESTS_LIST})
 
 	set(ADD_TEST
 "add_test([==[${test}]==]
-	xvfb-run --auto-servernum \"--server-args=+extension GLX +render -noreset\" \"${ES}\" --config \"${TEST_CONFIG}\" --test \"${test}\")")
+	$ENV{ES_INTEGRATION_PREFIX} xvfb-run --auto-servernum \"--server-args=+extension GLX +render -noreset\" \"${ES}\" --config \"${TEST_CONFIG}\" --test \"${test}\")")
 	set(SET_TEST_PROPS
 "set_tests_properties([==[${test}]==] PROPERTIES
 	WORKING_DIRECTORY \"${CMAKE_CURRENT_SOURCE_DIR}\"

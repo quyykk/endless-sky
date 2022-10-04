@@ -11,9 +11,7 @@ services:
         mkdir -p build/steam-x64
         cd build/steam-x64
         cmake ../../ -GNinja -DES_STEAM=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release
-        ninja EndlessSky EndlessSkyTests
-        ./endless-sky --version
-        ./tests/endless-sky-tests
+        ninja
 
 
   steam-x86:
@@ -28,6 +26,34 @@ services:
         mkdir -p build/steam-x86
         cd build/steam-x86
         cmake ../../ -GNinja -DES_STEAM_X86=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32
-        ninja EndlessSky EndlessSkyTests
+        ninja
+        ./endless-sky --version
+        ./tests/endless-sky-tests
+
+
+  test-steam-x64:
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+    volumes:
+      - '.:/endless-sky'
+    working_dir: /endless-sky
+    command:
+      - '/bin/bash'
+      - '-c'
+      - |
+        cd build/steam-x64
+        ./endless-sky --version
+        ./tests/endless-sky-tests
+
+
+  test-steam-x86:
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+    volumes:
+      - '.:/endless-sky'
+    working_dir: /endless-sky
+    command:
+      - '/bin/bash'
+      - '-c'
+      - |
+        cd build/steam-x86
         ./endless-sky --version
         ./tests/endless-sky-tests
