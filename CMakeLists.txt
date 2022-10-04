@@ -173,7 +173,7 @@ else()
 endif()
 
 # Link with the library dependencies.
-target_link_libraries(EndlessSky PRIVATE EndlessSkyLib SDL2::SDL2main)
+target_link_libraries(EndlessSky PRIVATE EndlessSkyLib $<$<TARGET_EXISTS:SDL2::SDL2main>:SDL2::SDL2main>)
 
 # Link with OpenGL or OpenGL ES.
 if(ES_GLES)
