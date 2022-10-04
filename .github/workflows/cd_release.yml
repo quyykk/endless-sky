@@ -7,7 +7,7 @@ on:
 
 jobs:
   appimage_amd64:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20-04
     env:
       ARCH: x86_64
       OUTPUT: endless-sky-amd64-${{ github.event.release.tag_name }}.AppImage
@@ -52,10 +52,10 @@ jobs:
           version: ${{ env.GCC }}
           arch: x86
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
+      - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: ${{ env.GCC }}-x86
+          prependedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw32-release'
@@ -91,10 +91,10 @@ jobs:
         with:
           version: ${{ env.GCC }}
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
+      - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: ${{ env.GCC }}-x64
+          prependedCacheKey: ${{ env.GCC }}-x64
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw-release'

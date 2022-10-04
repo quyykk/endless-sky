@@ -13,7 +13,7 @@ services:
         cmake ../../ -GNinja -DES_STEAM=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release
         ninja EndlessSky EndlessSkyTests
         ./endless-sky --version
-        ./endless-sky-tests
+        ./tests/endless-sky-tests
 
 
   steam-x86:
@@ -30,4 +30,4 @@ services:
         cmake ../../ -GNinja -DES_STEAM_X86=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32
         ninja EndlessSky EndlessSkyTests
         ./endless-sky --version
-        ./endless-sky-tests
+        ./tests/endless-sky-tests

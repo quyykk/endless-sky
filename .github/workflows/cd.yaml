@@ -60,10 +60,10 @@ jobs:
         with:
           arch: x86
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
+      - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: 12.1.0-x86
+          prependedCacheKey: 12.1.0-x86
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw32-ci'
@@ -94,10 +94,10 @@ jobs:
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
+      - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: 12.1.0-x86
+          prependedCacheKey: 12.1.0-x64
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw-ci'

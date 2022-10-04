@@ -68,10 +68,10 @@ jobs:
       with:
         version: ${{ env.MINGW }}
     - uses: lukka/get-cmake@latest
-    - uses: lukka/run-vcpkg@v10
+    - uses: lukka/run-vcpkg@dev/prepend_cache_key
       with:
         vcpkgJsonGlob: 'vcpkg.json'
-        appendedCacheKey: ${{ env.MINGW }}-x64
+        prependedCacheKey: ${{ env.MINGW }}-x64
     - uses: lukka/run-cmake@v10
       with:
         configurePreset: 'mingw-ci'
