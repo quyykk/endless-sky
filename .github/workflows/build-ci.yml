@@ -83,8 +83,8 @@ jobs:
         name: binary-windows-latest
         path: |
           credits.txt
-          ./build/mingw/Release/EndlessSky.exe
-          ./build/mingw/Release/*.dll
+          ./build/ci/EndlessSky.exe
+          ./build/ci/*.dll
 
 
   build_macos:
