@@ -24,7 +24,7 @@ jobs:
       runtime: steam-container-runtime.tar.gz
       platform: com.valvesoftware.SteamRuntime.Platform-amd64,i386-sniper-runtime.tar.gz
     container:
-      images: ubuntu:22.04
+      image: ubuntu:22.04
       volumes:
         - '.:/endless-sky'
     steps:

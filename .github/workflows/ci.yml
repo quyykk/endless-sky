@@ -81,7 +81,7 @@ jobs:
       if: ${{ needs.changed.outputs.game_code == 'false' && needs.changed.outputs.cmake == 'false' }}
       run: |
         Expand-Archive ${{ env.CONTINUOUS }} -DestinationPath continuous -Force
-        COPY .\continuous\EndlessSky.exe .
+        COPY '.\continuous\EndlessSky.exe' .
         COPY '.\continuous\*.dll' .
         COPY '.\continuous\credits.txt' .
     - name: Download game binary from CI
@@ -92,9 +92,9 @@ jobs:
     - name: Move game binary from CI
       if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' }}
       run: |
-        COPY .\build\ci\EndlessSky.exe .
+        COPY '.\build\ci\EndlessSky.exe' .
         COPY '.\build\ci\*.dll' .
-        COPY '.\continuous\credits.txt' .
+        COPY '.\build\ci\credits.txt' .
     - name: Parse Datafiles
       run: .\utils\test_parse.ps1 EndlessSky.exe
 
