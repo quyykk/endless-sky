@@ -62,4 +62,4 @@ jobs:
     - name: Execute data parsing test
       run: ./steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh -- ./build/steam-${{ matrix.arch }}/endless-sky
     - name: Execute tests
-      run: docker-compose run test-steam-${{ env.arch }}
+      run: docker-compose run test-steam-${{ matrix.arch }}
