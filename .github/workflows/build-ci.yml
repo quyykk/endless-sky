@@ -100,11 +100,11 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: macos-${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        key: macos-latest--ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
-          macos-${{ matrix.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
-          macos-${{ matrix.os }}-ccache-${{ github.repository }}-
-          macos-${{ matrix.os }}-ccache
+          macos-latest-ccache-${{ github.repository }}-${{ github.ref }}-
+          macos-latest-ccache-${{ github.repository }}-
+          macos-latest-ccache
     - name: Install development dependencies
       uses: ./.github/dependencies
     - uses: lukka/get-cmake@latest

@@ -16,10 +16,20 @@ jobs:
     env:
       ARCH: x86_64
       OUTPUT: EndlessSky-x86_64-continuous.AppImage
+      CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Cache ccache results
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ubuntu-20.04-desktop-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ubuntu-20.04-desktop-ccache-${{ github.repository }}-${{ github.ref }}-
+            ubuntu-20.04-desktop-ccache-${{ github.repository }}-
+            ubuntu-20.04-desktop-ccache-
       - name: Get Python
         uses: actions/setup-python@v4
         with:
@@ -49,10 +59,21 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win32-continuous.zip
+      GCC: 12.1.0
+      CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Cache ccache results
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ env.GCC }}-x86-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ env.GCC }}-x86-ccache-${{ github.repository }}-${{ github.ref }}-
+            ${{ env.GCC }}-x86-ccache-${{ github.repository }}-
+            ${{ env.GCC }}-x86-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
       - name: Get MinGW
@@ -63,7 +84,7 @@ jobs:
       - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          prependedCacheKey: 12.1.0-x86
+          prependedCacheKey: ${{ env.GCC }}-x86
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw32-ci'
@@ -85,10 +106,21 @@ jobs:
     runs-on: windows-latest
     env:
       OUTPUT: EndlessSky-win64-continuous.zip
+      GCC: 12.1.0
+      CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Cache ccache results
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ env.GCC }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ env.GCC }}-ccache-${{ github.repository }}-${{ github.ref }}-
+            ${{ env.GCC }}-ccache-${{ github.repository }}-
+            ${{ env.GCC }}-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
       - name: Get MinGW
@@ -97,7 +129,7 @@ jobs:
       - uses: lukka/run-vcpkg@dev/prepend_cache_key
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          prependedCacheKey: 12.1.0-x64
+          prependedCacheKey: ${{ env.GCC }}-x64
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw-ci'
@@ -119,10 +151,20 @@ jobs:
     runs-on: macos-latest
     env:
       OUTPUT: EndlessSky-macOS-continuous.zip
+      CCACHE_DIR: ${{ github.workspace }}/ccache
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Cache ccache results
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: macos-latest-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            macos-latest-ccache-${{ github.repository }}-${{ github.ref }}-
+            macos-latest-ccache-${{ github.repository }}-
+            macos-latest-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
