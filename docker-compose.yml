@@ -27,12 +27,10 @@ services:
         cd build/steam-x86
         cmake ../../ -GNinja -DES_STEAM_X86=ON -DES_VERSION_TYPE=release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32
         ninja
-        ./endless-sky --version
-        ./tests/endless-sky-tests
 
 
   test-steam-x64:
-    image: registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
     volumes:
       - '.:/endless-sky'
     working_dir: /endless-sky
@@ -42,11 +40,11 @@ services:
       - |
         cd build/steam-x64
         ./endless-sky --version
-        ./tests/endless-sky-tests
+        ctest --label-exclude benchmark
 
 
   test-steam-x86:
-    image: registry.gitlab.steamos.cloud/steamrt/sniper/platform:latest
+    image: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
     volumes:
       - '.:/endless-sky'
     working_dir: /endless-sky
@@ -56,4 +54,4 @@ services:
       - |
         cd build/steam-x86
         ./endless-sky --version
-        ./tests/endless-sky-tests
+        ctest --label-exclude benchmark

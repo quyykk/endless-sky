@@ -23,10 +23,6 @@ jobs:
       snapshot: latest-container-runtime-depot
       runtime: steam-container-runtime.tar.gz
       platform: com.valvesoftware.SteamRuntime.Platform-amd64,i386-sniper-runtime.tar.gz
-    container:
-      image: ubuntu:22.04
-      volumes:
-        - '.:/endless-sky'
     steps:
     - uses: actions/checkout@v3
       with:
@@ -61,13 +57,9 @@ jobs:
       run: |
         tar -xf ${{ env.runtime }}
         tar -xf ${{ env.platform }} -C steam-container-runtime/depot/sniper_platform_*/
-    - name: Test executable
+    - name: Verify executable
       run: ./steam-container-runtime/depot/run-in-sniper ./build/steam-${{ matrix.arch }}/endless-sky -- -v
     - name: Execute data parsing test
       run: ./steam-container-runtime/depot/run-in-sniper ./utils/test_parse.sh -- ./build/steam-${{ matrix.arch }}/endless-sky
-    - name: Execute integration tests
-      env:
-          PRINT_GLXINFO: true
-      run: |
-        cd build/steam-${{ matrix.arch }}
-        ES_INTEGRATION_PREFIX=./steam-container-runtime/depot/run-in-sniper ctest --label-regex integration
+    - name: Execute tests
+      run: docker-compose run test-steam-${{ env.arch }}
