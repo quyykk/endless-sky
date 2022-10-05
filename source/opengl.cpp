@@ -15,34 +15,46 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "opengl.h"
 
-#if !defined(__APPLE__) && !defined(ES_GLES)
-#ifdef _WIN32
-#include <GL/wglew.h>
-#else
-#include <GL/glxew.h>
+#if defined(__linux__) && !defined(ES_GLES)
+#include "glad/glad_glx.h"
+#elif defined(_WIN32)
+#include "glad/glad_wgl.h"
 #endif
-#endif
+
+#include <SDL2/SDL_syswm.h>
 
 #include <cstring>
 
-namespace {
-	bool HasOpenGLExtension(const char *name)
-	{
-#ifndef __APPLE__
-		auto extensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
-		return strstr(extensions, name);
-#else
-		bool value = false;
-		GLint extensionCount = 0;
-		glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
-		for(GLint i = 0; i < extensionCount && !value; ++i)
-		{
-			auto extension = reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i));
-			value = (extension && strstr(extension, name));
-		}
-		return value;
+
+
+bool OpenGL::InitializeLoader(SDL_Window *window)
+{
+	// Initialize glad.
+	if(!gladLoadGLLoader(&SDL_GL_GetProcAddress))
+		return false;
+
+	// Initialize WGL or GLX if necessary.
+	SDL_SysWMinfo handle;
+	SDL_VERSION(&handle.version);
+	if(!SDL_GetWindowWMInfo(window, &handle))
+		return false;
+
+#if defined(__linux__) && !defined(ES_GLES)
+	if(handle.subsystem == SDL_SYSWM_X11
+		&& !gladLoadGLXLoader(
+			&SDL_GL_GetProcAddress,
+			handle.info.x11.display,
+			DefaultScreen(handle.info.x11.display)))
+		return false;
+#elif defined(_WIN32)
+	if(handle.subsystem == SDL_SYSWM_WINDOWS
+		&& !gladLoadWGLLoader(
+			&SDL_GL_GetProcAddress,
+			handle.info.win.hdc))
+		return false;
 #endif
-	}
+
+	return true;
 }
 
 
@@ -53,11 +65,12 @@ bool OpenGL::HasAdaptiveVSyncSupport()
 	// macOS doesn't support Adaptive VSync for OpenGL.
 	return false;
 #elif defined(ES_GLES)
-	return HasOpenGLExtension("_swap_control_tear");
+	// EGL always support Adapative VSync.
+	return true;
 #elif defined(_WIN32)
-	return WGL_EXT_swap_control_tear || HasOpenGLExtension("_swap_control_tear");
+	return GLAD_WGL_EXT_swap_control_tear;
 #else
-	return GLX_EXT_swap_control_tear;
+	return GLAD_GLX_EXT_swap_control_tear;
 #endif
 }
 
@@ -65,5 +78,5 @@ bool OpenGL::HasAdaptiveVSyncSupport()
 
 bool OpenGL::HasSwizzleSupport()
 {
-	return HasOpenGLExtension("_texture_swizzle");
+	return GLAD_GL_ARB_texture_swizzle || GLAD_GL_EXT_texture_swizzle;
 }

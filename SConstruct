@@ -20,7 +20,7 @@ env.EnsureSConsVersion(3, 1, 0)
 if 'CXX' in os.environ:
 	env['CXX'] = os.environ['CXX']
 if 'CXXFLAGS' in os.environ:
-	env.Append(CCFLAGS = os.environ['CXXFLAGS'])
+	env.Append(CXXFLAGS = os.environ['CXXFLAGS'])
 if 'LDFLAGS' in os.environ:
 	env.Append(LINKFLAGS = os.environ['LDFLAGS'])
 if 'AR' in os.environ:
@@ -59,7 +59,7 @@ if env["mode"] == "debug":
 elif env["mode"] == "profile":
 	flags += ["-pg"]
 	env.Append(LINKFLAGS = ["-pg"])
-env.Append(CCFLAGS = flags)
+env.Append(CXXFLAGS = flags)
 
 # Always use `ar` to create the symbol table, and don't use ranlib at all, since it fails to preserve
 # LTO information, even when passed the plugin path, when run in Steam's "Scout" runtime.
@@ -79,7 +79,8 @@ if 'steamrt_scout' in chroot_name:
 sys_libs = [
 	"rpcrt4",
 ] if is_windows_host else [
-	"uuid"
+	"uuid",
+    "dl",
 ]
 env.Append(LIBS = sys_libs)
 
@@ -108,7 +109,7 @@ if env["opengl"] == "gles":
 	env.Append(LIBS = [
 		"GLESv2",
 	])
-	env.Append(CCFLAGS = ["-DES_GLES"])
+	env.Append(CXXFLAGS = ["-DES_GLES"])
 elif is_windows_host:
 	env.Append(LIBS = [
 		"glew32.dll",
@@ -117,7 +118,7 @@ elif is_windows_host:
 else:
 	env.Append(LIBS = [
 		"GL",
-		"GLEW",
+		"X11",
 	])
 
 # libmad is not in the Steam runtime, so link it statically:
@@ -151,13 +152,20 @@ try:
 except SConsEnvironmentError:
     pass
 
+# Build the necessary glad source files.
+glad = ['source/glad.c']
+if env["opengl"] == "desktop":
+    glad += ['source/glad_glx.c']
+elif is_windows_host:
+    glad += ['source/glad_wgl.c']
+
 # By default, invoking scons will build the backing archive file and then the game binary.
 sourceLib = env.StaticLibrary(pathjoin(libDirectory, "endless-sky"), RecursiveGlob("*.cpp", buildDirectory))
 exeObjs = [env.Glob(pathjoin(buildDirectory, f)) for f in ("main.cpp",)]
 if is_windows_host:
 	windows_icon = env.RES(pathjoin(buildDirectory, "WinApp.rc"))
 	exeObjs.append(windows_icon)
-sky = env.Program(pathjoin(binDirectory, "endless-sky"), exeObjs + sourceLib)
+sky = env.Program(pathjoin(binDirectory, "endless-sky"), exeObjs + sourceLib + glad)
 env.Default(sky)
 
 

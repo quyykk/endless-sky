@@ -16,21 +16,17 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #ifndef ES_OPENGL_H_
 #define ES_OPENGL_H_
 
-// Include whichever header is used for OpenGL on this operating system.
-#ifdef __APPLE__
-#include <OpenGL/GL3.h>
-#else
-#ifdef ES_GLES
-#include <GLES3/gl3.h>
-#else
-#include <GL/glew.h>
-#endif
-#endif
+#include "glad/glad.h"
+#include <SDL2/SDL.h>
+
+
 
 // A helper class for various OpenGL platform specific calls.
 class OpenGL
 {
 public:
+	static bool InitializeLoader(SDL_Window *window);
+
 	static bool HasAdaptiveVSyncSupport();
 	static bool HasSwizzleSupport();
 };
