@@ -32,7 +32,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 bool OpenGL::InitializeLoader(SDL_Window *window)
 {
-#ifndef __APPLE__
 	// Initialize glad.
 	if(!gladLoadGLLoader(&SDL_GL_GetProcAddress))
 		return false;
@@ -58,7 +57,6 @@ bool OpenGL::InitializeLoader(SDL_Window *window)
 		return false;
 #endif
 
-#endif
 	return true;
 }
 

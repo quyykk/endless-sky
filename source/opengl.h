@@ -16,9 +16,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #ifndef ES_OPENGL_H_
 #define ES_OPENGL_H_
 
-#ifndef __APPLE__
 #include "glad/glad.h"
-#endif
 
 #include <SDL2/SDL.h>
 

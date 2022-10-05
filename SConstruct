@@ -153,11 +153,11 @@ except SConsEnvironmentError:
     pass
 
 # Build the necessary glad source files.
-glad = ['source/glad.c']
+glad = [buildDirectory + '/glad.c']
 if env["opengl"] == "desktop":
-    glad += ['source/glad_glx.c']
+    glad += [buildDirectory + '/glad_glx.c']
 elif is_windows_host:
-    glad += ['source/glad_wgl.c']
+    glad += [buildDirectory + '/glad_wgl.c']
 
 # By default, invoking scons will build the backing archive file and then the game binary.
 sourceLib = env.StaticLibrary(pathjoin(libDirectory, "endless-sky"), RecursiveGlob("*.cpp", buildDirectory))
