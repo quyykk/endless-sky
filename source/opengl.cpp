@@ -18,6 +18,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #if defined(__linux__) && !defined(ES_GLES)
 #include "glad/glad_glx.h"
 #elif defined(_WIN32)
+#define STRICT
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "glad/glad_wgl.h"
 #endif
 
