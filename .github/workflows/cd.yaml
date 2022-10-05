@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - glad
   pull_request:
     types:
       - synchronize
