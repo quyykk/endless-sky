@@ -96,9 +96,7 @@ find_package(Catch2 CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
-if(NOT APPLE)
-	find_package(GLEW REQUIRED)
-endif()
+find_package(glad CONFIG REQUIRED)
 
 # Only very new versions of OpenAL provide a config package, so try to find it manually.
 find_package(OpenAL CONFIG QUIET)
@@ -192,9 +190,8 @@ else()
 	if(APPLE)
 		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
 		target_compile_definitions(EndlessSkyLib PUBLIC GL_SILENCE_DEPRECATION)
-	else()
-		# GLEW is only needed on Linux and Windows.
-		target_link_libraries(EndlessSky PRIVATE GLEW::GLEW)
+	elseif(UNIX)
+		target_link_libraries(EndlessSky PRIVATE X11)
 	endif()
 endif()
 

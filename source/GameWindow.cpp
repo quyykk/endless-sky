@@ -158,20 +158,12 @@ bool GameWindow::Init()
 		return false;
 	}
 
-	// Initialize GLEW.
-#if !defined(__APPLE__) && !defined(ES_GLES)
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-#ifdef GLEW_ERROR_NO_GLX_DISPLAY
-	if(err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY)
-#else
-	if(err != GLEW_OK)
-#endif
+	if(!OpenGL::InitializeLoader(mainWindow))
 	{
-		ExitWithError("Unable to initialize GLEW!");
+		std::string error = SDL_GetError();
+		ExitWithError("Error: " + error);
 		return false;
 	}
-#endif
 
 	// Check that the OpenGL version is high enough.
 	const char *glVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
