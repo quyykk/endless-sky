@@ -72,6 +72,8 @@ string GameWindow::SDLVersions()
 
 bool GameWindow::Init()
 {
+	SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+
 	// This needs to be called before any other SDL commands.
 	if(SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
