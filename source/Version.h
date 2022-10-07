@@ -13,13 +13,14 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef VERSION_H_IN_
-#define VERSION_H_IN_
+#ifndef VERSION_H_
+#define VERSION_H_
 
 // The current version of Endless Sky.
-#define ES_VERSION "@PROJECT_VERSION@"
+extern const char *ES_VERSION;
+
 // The suffix of the current version. Can either be '-alpha' or '-alpha'
 // followed by the current commit hash.
-#define ES_VERSION_SUFFIX "@ES_VERSION_SUFFIX@"
+extern const char *ES_VERSION_SUFFIX;
 
 #endif
