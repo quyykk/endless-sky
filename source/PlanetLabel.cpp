@@ -76,7 +76,7 @@ PlanetLabel::PlanetLabel(const Point &position, const StellarObject &object, con
 		bool overlaps = false;
 
 		Point start = object.Position() * zoom +
-			(radius + INNER_SPACE + LINE_GAP + LINE_LENGTH) * Angle(LINE_ANGLE[d]).Unit();
+			(object.Radius() + INNER_SPACE + LINE_GAP + LINE_LENGTH) * zoom * Angle(LINE_ANGLE[d]).Unit();
 		Point unit(LINE_ANGLE[d] > 180. ? -1. : 1., 0.);
 		Point end = start + unit * width;
 
