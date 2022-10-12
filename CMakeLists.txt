@@ -46,7 +46,6 @@ endif()
 
 # Some system libraries aren't available on the default Sniper runtime and need to be built from source.
 if(ES_STEAM OR ES_STEAM_X86)
-	set(ES_STEAM ON)
 	list(APPEND VCPKG_MANIFEST_FEATURES "steam-libs")
 	if(ES_STEAM_X86)
 		set(VCPKG_TARGET_TRIPLET "x86-linux")
@@ -182,7 +181,7 @@ if(ES_GLES)
 	target_compile_definitions(EndlessSkyLib PUBLIC ES_GLES)
 else()
 	# The Steam runtime can't rely on GLVND being available, so link against the legacy interface.
-	if(ES_STEAM)
+	if(ES_STEAM OR ES_STEAM_X86)
 		set(OpenGL_GL_PREFERENCE "LEGACY")
 	endif()
 

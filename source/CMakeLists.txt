@@ -337,7 +337,6 @@ if(MINGW)
 	target_link_libraries(EndlessSkyLib PUBLIC mingw32)
 endif()
 
-
 # Link with the general libraries.
 target_link_libraries(EndlessSkyLib PUBLIC SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL
 	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>)
