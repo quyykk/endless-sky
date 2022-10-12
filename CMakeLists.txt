@@ -23,14 +23,14 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 # On Linux use relative RPATH.
 set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
-# Add our overlays  for vcpkg and setup vcpkg.
+# Add our overlays for vcpkg and setup vcpkg.
 set(VCPKG_OVERLAY_TRIPLETS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_SOURCE_DIR}/overlays")
 set(VCPKG_BOOTSTRAP_OPTIONS "-disableMetrics")
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-	CACHE STRING "Vcpkg toolchain file" FORCE)
+	CACHE STRING "Vcpkg toolchain file")
 
 if(ES_USE_SYSTEM_LIBRARIES)
 	if(UNIX AND NOT APPLE)
