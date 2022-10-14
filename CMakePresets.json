@@ -95,6 +95,7 @@
       "description": "Builds with the default host compiler on MacOS",
       "inherits": "base",
       "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
       },
       "condition": {
@@ -140,6 +141,7 @@
       "inherits": "base",
       "generator": "Xcode",
       "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
       },
       "condition": {
@@ -199,6 +201,7 @@
       "inherits": "ci",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "macos64-release",
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
       }
     },
@@ -209,6 +212,7 @@
       "inherits": "release",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "macos64-release",
+        "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
       }
     },
