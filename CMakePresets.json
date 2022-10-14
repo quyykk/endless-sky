@@ -92,11 +92,26 @@
     {
       "name": "macos",
       "displayName": "MacOS",
-      "description": "Builds with the default host compiler on MacOS",
+      "description": "Builds with the default host compiler on x64-based MacOS",
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-arm",
+      "displayName": "MacOS ARM",
+      "description": "Builds with the default host compiler on ARM-based MacOS",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-dynamic"
       },
       "condition": {
         "type": "equals",
@@ -137,12 +152,28 @@
     {
       "name": "xcode",
       "displayName": "Xcode",
-      "description": "Builds with Xcode on MacOS",
+      "description": "Builds with Xcode on x64-based MacOS",
       "inherits": "base",
       "generator": "Xcode",
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
         "VCPKG_TARGET_TRIPLET": "x64-osx-dynamic"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "xcode-arm",
+      "displayName": "Xcode ARM",
+      "description": "Builds with Xcode on ARM-based MacOS",
+      "inherits": "base",
+      "generator": "Xcode",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-dynamic"
       },
       "condition": {
         "type": "equals",
@@ -331,6 +362,18 @@
       "inherits": "release"
     },
     {
+      "name": "macos-arm-debug",
+      "displayName": "Debug",
+      "configurePreset": "macos-arm",
+      "inherits": "debug"
+    },
+    {
+      "name": "macos-arm-release",
+      "displayName": "Release",
+      "configurePreset": "macos-arm",
+      "inherits": "release"
+    },
+    {
       "name": "xcode-debug",
       "displayName": "Debug",
       "configurePreset": "xcode",
@@ -340,6 +383,18 @@
       "name": "xcode-release",
       "displayName": "Release",
       "configurePreset": "xcode",
+      "inherits": "release"
+    },
+    {
+      "name": "xcode-arm-debug",
+      "displayName": "Debug",
+      "configurePreset": "xcode-arm",
+      "inherits": "debug"
+    },
+    {
+      "name": "xcode-arm-release",
+      "displayName": "Release",
+      "configurePreset": "xcode-arm",
       "inherits": "release"
     },
     {
@@ -546,6 +601,18 @@
       "inherits": "benchmark"
     },
     {
+      "name": "macos-arm-test",
+      "displayName": "Tests",
+      "configurePreset": "macos-arm",
+      "inherits": "test"
+    },
+    {
+      "name": "macos-arm-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "macos-arm",
+      "inherits": "benchmark"
+    },
+    {
       "name": "xcode-test",
       "displayName": "Tests",
       "configurePreset": "xcode",
@@ -555,6 +622,18 @@
       "name": "xcode-benchmark",
       "displayName": "Benchmarks",
       "configurePreset": "xcode",
+      "inherits": "benchmark"
+    },
+    {
+      "name": "xcode-arm-test",
+      "displayName": "Tests",
+      "configurePreset": "xcode-arm",
+      "inherits": "test"
+    },
+    {
+      "name": "xcode-arm-benchmark",
+      "displayName": "Benchmarks",
+      "configurePreset": "xcode-arm",
       "inherits": "benchmark"
     },
     {
