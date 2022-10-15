@@ -130,7 +130,6 @@ jobs:
       - uses: lukka/run-vcpkg@v10
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: 10.9
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos-release'
