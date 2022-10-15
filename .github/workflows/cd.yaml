@@ -30,10 +30,6 @@ jobs:
             ubuntu-20.04-desktop-ccache-${{ github.repository }}-${{ github.ref }}-
             ubuntu-20.04-desktop-ccache-${{ github.repository }}-
             ubuntu-20.04-desktop-ccache-
-      - name: Get Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
       - name: Install development dependencies
         uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
