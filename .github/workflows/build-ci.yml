@@ -68,7 +68,7 @@ jobs:
       with:
         version: ${{ env.MINGW }}
     - uses: lukka/get-cmake@latest
-    - uses: lukka/run-vcpkg@dev/prepend_cache_key
+    - uses: lukka/run-vcpkg@v10
       with:
         vcpkgJsonGlob: 'vcpkg.json'
         prependedCacheKey: ${{ env.MINGW }}-x64

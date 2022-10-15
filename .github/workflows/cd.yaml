@@ -81,7 +81,7 @@ jobs:
         with:
           arch: x86
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@dev/prepend_cache_key
+      - uses: lukka/run-vcpkg@v10
         with:
           vcpkgJsonGlob: 'vcpkg.json'
           prependedCacheKey: ${{ env.GCC }}-x86
@@ -126,7 +126,7 @@ jobs:
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@dev/prepend_cache_key
+      - uses: lukka/run-vcpkg@v10
         with:
           vcpkgJsonGlob: 'vcpkg.json'
           prependedCacheKey: ${{ env.GCC }}-x64
