@@ -12,9 +12,35 @@ If you clone the repo another way make sure to download submodules as well when 
 > git submodule update --init
 ```
 
+It is highly recommended to update submodules every time you `git pull` automatically, by setting the following config:
+
+```powershell
+> git config submodule.recurse true
+```
+
 The game's root directory, where your `git clone`d files reside, will be your starting point for compiling the game.
 
 Next you will need to install a couple of dependencies to build the game.
+
+## Windows
+
+On Windows, you have the choice between MinGW and ClangCL. If you want to use Visual Studio, skip these instructions and go directly to the [Visual Studio instructions](#building-with-visual-studio).
+
+You can download the [MinGW Winlibs](https://winlibs.com/#download-release) build, which also includes various tools you'll need to build the game as well. It is possible to use other MinGW builds as well.
+
+You'll need the MSVCRT runtime version, 64-bit. The latest version is currently gcc 12 ([direct download link](https://github.com/brechtsanders/winlibs_mingw/releases/download/12.1.0-14.0.4-10.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-12.1.0-mingw-w64msvcrt-10.0.0-r2.zip)).
+
+Extract the zip file in a folder whose path doesn't contain a space (C:\ for example) and add the bin\ folder inside to your PATH (Press the Windows key and type "edit environment variables", then click on PATH and add it in the list).
+
+You will also need to install [CMake](https://cmake.org) (if you don't already have it).
+
+## MacOS
+
+Install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools and libraries you will need:
+
+```
+$ brew install cmake ninja libmad libpng jpeg-turbo sdl2 openal-soft
+```
 
 ## Linux
 
@@ -22,16 +48,20 @@ If you use a reasonably up-to-date distro (Fedora, latest Ubuntu, Arch, openSUSE
 
 <details>
 <summary>DEB-based distros</summary>
+
 ```
 g++ cmake ninja-build libsdl2-dev libpng-dev libjpeg-dev libgl1-mesa-dev libglew-dev libopenal-dev libmad0-dev uuid-dev
 ```
+
 </details>
 
 <details>
 <summary>RPM-based distros</summary>
+
 ```
 gcc-c++ cmake ninja-build SDL2-devel libpng-devel libjpeg-turbo-devel mesa-libGL-devel glew-devel openal-soft-devel libmad-devel libuuid-devel
 ```
+
 </details>
 
 It is recommended to use a newish CMake, although CMake 3.16 is the lowest supported. You can get the latest version from the [offical website](https://cmake.org/download/). To follow the instructions written below, you will need at least CMake 3.21.
@@ -43,38 +73,22 @@ It is recommended to use a newish CMake, although CMake 3.16 is the lowest suppo
 
 <details>
 <summary>DEB-based distros</summary>
+
 ```
 g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl
 ```
+
 </details>
 <details>
 <summary>RPM-based distros</summary>
+
 ```
 gcc-c++ cmake ninja-build mesa-libGL-devel autoconf libtool libXext-devel mesa-libGLU-devel
 ```
-</details>
 
 </details>
 
-## Windows
-
-On Windows, you have the choice between MinGW and ClangCL. If you want to use Visual Studio, skip these instructions and go directly to the [Visual Studio instructions](#building-with-visual-studio).
-
-You can download the [MinGW Winlibs](https://winlibs.com/#download-release) build, which also includes various tools you'll need to build the game as well. It is possible to use other MinGW builds as well.
-
-You'll need the MSVCRT runtime version, 64-bit. The latest version is currently gcc 12 ([direct link](https://github.com/brechtsanders/winlibs_mingw/releases/download/12.1.0-14.0.4-10.0.0-msvcrt-r2/winlibs-x86_64-posix-seh-gcc-12.1.0-mingw-w64msvcrt-10.0.0-r2.zip)).
-
-Extract the zip file in a folder whose path doesn't contain a space (C:\ for example) and add the bin\ folder inside to your PATH (Press the Windows key and type "edit environment variables", then click on PATH and add it in the list).
-
-You will also need to install [CMake](https://cmake.org) (if you don't already have it).
-
-## MacOS
-
-Install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools you will need:
-
-```
-  $ brew install cmake ninja pkg-config nasm
-```
+</details>
 
 # Building from the command line
 
@@ -91,9 +105,11 @@ $ ./build/<preset>/Debug/endless-sky-tests
 
 Replace `<preset>` with one of the following presets:
 
-- Windows: `mingw` (builds with MinGW)
-- MacOS: `macos` (builds with the default compiler), `xcode` (builds using the XCode toolchain)
+- Windows: `mingw` (builds with MinGW), `vs` (builds with the Visual Studio toolchain)
+- MacOS: `macos` or `macos-arm` (builds with the default compiler), `xcode` or `xcode-arm` (builds using the XCode toolchain)
 - Linux: `linux` (builds with the default compiler)
+
+# Building with an IDE
 
 ## Building with Visual Studio Code
 
@@ -111,17 +127,15 @@ If you want to use the Code::Blocks IDE, from the root of the project folder exe
 
 With `<preset>` being one of the available presets (see above for a list). For Windows for example you'd want `mingw`. Now there will be a Code::Blocks project inside `build\mingw`.
 
-
 ## Building with Visual Studio
 
 You will need to install the [Clang component for Visual Studio](https://docs.microsoft.com/en-us/cpp/build/clang-support-msbuild). Next, open a terminal inside the root of the project:
 
 ```powershell
-> mkdir build
-> cmake build -G"Visual Studio 17" -T ClangCL
+> cmake --preset vs
 ```
 
-`"Visual Studio 17"` is Visual Studio 2022. If you are using an older version of VS, you will need to adjust the string. Now you will find a complete solution in the `build/` folder. Find the solution and open it and you're good to go!
+This will create a Visual Studio 2022 solution. If you are using an older version of VS, you will need to pass it using `-G`. Now you will find a complete solution in the `build/` folder. Find the solution and open it and you're good to go!
 
 **Note**: Using MSVC to compile Endless Sky is not supported. If you try, you will get a tons of warnings (and maybe even a couple of errors) during compilation.
 
@@ -133,4 +147,6 @@ If you want to use the XCode IDE, from the root of the project folder execute:
 $ cmake --preset xcode
 ```
 
-You will find a XCode project inside `build/xcode`.
+(or use `xcode-arm` if you are using an ARM-based Mac).
+
+The XCode project is located in the `build/` directory.
