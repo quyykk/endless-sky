@@ -82,7 +82,7 @@ if(ES_VERSION_TYPE STREQUAL "hash")
 
 	string(TIMESTAMP ES_BUILT_DATE "%Y-%m-%d %H-%M UTC" UTC)
 	set(ES_CREDITS_CHANGE "\nBuilt: ${ES_BUILT_DATE}\n${ES_LAST_CHANGE}\n")
-elseif(ES_VERSION_SUFFIX STREQUAL "alpha")
+elseif(ES_VERSION_TYPE STREQUAL "alpha")
 	set(ES_VERSION_SUFFIX "-alpha")
 endif()
 configure_file("./source/Version.cpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Version.cpp" @ONLY)
