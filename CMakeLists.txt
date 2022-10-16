@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.13..3.24)
 
-include(CMakeDependentOption)
-cmake_dependent_option(ES_GLES "Build the game with OpenGL ES" OFF UNIX OFF)
-cmake_dependent_option(ES_STEAM "Build the game for the Steam Linux runtime" OFF UNIX OFF)
-cmake_dependent_option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF UNIX OFF)
-
+option(ES_GLES "Build the game with OpenGL ES" OFF)
+option(ES_STEAM "Build the game for the Steam Linux runtime" OFF)
+option(ES_STEAM_X86 "Build the game for the x86 Steam Linux runtime" OFF)
 option(ES_USE_SYSTEM_LIBRARIES "Use system libraries instead of the vcpkg ones." ${UNIX})
 
 set(ES_VERSION_TYPE "alpha" CACHE STRING "What kind of version is being built. Controls the version string.")
