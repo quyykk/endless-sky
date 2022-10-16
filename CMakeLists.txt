@@ -53,7 +53,7 @@ if(ES_STEAM OR ES_STEAM_X86)
 	endif()
 endif()
 
-project("Endless Sky" VERSION 0.9.15
+project("Endless Sky" VERSION 0.9.16
 	DESCRIPTION "Space exploration, trading, and combat game."
 	HOMEPAGE_URL https://endless-sky.github.io/
 	LANGUAGES CXX)
