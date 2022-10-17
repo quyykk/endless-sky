@@ -50,6 +50,11 @@ if(ES_STEAM OR ES_STEAM_X86)
 	endif()
 endif()
 
+# Build the libraries needed for the testing infrastructure, if needed.
+if(BUILD_TESTING)
+	list(APPEND VCPKG_MANIFEST_FEATURES "test-libs")
+endif()
+
 # Various helpful options for IDEs.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EndlessSky)
@@ -89,10 +94,12 @@ configure_file("./resources/endless-sky.6.in" "${CMAKE_CURRENT_SOURCE_DIR}/resou
 configure_file("./resources/endless-sky.exe.manifest.in" "${CMAKE_CURRENT_SOURCE_DIR}/resources/endless-sky.exe.manifest" @ONLY)
 
 # Find the needed library dependencies.
-find_package(Catch2 CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
+if(BUILD_TESTING)
+	find_package(Catch2 CONFIG REQUIRED)
+endif()
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
 endif()

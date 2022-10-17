@@ -1,7 +1,5 @@
 {
-  "dependencies": [
-    "catch2"
-  ],
+  "dependencies": [],
   "features": {
     "system-libs": {
       "description": "System libraries required to build ES.",
@@ -40,6 +38,12 @@
       "description": "System libraries not provided in the Steam Sniper Runtime.",
       "dependencies": [
         "libmad"
+      ]
+    },
+    "test-libs": {
+      "description": "Libraries needed for the testing infrastructure.",
+      "dependencies": [
+        "catch2"
       ]
     }
   }
