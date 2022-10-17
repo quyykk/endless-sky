@@ -246,7 +246,7 @@ elseif(UNIX)
 	install(FILES resources/endless-sky.desktop DESTINATION share/applications)
 
 	# Install app center metadata.
-	install(FILES resources/endless-sky.appdata.xml DESTINATION share/metainfo)
+	install(FILES resources/io.github.endless_sky.endless_sky.appdata.xml DESTINATION share/metainfo)
 
 	# Install icons, keeping track of all the paths.
 	# Most Ubuntu apps supply 16, 22, 24, 32, 48, and 256, and sometimes others.
