@@ -52,7 +52,8 @@
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "CMAKE_BUILD_TYPE": "Release",
         "ES_VERSION_TYPE": "release",
-        "ES_USE_SYSTEM_LIBRARIES": "OFF"
+        "ES_USE_SYSTEM_LIBRARIES": "OFF",
+        "BUILD_TESTING": "OFF"
       },
       "condition": {
         "type": "equals",
