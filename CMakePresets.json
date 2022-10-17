@@ -535,10 +535,16 @@
     {
       "name": "ci",
       "hidden": true,
-      "inherits": [
-        "test",
-        "benchmark"
-      ],
+      "output": {
+        "verbosity": "verbose",
+        "shortProgress": true,
+        "outputOnFailure": true
+      },
+      "filter": {
+        "exclude": {
+          "label": "integration"
+        }
+      },
       "condition": {
         "type": "equals",
         "lhs": "$env{CI}",
@@ -548,10 +554,16 @@
     {
       "name": "ci-integration",
       "hidden": true,
-      "inherits": [
-        "ci",
-        "integration"
-      ]
+      "output": {
+        "verbosity": "verbose",
+        "shortProgress": true,
+        "outputOnFailure": true
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{CI}",
+        "rhs": "true"
+      }
     },
     {
       "name": "linux-test",
