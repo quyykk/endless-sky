@@ -52,6 +52,7 @@ if(ES_STEAM OR ES_STEAM_X86)
 endif()
 
 # Build the libraries needed for the testing infrastructure, if needed.
+option(BUILD_TESTING "Build the testing tree." ON)
 if(BUILD_TESTING)
 	list(APPEND VCPKG_MANIFEST_FEATURES "test-libs")
 endif()
@@ -65,7 +66,6 @@ project("Endless Sky" VERSION 0.9.17
 	DESCRIPTION "Space exploration, trading, and combat game."
 	HOMEPAGE_URL https://endless-sky.github.io/
 	LANGUAGES CXX)
-include(CTest)
 
 # Configure various files that reference the current version number.
 string(TIMESTAMP ES_CURRENT_DATE "%d %b %Y")
@@ -123,6 +123,7 @@ find_library(LIBMAD_LIB_RELEASE NAMES mad libmad NAMES_PER_DIR PATHS "${_VCPKG_I
 # Add the library target.
 add_subdirectory(source)
 # Setup for the testing frameworks.
+include(CTest)
 if(BUILD_TESTING)
 	add_subdirectory(tests)
 endif()
