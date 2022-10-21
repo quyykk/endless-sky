@@ -114,6 +114,10 @@
         "CMAKE_OSX_ARCHITECTURES": "arm64",
         "VCPKG_TARGET_TRIPLET": "arm64-osx-dynamic"
       },
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -175,6 +179,10 @@
       "cacheVariables": {
         "CMAKE_OSX_ARCHITECTURES": "arm64",
         "VCPKG_TARGET_TRIPLET": "arm64-osx-dynamic"
+      },
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
       },
       "condition": {
         "type": "equals",
