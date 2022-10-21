@@ -39,7 +39,7 @@ You will also need to install [CMake](https://cmake.org) (if you don't already h
 Install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools and libraries you will need:
 
 ```
-$ brew install cmake ninja libmad libpng jpeg-turbo sdl2 openal-soft
+$ brew install cmake ninja mad libpng jpeg-turbo sdl2 openal-soft
 ```
 
 ## Linux
