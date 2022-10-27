@@ -112,6 +112,7 @@ private:
 	static bool ShouldUseAfterburner(Ship &ship);
 	// Special personality behaviors.
 	void DoAppeasing(const std::shared_ptr<Ship> &ship, double *threshold) const;
+	void DoFleeing(const std::shared_ptr<Ship> &ship) const;
 	void DoSwarming(Ship &ship, Command &command, std::shared_ptr<Ship> &target);
 	void DoSurveillance(Ship &ship, Command &command, std::shared_ptr<Ship> &target) const;
 	void DoMining(Ship &ship, Command &command);

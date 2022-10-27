@@ -516,6 +516,7 @@ void AI::Step(const PlayerInfo &player, Command &activeCommands)
 	const Ship *flagship = player.Flagship();
 	step = (step + 1) & 31;
 	int targetTurn = 0;
+	int fleeingTurn = 0;
 	int minerCount = 0;
 	const int maxMinerCount = minables.empty() ? 0 : 9;
 	bool opportunisticEscorts = !Preferences::Has("Turrets focus fire");
@@ -609,9 +610,26 @@ void AI::Step(const PlayerInfo &player, Command &activeCommands)
 			it->SetParent(parent);
 		}
 
+		// Run away if there is a hostile ship in the system that is not disabled and you are badly damaged.
+		// Player ships never stop targeting hostiles, while hostile mission NPCs will
+		// do so only if they are allowed to leave.
+		const bool shouldFlee = (personality.IsFleeing() ||
+			(!personality.IsHeroic() && !personality.IsStaying()
+			&& healthRemaining < RETREAT_HEALTH + .25 * personality.IsCoward()));
+		if(!it->IsYours() && shouldFlee && (!it->GetParent() || !it->GetParent()->GetGovernment()->IsEnemy(gov)))
+		{
+			// Each ship only decides to flee twice a second.
+			fleeingTurn = (fleeingTurn + 1) & 31;
+			if(fleeingTurn == step)
+				DoFleeing(it);
+		}
+		// This ship doesn't need to flee anymore.
+		else if(it->IsFleeing())
+			it->SetFleeing(false);
+
 		// Pick a target and automatically fire weapons.
 		shared_ptr<Ship> target = it->GetTargetShip();
-		if(isPresent && !personality.IsSwarming())
+		if(isPresent && !it->IsFleeing() && !personality.IsSwarming())
 		{
 			// Each ship only switches targets twice a second, so that it can
 			// focus on damaging one particular ship.
@@ -637,41 +655,6 @@ void AI::Step(const PlayerInfo &player, Command &activeCommands)
 			it->SetCommands(firingCommands);
 			continue;
 		}
-
-		// Run away if your hostile target is not disabled and you are badly damaged.
-		// Player ships never stop targeting hostiles, while hostile mission NPCs will
-		// do so only if they are allowed to leave.
-		const bool shouldFlee = (personality.IsFleeing() ||
-			(!personality.IsHeroic() && !personality.IsStaying()
-			&& healthRemaining < RETREAT_HEALTH + .25 * personality.IsCoward()));
-		if(!it->IsYours() && shouldFlee && target && target->GetGovernment()->IsEnemy(gov) && !target->IsDisabled()
-			&& (!it->GetParent() || !it->GetParent()->GetGovernment()->IsEnemy(gov)))
-		{
-			// Make sure the ship has somewhere to flee to.
-			const System *system = it->GetSystem();
-			if(it->JumpsRemaining() && (!system->Links().empty() || it->Attributes().Get("jump drive")))
-				target.reset();
-			else
-				for(const StellarObject &object : system->Objects())
-					if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->HasSpaceport()
-							&& object.GetPlanet()->CanLand(*it))
-					{
-						target.reset();
-						break;
-					}
-
-			if(target)
-				// This ship has nowhere to flee to: Stop fleeing.
-				it->SetFleeing(false);
-			else
-			{
-				// This ship has somewhere to flee to: Remove target and mark this ship as fleeing.
-				it->SetTargetShip(target);
-				it->SetFleeing();
-			}
-		}
-		else if(it->IsFleeing())
-			it->SetFleeing(false);
 
 		// Special actions when a ship is heavily damaged:
 		if(healthRemaining < RETREAT_HEALTH + .25)
@@ -757,7 +740,7 @@ void AI::Step(const PlayerInfo &player, Command &activeCommands)
 		}
 
 		// Attacking a hostile ship, fleeing and stopping to be refueled are more important than mining.
-		if(isPresent && personality.IsMining() && !shouldFlee && !target && !isStranded && maxMinerCount)
+		if(isPresent && personality.IsMining() && !it->IsFleeing() && !target && !isStranded && maxMinerCount)
 		{
 			// Miners with free cargo space and available mining time should mine. Mission NPCs
 			// should mine even if there are other miners or they have been mining a while.
@@ -888,8 +871,9 @@ void AI::Step(const PlayerInfo &player, Command &activeCommands)
 		}
 		// If this ship has decided to recall all of its fighters because combat has ceased,
 		// it comes to a stop to facilitate their reboarding process.
+		// Unless the ship is fleeing; in that case it abandons its fighters.
 		bool mustRecall = false;
-		if(!target && it->HasBays() && !(it->IsYours() ?
+		if(!target && !it->IsFleeing() && it->HasBays() && !(it->IsYours() ?
 				thisIsLaunching : it->Commands().Has(Command::DEPLOY)))
 			for(const weak_ptr<Ship> &ptr : it->GetEscorts())
 			{
@@ -2327,6 +2311,51 @@ void AI::DoAppeasing(const shared_ptr<Ship> &ship, double *threshold) const
 		+ "\": Please, just take my cargo and leave me alone.", Messages::Importance::Low);
 
 	*threshold = (1. - health) + .1;
+}
+
+
+
+void AI::DoFleeing(const shared_ptr<Ship> &ship) const
+{
+	// Search for an enemy in the ship's current system.
+	bool hasEnemyInSystem = false;
+	for(const auto &enemy : GetShipsList(*ship, true))
+		if(!enemy->IsDisabled())
+		{
+			hasEnemyInSystem = true;
+			break;
+		}
+	// Don't need to flee if there are no enemies.
+	if(!hasEnemyInSystem)
+	{
+		ship->SetFleeing(false);
+		return;
+	}
+
+	bool hasDestination = false;
+	// Make sure the ship has somewhere to flee to.
+	const System *system = ship->GetSystem();
+	if(ship->JumpsRemaining() && (!system->Links().empty() || ship->Attributes().Get("jump drive")))
+		hasDestination = true;
+	else
+		for(const StellarObject &object : system->Objects())
+			if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->HasSpaceport()
+					&& object.GetPlanet()->CanLand(*ship))
+			{
+				hasDestination = true;
+				break;
+			}
+
+	// This ship has nowhere to flee so stop fleeing.
+	if(!hasDestination)
+	{
+		ship->SetFleeing(false);
+		return;
+	}
+
+	// This ship has somewhere to flee to and there are enemies: Remove target and mark this ship as fleeing.
+	ship->SetTargetShip(nullptr);
+	ship->SetFleeing();
 }
 
 
