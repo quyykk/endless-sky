@@ -77,7 +77,7 @@
     },
     {
       "name": "linux-gles",
-      "displayName": "Linux",
+      "displayName": "Linux OpenGL ES",
       "description": "Builds with the default host compiler with OpenGL ES on Linux",
       "inherits": "base",
       "cacheVariables": {
