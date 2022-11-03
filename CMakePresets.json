@@ -311,6 +311,17 @@
         "CMAKE_RANLIB": "i686-mingw32-gcc-ranlib",
         "VCPKG_TARGET_TRIPLET": "win32-release"
       }
+    },
+    {
+      "name": "vs-ci",
+      "displayName": "Visual Studio CI",
+      "description": "Builds with VS clang for CI purposes",
+      "inherits": "ci",
+      "generator": "Visual Studio 17",
+      "toolset": "ClangCL",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-release"
+      }
     }
   ],
   "buildPresets": [
@@ -494,6 +505,12 @@
       "name": "mingw32-ci-release",
       "displayName": "MinGW x86 release build",
       "configurePreset": "mingw32-release",
+      "inherits": "ci"
+    },
+    {
+      "name": "vs-ci",
+      "displayName": "VS CI build",
+      "configurePreset": "vs-ci",
       "inherits": "ci"
     }
   ],
@@ -740,6 +757,12 @@
       "displayName": "Mingw CD Tests",
       "configurePreset": "mingw-ci",
       "inherits": "test"
+    },
+    {
+      "name": "vs-ci",
+      "displayName": "VS CI Tests",
+      "configurePreset": "vs-ci",
+      "inherits": "ci"
     }
   ]
 }

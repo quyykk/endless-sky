@@ -87,6 +87,26 @@ jobs:
           ./build/ci/*.dll
 
 
+  build_windows_clang:
+    name: Windows Clang
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: actions/cache@v3
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+        prependedCacheKey: vs-x64
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'vs-ci'
+        buildPreset: 'vs-ci'
+        testPreset: 'vs-ci'
+
+
   build_macos:
     name: MacOS
     runs-on: macos-latest
