@@ -19,7 +19,7 @@ do
   # Check if the file is present in the source list.
   if ! grep -Fq "${FILE}" "${LIBLIST}"; then
     if [ $RESULT -ne 1 ]; then
-      echo -e "\033[1mMissing files in source/CMakeLists.txt:\033[0m"
+      echo -e "\033[1mMissing source files in source/CMakeLists.txt:\033[0m"
     fi
     echo -e "${FILE}"
     RESULT=1
@@ -31,7 +31,19 @@ do
   # Check if the file is present in the source list.
   if ! grep -Fq "${FILE}" "${TESTLIST}"; then
     if [ $RESULT -ne 2 ]; then
-      echo -e "\033[1mMissing files in tests/unit/CMakeLists.txt:\033[0m"
+      echo -e "\033[1mMissing source files in tests/CMakeLists.txt:\033[0m"
+    fi
+    echo -e "${FILE}"
+    RESULT=2
+  fi
+done
+
+for FILE in $(find tests/integration/config/plugins/integration-tests/data/tests/ -type f -name "*.txt" | sed s,^tests/integration/config/plugins/integration-tests/data/tests/,, | sort)
+do
+  # Check if the file is present in the source list.
+  if ! grep -Fq "${FILE}" "${TESTLIST}"; then
+    if [ $RESULT -ne 2 ]; then
+      echo -e "\033[1mMissing data files in tests/CMakeLists.txt:\033[0m"
     fi
     echo -e "${FILE}"
     RESULT=2
