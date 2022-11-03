@@ -60,15 +60,18 @@ catch_discover_tests(EndlessSkyTests
 
 # Integration tests.
 if(UNIX AND NOT APPLE)
-	add_custom_target(IntegrationTests ALL
+	add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake"
 		COMMENT "Discover every integration test"
 		COMMAND ${CMAKE_COMMAND} -DES=$<TARGET_FILE:EndlessSky>
 			-DBINARY_PATH="${CMAKE_CURRENT_BINARY_DIR}"
 			-P ${CMAKE_CURRENT_SOURCE_DIR}/integration/IntegrationTests.cmake
-		DEPENDS ${INTEGRATION_TESTS} ${CMAKE_CURRENT_SOURCE_DIR}/integration/IntegrationTests.cmake
+		DEPENDS EndlessSky ${INTEGRATION_TESTS}
+			${CMAKE_CURRENT_SOURCE_DIR}/integration/IntegrationTests.cmake
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	add_dependencies(IntegrationTests EndlessSky)
 	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake")
+	add_custom_target(IntegrationTests ALL
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake"
+	)
 
 	# If the target is not run, simply don't provide any integration tests instead of erroring out.
 	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/IntegrationTests_tests.cmake" "")
