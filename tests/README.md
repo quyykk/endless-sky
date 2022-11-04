@@ -12,3 +12,19 @@ Choose the best test-technology to get the most maintainable tests and the best 
 If your test is checking something in the build/test environment, then a single script in the utils directory is likely most fitting.
 
 If your test is really testing the codebase, then a unit-test or an integration test is likely most fitting. When the test-coverage would be equal, then writing a unit-test is preferred over writing an integration test, because unit-tests are generally more efficient and easier to debug.
+
+# Running the tests
+
+You can execute the unit tests by running
+
+```bash
+$ ctest --preset <preset>-test
+```
+
+If you are using an IDE, there should be a button somewhere that you can use that executes this command automatically.
+
+For Linux, you can run the integration tests as follows:
+
+```bash
+$ ctest --preset linux-integration
+```

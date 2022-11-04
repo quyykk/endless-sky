@@ -129,7 +129,9 @@ With `<preset>` being one of the available presets (see above for a list). For W
 
 ## Building with Visual Studio
 
-You will need to install the [Clang component for Visual Studio](https://docs.microsoft.com/en-us/cpp/build/clang-support-msbuild). Next, open a terminal inside the root of the project:
+You will need to install the [Clang component for Visual Studio](https://docs.microsoft.com/en-us/cpp/build/clang-support-msbuild) as well as the CMake integration. If you are using VS 2022 (or higher), you can simply open the folder. Make sure to select "vs" as the configuration preset in the dropdown.
+
+If you are on an earlier version, you will need to generate the solution manually as follows:
 
 ```powershell
 > cmake --preset vs
