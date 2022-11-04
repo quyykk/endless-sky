@@ -16,8 +16,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Install dependencies
-        run: sudo apt-get install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev
+      - name: Install development dependencies
+        uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
@@ -43,6 +43,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
         with:
@@ -83,6 +85,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
       - name: Get MinGW
         uses: quyykk/get-winlibs-mingw@v1
         with:
@@ -127,25 +131,27 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
       - uses: lukka/run-vcpkg@v10
         with:
           vcpkgJsonGlob: 'vcpkg.json'
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'macos-release'
+          configurePreset: 'macos-arm-release'
           buildPreset: 'macos-ci-release'
-      - name: Prepare for ARM app bundle
+      - name: Prepare for x64 app bundle
         run: |
-          mv build/release/EndlessSky.app EndlessSky.app.x64
+          mv build/release/EndlessSky.app EndlessSky.app.arm
           rm -rf build/release
       - uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'macos-arm-release'
-          buildPreset: 'macos-arm-ci-release'
+          configurePreset: 'macos-release'
+          buildPreset: 'macos-ci-release'
       - name: Create universal binary
         run: |
-          mv build/release/EndlessSky.app EndlessSky.app.arm
+          mv build/release/EndlessSky.app EndlessSky.app.x64
           cp -r EndlessSky.app.arm EndlessSky.app
           lipo -create -output EndlessSky.app/Contents/MacOS/EndlessSky EndlessSky.app.arm/Contents/MacOS/EndlessSky EndlessSky.app.x64/Contents/MacOS/EndlessSky
           for lib in EndlessSky.app/Contents/Frameworks/* ; lipo -create -output $lib EndlessSky.app.arm/Contents/Frameworks/$(basename $lib) EndlessSky.app.x64/Contents/Frameworks/$(basename $lib)
