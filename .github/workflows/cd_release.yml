@@ -135,22 +135,34 @@ jobs:
         with:
           configurePreset: 'macos-release'
           buildPreset: 'macos-ci-release'
+      - name: Prepare for ARM app bundle
+        run: |
+          mv build/release/EndlessSky.app EndlessSky.app.x64
+          rm -rf build/release
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'macos-arm-release'
+          buildPreset: 'macos-arm-ci-release'
+      - name: Create universal binary
+        run: |
+          mv build/release/EndlessSky.app EndlessSky.app.arm
+          cp -r EndlessSky.app.arm EndlessSky.app
+          lipo -create -output EndlessSky.app/Contents/MacOS/EndlessSky EndlessSky.app.arm/Contents/MacOS/EndlessSky EndlessSky.app.x64/Contents/MacOS/EndlessSky
+          for lib in EndlessSky.app/Contents/Frameworks/* ; lipo -create -output $lib EndlessSky.app.arm/Contents/Frameworks/$(basename $lib) EndlessSky.app.x64/Contents/Frameworks/$(basename $lib)
       - name: Package Application
         run: |
-          cd build/release
           mkdir ${{ env.OUTPUT }}
           cp -r EndlessSky.app ${{ env.OUTPUT }}
           ln -s /Applications ${{ env.OUTPUT }}
           hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
       - name: Prepare Steam Depot
         run: |
-          cd build/release
           mv EndlessSky.app/Contents/Resources/endless-sky.icns .
           rm -rf EndlessSky.app/Contents/Resources
           mkdir EndlessSky.app/Contents/Resources
           mv endless-sky.icns EndlessSky.app/Contents/Resources
-          mkdir ../../depot
-          mv EndlessSky.app/ ../../depot
+          mkdir depot/
+          mv EndlessSky.app/ depot/
       - name: Upload Steam Depot
         uses: actions/upload-artifact@v3
         with:

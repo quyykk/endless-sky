@@ -257,6 +257,17 @@
       }
     },
     {
+      "name": "macos-arm-release",
+      "displayName": "MacOS ARM Release",
+      "description": "Builds for MacOS ARM like an official release",
+      "inherits": "release",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "macosARM-release",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
+      }
+    },
+    {
       "name": "mingw-ci",
       "displayName": "MinGW CI",
       "description": "Builds with MinGW for CI purposes",
@@ -481,6 +492,12 @@
       "name": "macos-ci-release",
       "displayName": "MacOS release build",
       "configurePreset": "macos-release",
+      "inherits": "ci"
+    },
+    {
+      "name": "macos-arm-ci-release",
+      "displayName": "MacOS ARM release build",
+      "configurePreset": "macos-arm-release",
       "inherits": "ci"
     },
     {
