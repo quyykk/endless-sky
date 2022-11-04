@@ -41,6 +41,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Test.h"
 #include "TestContext.h"
 #include "UI.h"
+#include "Version.h"
 
 #include <chrono>
 #include <iostream>
@@ -66,6 +67,7 @@ void PrintVersion();
 void GameLoop(PlayerInfo &player, const Conversation &conversation, const string &testToRun, bool debugMode);
 Conversation LoadConversation();
 void PrintTestsTable();
+void PrintTestsList();
 #ifdef _WIN32
 void InitConsole();
 #endif
@@ -84,6 +86,7 @@ int main(int argc, char *argv[])
 	bool debugMode = false;
 	bool loadOnly = false;
 	bool printTests = false;
+	bool printTestsNamesOnly = false;
 	bool printData = false;
 	string testToRunName = "";
 
@@ -113,6 +116,8 @@ int main(int argc, char *argv[])
 			testToRunName = *it;
 		else if(arg == "--tests")
 			printTests = true;
+		else if(arg == "--tests-names-only")
+			printTestsNamesOnly = true;
 	}
 	if(PrintData::IsPrintDataArgument(argv))
 		printData = true;
@@ -120,7 +125,7 @@ int main(int argc, char *argv[])
 
 	try {
 		// Begin loading the game data.
-		bool isConsoleOnly = loadOnly || printTests || printData;
+		bool isConsoleOnly = loadOnly || printTests || printTestsNamesOnly || printData;
 		future<void> dataLoading = GameData::BeginLoad(isConsoleOnly, debugMode);
 
 		// If we are not using the UI, or performing some automated task, we should load
@@ -142,6 +147,11 @@ int main(int argc, char *argv[])
 		if(printTests)
 		{
 			PrintTestsTable();
+			return 0;
+		}
+		if(printTestsNamesOnly)
+		{
+			PrintTestsList();
 			return 0;
 		}
 
@@ -184,8 +194,13 @@ int main(int argc, char *argv[])
 	catch(const runtime_error &error)
 	{
 		Audio::Quit();
-		bool doPopUp = testToRunName.empty();
-		GameWindow::ExitWithError(error.what(), doPopUp);
+		bool isTest = !testToRunName.empty();
+		GameWindow::ExitWithError(error.what(), !isTest);
+
+		// When a integration tests fails, it should only return an error
+		// if the test isn't a known failure.
+		if(isTest)
+			return GameData::Tests().Get(testToRunName)->GetStatus() < Test::Status::BROKEN;
 		return 1;
 	}
 
@@ -417,6 +432,7 @@ void PrintHelp()
 	cerr << "    -d, --debug: turn on debugging features (e.g. Caps Lock slows down instead of speeds up)." << endl;
 	cerr << "    -p, --parse-save: load the most recent saved game and inspect it for content errors." << endl;
 	cerr << "    --tests: print table of available tests, then exit." << endl;
+	cerr << "    --tests-names-only: print list of every test, then exit." << endl;
 	cerr << "    --test <name>: run given test from resources directory." << endl;
 	PrintData::Help();
 	cerr << endl;
@@ -430,7 +446,7 @@ void PrintHelp()
 void PrintVersion()
 {
 	cerr << endl;
-	cerr << "Endless Sky ver. 0.9.17-alpha" << endl;
+	cerr << "Endless Sky ver. " << ES_VERSION << ES_VERSION_SUFFIX << endl;
 	cerr << "License GPLv3+: GNU GPL version 3 or later: <https://gnu.org/licenses/gpl.html>" << endl;
 	cerr << "This is free software: you are free to change and redistribute it." << endl;
 	cerr << "There is NO WARRANTY, to the extent permitted by law." << endl;
@@ -485,6 +501,17 @@ void PrintTestsTable()
 		cout << test.StatusText() << '\t';
 		cout << "\"" << test.Name() << "\"" << '\n';
 	}
+	cout.flush();
+}
+
+
+
+// This prints out a list of every test.
+void PrintTestsList()
+{
+	for(auto &it : GameData::Tests())
+		if(it.second.GetStatus() != Test::Status::PARTIAL)
+			cout << it.second.Name() << '\n';
 	cout.flush();
 }
 

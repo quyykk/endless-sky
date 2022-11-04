@@ -1,0 +1,137 @@
+name: Build CI
+
+on:
+  workflow_call:
+
+
+jobs:
+  build_ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [20.04, 22.04]
+        opengl: [desktop, gles]
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/ccache
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Cache ccache results
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-${{ github.ref }}-
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-${{ github.repository }}-
+          ubuntu-${{ matrix.os }}-${{ matrix.opengl }}-ccache-
+    - name: Install development dependencies
+      uses: ./.github/dependencies
+    - name: Install runtime dependencies
+      run: sudo apt install -y --no-install-recommends libosmesa6 mesa-utils libglvnd-dev
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: ${{ matrix.opengl == 'desktop' && 'linux-ci' || 'linux-gles-ci' }}
+        buildPreset: ${{ matrix.opengl == 'desktop' && 'linux-ci' || 'linux-gles-ci' }}
+        testPreset: ${{ matrix.opengl == 'desktop' && 'linux-ci' || 'linux-gles-ci' }}
+
+
+  build_windows:
+    name: Windows
+    runs-on: windows-latest
+    env:
+        CCACHE_DIR: ${{ github.workspace}}\ccache
+        MINGW: '8.5.0'
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Cache ccache results
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ matrix.mingw }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ${{ matrix.mingw }}-ccache-${{ github.repository }}-${{ github.ref }}-
+          ${{ matrix.mingw }}-ccache-${{ github.repository }}-
+          ${{ matrix.mingw }}-ccache
+    - name: Install development dependencies
+      uses: ./.github/dependencies
+    - name: Get MinGW
+      uses: quyykk/get-winlibs-mingw@v1
+      with:
+        version: ${{ env.MINGW }}
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+        prependedCacheKey: ${{ env.MINGW }}-x64
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'mingw-ci'
+        buildPreset: 'mingw-ci'
+        testPreset: 'mingw-ci'
+    - name: Upload game binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: binary-windows-latest
+        path: |
+          credits.txt
+          ./build/ci/EndlessSky.exe
+          ./build/ci/*.dll
+
+
+  build_windows_clang:
+    name: Windows Clang
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+        prependedCacheKey: vs-x64
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'vs-ci'
+        buildPreset: 'vs-ci'
+        testPreset: 'vs-ci'
+
+
+  build_macos:
+    name: MacOS
+    runs-on: macos-latest
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/ccache
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Cache ccache results
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: macos-latest--ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          macos-latest-ccache-${{ github.repository }}-${{ github.ref }}-
+          macos-latest-ccache-${{ github.repository }}-
+          macos-latest-ccache
+    - name: Install development dependencies
+      uses: ./.github/dependencies
+    - uses: lukka/get-cmake@latest
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+    - uses: lukka/run-cmake@v10
+      with:
+        configurePreset: 'macos-ci'
+        buildPreset: 'macos-ci'
+        testPreset: 'macos-ci'

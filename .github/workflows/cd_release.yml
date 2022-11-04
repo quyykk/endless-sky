@@ -1,0 +1,255 @@
+name: Release CD
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  appimage_amd64:
+    runs-on: ubuntu-20-04
+    env:
+      ARCH: x86_64
+      OUTPUT: endless-sky-amd64-${{ github.event.release.tag_name }}.AppImage
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'linux-release'
+          buildPreset: 'linux-ci-release'
+      - name: Package Application
+        run: ./utils/build_appimage.sh build/release
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+
+  windows_win32:
+    runs-on: windows-latest
+    env:
+      OUTPUT: endless-sky-win32-${{ github.event.release.tag_name }}.zip
+      GCC: 12.1.0
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - name: Get MinGW
+        uses: quyykk/get-winlibs-mingw@v1
+        with:
+          version: ${{ env.GCC }}
+          arch: x86
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+          prependedCacheKey: ${{ env.GCC }}-x86
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw32-release'
+          buildPreset: 'mingw32-ci-release'
+      - name: Package Application
+        run: |
+          cmake --install build/release
+          7z a ${{ env.OUTPUT }} "./install/release/*"
+      - name: Upload Steam Depot
+        uses: actions/upload-artifact@v3
+        with:
+          name: steam-win32-depot
+          path: |
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+
+  windows_win64:
+    runs-on: windows-latest
+    env:
+      OUTPUT: endless-sky-win64-${{ github.event.release.tag_name }}.zip
+      GCC: 12.1.0
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - name: Get MinGW
+        uses: quyykk/get-winlibs-mingw@v1
+        with:
+          version: ${{ env.GCC }}
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+          prependedCacheKey: ${{ env.GCC }}-x64
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'mingw-release'
+          buildPreset: 'mingw-ci-release'
+      - name: Package Application
+        run: |
+          cmake --install build/release
+          7z a ${{ env.OUTPUT }} "./install/release/*"
+      - name: Upload Steam Depot
+        uses: actions/upload-artifact@v3
+        with:
+          name: steam-win64-depot
+          path: |
+            ./install/release/EndlessSky.exe
+            ./install/release/*.dll
+      - name: Upload credits.txt
+        uses: actions/upload-artifact@v3
+        with:
+          name: credits.txt
+          path:
+            credits.txt
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}
+
+
+  dmg_macos:
+    runs-on: macos-latest
+    env:
+      OUTPUT: endless-sky-macos-${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install development dependencies
+        uses: ./.github/dependencies
+      - uses: lukka/get-cmake@latest
+      - uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'macos-arm-release'
+          buildPreset: 'macos-ci-release'
+      - name: Prepare for x64 app bundle
+        run: |
+          mv build/release/EndlessSky.app EndlessSky.app.arm
+          rm -rf build/release
+      - uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'macos-release'
+          buildPreset: 'macos-ci-release'
+      - name: Create universal binary
+        run: |
+          mv build/release/EndlessSky.app EndlessSky.app.x64
+          cp -r EndlessSky.app.arm EndlessSky.app
+          lipo -create -output EndlessSky.app/Contents/MacOS/EndlessSky EndlessSky.app.arm/Contents/MacOS/EndlessSky EndlessSky.app.x64/Contents/MacOS/EndlessSky
+          for lib in EndlessSky.app/Contents/Frameworks/*; do lipo -create -output $lib EndlessSky.app.arm/Contents/Frameworks/$(basename $lib) EndlessSky.app.x64/Contents/Frameworks/$(basename $lib); done
+      - name: Package Application
+        run: |
+          mkdir ${{ env.OUTPUT }}
+          cp -r EndlessSky.app ${{ env.OUTPUT }}
+          ln -s /Applications ${{ env.OUTPUT }}
+          hdiutil create -ov -fs HFS+ -format UDZO -imagekey zlib-level=9 -srcfolder ${{ env.OUTPUT }} ${{ github.workspace }}/${{ env.OUTPUT }}.dmg
+      - name: Prepare Steam Depot
+        run: |
+          mv EndlessSky.app/Contents/Resources/endless-sky.icns .
+          rm -rf EndlessSky.app/Contents/Resources
+          mkdir EndlessSky.app/Contents/Resources
+          mv endless-sky.icns EndlessSky.app/Contents/Resources
+          mkdir depot/
+          mv EndlessSky.app/ depot/
+      - name: Upload Steam Depot
+        uses: actions/upload-artifact@v3
+        with:
+          name: steam-macos-depot
+          path: depot
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.OUTPUT }}.dmg
+
+
+  build_steam_linux:
+    name: Steam Linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x64, x86]
+    env:
+      ARTIFACT: endless-sky
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Build Endless Sky
+      run: docker-compose run steam-${{ matrix.arch }}
+    - name: Prepare binary
+      run: cp build/steam-${{ matrix.arch }}/${{ env.ARTIFACT }} .
+    - name: Upload Steam Depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-linux${{ matrix.arch == 'x64' && '64' || '32' }}-depot
+        path: ${{ env.ARTIFACT }}
+
+
+  deploy_steam:
+    name: Deploy Steam
+    needs: [build_steam_linux, windows_win32, windows_win64, dmg_macos]
+    runs-on: ubuntu-latest
+    # environment: steam
+    env:
+      data: data-depot
+      linux32: steam-linux-x86
+      linux64: steam-linux-x64
+      win32: steam-win32
+      win64: steam-win64
+      macos: steam-macos
+      ARTIFACT: endless-sky
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download credits.txt
+      uses: actions/download-artifact@v3
+      with:
+        name: credits.txt
+    - name: Upload Steam Depot
+      uses: actions/upload-artifact@v3
+      with:
+        name: steam-data-depot
+        path: |
+          changelog
+          copyright
+          credits.txt
+          icon.png
+          keys.txt
+          license.txt
+          data/
+          images/
+          sounds/
+    # - uses: game-ci/steam-deploy@v1
+    #   with:
+    #     appId: 404410
+    #     buildDescription: canary-${{ github.sha }}
+    #     username: ${{ secrets.STEAM_DEPLOY_UN }}
+    #     password: ${{ secrets.STEAM_DEPLOY_PW }}
+    #     configVdf: ${{ secrets.STEAM_DEPLOY_VDF }}
+    #     ssfnFileName: ${{ secrets.STEAM_DEPLOY_SSFN_NAME }}
+    #     ssfnFileContents: ${{ secrets.STEAM_DEPLOY_SSFN }}
+    #     rootPath: ''
+    #     depot1Path: ${{ env.data }}
+    #     depot3Path: ${{ env.win32 }}
+    #     depot4Path: ${{ env.win64 }}
+    #     depot5Path: ${{ env.macos }}
+    #     depot6Path: ${{ env.linux32 }}
+    #     depot7Path: ${{ env.linux64 }}
+    #     releaseBranch: canary
