@@ -195,7 +195,7 @@
       "displayName": "Visual Studio",
       "description": "Builds with clang-cl as a VS 2022 project",
       "inherits": "base",
-      "generator": "Visual Studio 17",
+      "generator": "Visual Studio 17 2022",
       "toolset": "ClangCL",
       "cacheVariables": {
         "VCPKG_TARGET_TRIPLET": "x64-windows"
