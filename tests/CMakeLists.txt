@@ -38,6 +38,7 @@ target_sources(EndlessSkyTests PRIVATE
 )
 
 list(APPEND INTEGRATION_TESTS
+	integration/config/plugins/integration-tests/data/tests/tests_afterburn_flight.txt
 	integration/config/plugins/integration-tests/data/tests/tests_common.txt
 	integration/config/plugins/integration-tests/data/tests/tests_disown.txt
 	integration/config/plugins/integration-tests/data/tests/tests_flagship_model_condition.txt
