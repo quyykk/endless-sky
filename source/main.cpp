@@ -189,7 +189,8 @@ int main(int argc, char *argv[])
 	catch(const runtime_error &error)
 	{
 		Audio::Quit();
-		GameWindow::ExitWithError(error.what(), testToRunName.empty());
+		bool doPopUp = testToRunName.empty();
+		GameWindow::ExitWithError(error.what(), doPopUp);
 		return 1;
 	}
 
