@@ -69,8 +69,9 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04]
         opengl: [desktop, gles]
     env:
-        CXX: sccache g++
-        ARTIFACT: endless-sky
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
+      ARTIFACT: endless-sky
     steps:
     - uses: actions/checkout@v3
     - name: Restore cached game binary
@@ -119,8 +120,9 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
     env:
-        CXX: sccache g++
-        TEST_BINARY: tests/unit/endless-sky-tests
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
+      TEST_BINARY: tests/unit/endless-sky-tests
     steps:
     - uses: actions/checkout@v3
     - name: Restore cached test binary
@@ -159,11 +161,12 @@ jobs:
       matrix:
         os: [windows-2022]
     env:
-        DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
-        DIR_ESLIB: dev64
-        CXX: sccache g++
-        ARTIFACT: EndlessSky.exe
-        AR: gcc-ar
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
+      DIR_ESLIB: dev64
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
+      ARTIFACT: EndlessSky.exe
+      AR: gcc-ar
     steps:
     - uses: actions/checkout@v3
     - name: Restore cached game binary
@@ -222,11 +225,12 @@ jobs:
       matrix:
         os: [windows-2022]
     env:
-        DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
-        DIR_ESLIB: .\dev64
-        CXX: sccache g++
-        AR: gcc-ar
-        TEST_BINARY: .\tests\unit\endless-sky-tests.exe
+      DIR_MINGW64: C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64
+      DIR_ESLIB: .\dev64
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
+      AR: gcc-ar
+      TEST_BINARY: .\tests\unit\endless-sky-tests.exe
     steps:
     - uses: actions/checkout@v3
     - name: Restore cached test binary
