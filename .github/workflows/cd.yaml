@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - use-sccache
   pull_request:
     types:
       - synchronize
