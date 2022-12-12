@@ -1,0 +1,39 @@
+name: Install sccache
+description: Installs sccache for the current platform
+inputs:
+  cache-key:
+    description: The cache key to use to read/write the cache
+    default: ''
+    required: true
+runs:
+  using: 'composite'
+  env: 
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    VERSION: v0.3.3
+  steps:
+    - name: Download sccache (Linux)
+      if: runner.os == 'Linux'
+      run: gh release download -R mozilla/sccache ${{ env.VERSION }} -p sccache-${{ env.VERSION }}-x86_64unknown-linux-musl.tar.gz
+      shell: bash
+
+    - name: Download sccache (Windows)
+      if: runner.os == 'Windows'
+      run: gh release download -R mozilla/sccache ${{ env.VERSION }} -p sccache-${{ env.VERSION }}-x86_64pc-windows-msvc.tar.gz
+      shell: bash
+
+    - name: Download sccache (MacOS)
+      if: runner.os == 'macOS'
+      run: gh release download -R mozilla/sccache ${{ env.VERSION }} -p sccache-${{ env.VERSION }}-x86_64apple-darwin.tar.gz
+      shell: bash
+
+    - name: Extract
+      run: tar xf sccache-*.tar.gz --strip-components=1
+      shell: bash
+    - name: Add to PATH
+      run: echo "." >> $GITHUB_ENV
+      shell: bash
+    - name: Write to the cache
+      if: ${{ github.event_name == 'push' }}
+      run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ input.cache-key }}-${{ github.sha }}" >> $GITHUB_ENV
+    - name: Read from the cache
+      run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ input.cache-key }}-" >> $GITHUB_ENV
