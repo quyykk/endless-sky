@@ -37,7 +37,7 @@ runs:
       run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ inputs.cache-key }}-${{ github.sha }}" >> $GITHUB_ENV
       shell: bash
     - name: Read from the cache
-      run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ inputs.cache-key }}-" >> $GITHUB_ENV
+      run: echo "SCCACHE_GHA_CACHE_FROM=sccache-${{ inputs.cache-key }}-" >> $GITHUB_ENV
       shell: bash
     - name: Configure sccache
       uses: actions/github-script@v6
