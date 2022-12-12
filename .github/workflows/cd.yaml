@@ -23,6 +23,7 @@ jobs:
       ARCH: x86_64
       OUTPUT: endless-sky-x86_64-continuous.AppImage
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
@@ -53,6 +54,8 @@ jobs:
       DIR_ESLIB: .\dev64
       OUTPUT: EndlessSky-win64-continuous.zip
       AR: gcc-ar
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CXX: sccache g++
     steps:
       - uses: actions/checkout@v3
       - name: Fetch development libraries
