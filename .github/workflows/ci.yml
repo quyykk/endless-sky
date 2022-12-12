@@ -236,9 +236,6 @@ jobs:
         path: ${{ env.TEST_BINARY }}
         # Rebuild the test binary if source code changed, test code changed, or if instructions on building the game changed.
         key: ${{ matrix.os }}-tests-${{ hashFiles('source/**', 'tests/unit/**', '.winmake', '.github/workflows/ci.yml', 'SConstruct') }}
-    - name: Install development dependencies
-      if: steps.cache-tests.outputs.cache-hit != 'true'
-      run: choco install sccache
     - name: Cache scons
       if: steps.cache-tests.outputs.cache-hit != 'true'
       uses: actions/cache@v3
@@ -254,6 +251,7 @@ jobs:
         COPY $Env:DIR_MINGW64\bin\libgcc_s_seh-1.dll .
         COPY $Env:DIR_MINGW64\bin\libstdc++-6.dll .
         COPY $Env:DIR_MINGW64\bin\libwinpthread-1.dll .
+    - name: Setup sccache
       if: steps.cache-artifact.outputs.cache-hit != 'true'
       uses: ./.github/sccache
       with:
