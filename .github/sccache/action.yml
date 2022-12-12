@@ -9,9 +9,7 @@ runs:
   using: 'composite'
   steps:
     - name: Set environment variables
-      run: |
-        echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-        echo "SCCACHE_VERSION=v0.3.3" >> $GITHUB_ENV
+      run: echo "SCCACHE_VERSION=v0.3.3" >> $GITHUB_ENV
       shell: bash
     - name: Download sccache (Linux)
       if: runner.os == 'Linux'
