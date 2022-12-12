@@ -37,5 +37,7 @@ runs:
     - name: Write to the cache
       if: ${{ github.event_name == 'push' }}
       run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ input.cache-key }}-${{ github.sha }}" >> $GITHUB_ENV
+      shell: bash
     - name: Read from the cache
       run: echo "SCCACHE_GHA_CACHE_TO=sccache-${{ input.cache-key }}-" >> $GITHUB_ENV
+      shell: bash
