@@ -390,7 +390,9 @@ void GameLoop(PlayerInfo &player, const Conversation &conversation, const string
 			{
 				skipFrame = (skipFrame + 1) % 3;
 				if(skipFrame)
+				{
 					continue;
+				}
 			}
 		}
 
