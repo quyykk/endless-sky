@@ -60,10 +60,10 @@ target_include_directories(EndlessSkyTests PRIVATE unit/include)
 target_link_libraries(EndlessSkyTests PRIVATE EndlessSkyLib)
 
 # CTest support for our unit tests.
-add_test(NAME unit COMMAND EndlessSkyTests)
-set_tests_properties(unit PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" LABELS unit)
-add_test(NAME benchmark COMMAND "$<TARGET_FILE:EndlessSkyTests>" [!benchmark])
-set_tests_properties(benchmark PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" LABELS benchmark)
+add_test(NAME Unit COMMAND EndlessSkyTests)
+set_tests_properties(Unit PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" LABELS unit)
+add_test(NAME Benchmarks COMMAND "$<TARGET_FILE:EndlessSkyTests>" [!benchmark])
+set_tests_properties(Benchmarks PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" LABELS benchmark)
 
 # Integration tests.
 if(UNIX AND NOT APPLE)
