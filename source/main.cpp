@@ -78,7 +78,7 @@ void InitConsole();
 
 
 
-// Entry point for the EndlessSky executable
+// Entry point for the EndlessSky executableaa
 int main(int argc, char *argv[])
 {
 	// Handle command-line arguments
