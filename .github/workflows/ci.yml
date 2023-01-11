@@ -284,7 +284,7 @@ jobs:
   test_parse:
     needs: [changed, build_windows]
     name: Data Files
-    if: ${{ needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.outputs.data == 'true' || needs.changed.outputs.parse_script == 'true' }}
+    if: ${{ (needs.changed.outputs.game_code == 'true' || needs.changed.outputs.cmake == 'true' || needs.changed.outputs.data == 'true' || needs.changed.outputs.parse_script == 'true') && always() }}
     runs-on: windows-2022
     env:
       CONTINUOUS: EndlessSky-win64-continuous.zip
