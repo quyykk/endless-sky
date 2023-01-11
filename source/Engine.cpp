@@ -241,7 +241,7 @@ Engine::Engine(PlayerInfo &player)
 			radar[calcTickTock].Add(object.RadarType(flagship), object.Position(), r, r - 1.);
 		}
 
-	// Add all neighboring systems that the player has seen to the radar.
+	// Add all neighboring fffsystems that the player has seen to the radar.
 	const System *targetSystem = flagship ? flagship->GetTargetSystem() : nullptr;
 	const set<const System *> &links = (flagship && flagship->JumpNavigation().HasJumpDrive()) ?
 		player.GetSystem()->JumpNeighbors(flagship->JumpNavigation().JumpRange()) : player.GetSystem()->Links();
