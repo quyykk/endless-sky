@@ -296,7 +296,7 @@ jobs:
       uses: robinraju/release-downloader@v1
       with:
         tag: continuous
-        file: ${{ env.CONTINUOUS }}
+        fileName: ${{ env.CONTINUOUS }}
     - name: Extract and prepare continuous
       if: ${{ needs.changed.outputs.game_code != 'true' && needs.changed.outputs.cmake != 'true' }}
       run: |
