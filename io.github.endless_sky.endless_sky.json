@@ -1,0 +1,146 @@
+{
+    "$schema": "https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json",
+    "id": "io.github.endless_sky.endless_sky",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "22.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "endless-sky",
+    "rename-desktop-file": "endless-sky.desktop",
+    "rename-icon": "endless-sky",
+    "finish-args": [
+        "--socket=pulseaudio",
+        "--socket=wayland",
+        "--socket=fallback-x11",
+        "--share=ipc",
+        "--device=dri"
+    ],
+    "modules": [
+        {
+            "name": "glu",
+            "config-opts": ["--disable-static"],
+            "sources": [
+              {
+                "type": "archive",
+                "url": "https://mesa.freedesktop.org/archive/glu/glu-9.0.1.tar.xz",
+                "sha256": "fb5a4c2dd6ba6d1c21ab7c05129b0769544e1d68e1e3b0ffecb18e73c93055bc"
+              }
+            ],
+            "cleanup": ["/include", "/lib/*.a", "/lib/*.la", "/lib/pkgconfig"]
+        },
+        {
+            "name": "vcpkg",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DVCPKG_DEVELOPMENT_WARNINGS=OFF",
+                "-DBUILD_TESTING=OFF",
+                "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+                "-DFETCHCONTENT_SOURCE_DIR_FMT=fmt",
+                "-DFETCHCONTENT_SOURCE_DIR_CMAKERC=cmrc",
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "no-make-install": true,
+            "post-install": [
+                "cp -r vcpkg-source /app/vcpkg",
+                "cp vcpkg /app/vcpkg"
+            ],
+            "cleanup": ["*"],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/microsoft/vcpkg-tool/archive/2022-12-14.tar.gz",
+                    "sha512": "63db6e7a2f6ac3924e6da07b278549ca043c29d38524ef7d5804dad0d2d0069f542d48ed31601845ddfcbf87471a90a2b4368f645fd3e43066ce7e72aa40bbf6"
+                },
+                {
+                    "type": "git",
+                    "url": "https://github.com/Microsoft/vcpkg",
+                    "commit": "163fe7bd3d67c41200617caaa245b5ba2ba854e6",
+                    "dest": "vcpkg-source"
+                },
+                {
+                    "type": "archive",
+                    "url": "https://github.com/fmtlib/fmt/archive/refs/tags/9.1.0.tar.gz",
+                    "sha512": "a18442042722dd48e20714ec034a12fcc0576c9af7be5188586970e2edf47529825bdc99af366b1d5891630c8dbf6f63bfa9f012e77ab3d3ed80d1a118e3b2be",
+                    "dest": "fmt"
+                },
+                {
+                    "type": "archive",
+                    "url": "https://github.com/vector-of-bool/cmrc/archive/refs/tags/2.0.1.tar.gz",
+                    "sha512": "cb69ff4545065a1a89e3a966e931a58c3f07d468d88ecec8f00da9e6ce3768a41735a46fc71af56e0753926371d3ca5e7a3f2221211b4b1cf634df860c2c997f",
+                    "dest": "cmrc"
+                },
+                {
+                    "type": "file",
+                    "url": "https://github.com/KhronosGroup/EGL-Registry/archive/af97e2c27b49a090a335fc6ed5040c780ad9fec8.tar.gz",
+                    "sha512": "89f29608702cb85c5280a7d86ef2cd1c77ed746d4a2577ea143767828ea41ef28cf038d2d86fe1eccc03db08ad27258cb04dadb92233ed9acc10548d93537a80",
+                    "dest": "vcpkg-source/downloads",
+                    "dest-filename": "KhronosGroup-EGL-Registry-af97e2c27b49a090a335fc6ed5040c780ad9fec8.tar.gz"
+                },
+                {
+                    "type": "file",
+                    "url": "https://github.com/KhronosGroup/OpenGL-Registry/archive/5bae8738b23d06968e7c3a41308568120943ae77.tar.gz",
+                    "sha512": "3f8c58474627ded85d95f8a4d86329ec4f55b179eb2df393983462d42088e9496eef1a5980481f4b085e6ffb749cd5dd3b312a1e2b7b8189d9723a673ec65b0d",
+                    "dest": "vcpkg-source/downloads",
+                    "dest-filename": "KhronosGroup-OpenGL-Registry-5bae8738b23d06968e7c3a41308568120943ae77.tar.gz"
+                },
+                {
+                    "type": "file",
+                    "url": "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz",
+                    "sha512": "57453646635609d54f62fb32a080b82b601fd471fcfd26e109f479b3fef6dfbc24b83f4ba62916d07d62cd06d1409ad7aa19bc1cd7cf3639c103c815b8be31d1",
+                    "dest": "vcpkg-source/downloads"
+                },
+                {
+                    "type": "file",
+                    "url": "https://sourceforge.net/projects/mad/files/libmad/0.15.1b/libmad-0.15.1b.tar.gz/download",
+                    "sha512": "2cad30347fb310dc605c46bacd9da117f447a5cabedd8fefdb24ab5de641429e5ec5ce8af7aefa6a75a3f545d3adfa255e3fa0a2d50971f76bc0c4fc0400cc45",
+                    "dest": "vcpkg-source/downloads",
+                    "dest-filename": "libmad-0.15.1b.tar.gz"
+                }
+            ]
+        },
+        {
+            "name": "endless-sky",
+            "buildsystem": "cmake-ninja",
+            "build-options": {
+                "arch": {
+                    "x86_64": {
+                        "config-opts": [
+                            "-DVCPKG_TARGET_TRIPLET=flatpak-x64"
+                        ]
+                    },
+                    "aarch64": {
+                        "config-opts": [
+                            "-DVCPKG_TARGET_TRIPLET=flatpak-arm64"
+                        ],
+                        "env": {
+                            "VCPKG_FORCE_SYSTEM_BINARIES": "1"
+                        }
+                    }
+                }
+            },
+            "config-opts": [
+                "-DES_USE_SYSTEM_LIBRARIES=ON",
+                "-DES_FLATPAK=ON",
+                "-DBUILD_TESTING=OFF",
+                "-DCMAKE_TOOLCHAIN_FILE=/app/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "post-install": [
+                "install -Dm755 launcher /app/bin/endless-sky"
+            ],
+            "cleanup": ["/vcpkg/*"],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "./"
+                },
+                {
+                    "type": "script",
+                    "dest-filename": "launcher",
+                    "commands": [
+                        "exec /app/games/endless-sky -r /app/share/games/endless-sky"
+                    ]
+                }
+            ]
+        }
+    ]
+}

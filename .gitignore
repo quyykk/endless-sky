@@ -27,6 +27,7 @@ scons-local*
 .sconsign.dblite
 /*.d
 /vcpkg/
+.flatpak-builder/
 
 # Test Reports
 test-report.xml
