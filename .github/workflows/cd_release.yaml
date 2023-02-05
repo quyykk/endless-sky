@@ -1,9 +1,9 @@
 name: Release CD
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - v*
 
 jobs:
   release_appimage_x64:
@@ -39,10 +39,11 @@ jobs:
           echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
         if: ${{ failure() || cancelled() }}
         shell: bash
-      - name: Upload Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ env.OUTPUT }}
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
 
 
   release_windows_x86:
@@ -73,10 +74,11 @@ jobs:
           echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
         if: ${{ failure() || cancelled() }}
         shell: bash
-      - name: Upload Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ env.OUTPUT }}
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
 
 
   release_windows_x64:
@@ -108,10 +110,11 @@ jobs:
           echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
         if: ${{ failure() || cancelled() }}
         shell: bash
-      - name: Upload Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ env.OUTPUT }}
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
 
 
   release_macos_universal:
@@ -159,7 +162,24 @@ jobs:
           echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
         if: ${{ failure() || cancelled() }}
         shell: bash
-      - name: Upload Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          files: ${{ env.OUTPUT }}.dmg
+          name: ${{ env.OUTPUT }}
+          path: ${{ env.OUTPUT }}
+
+
+  release_create:
+    name: Create Draft Release
+    needs: [release_appimage_x64, release_windows_x86, release_windows_x64, release_macos_universal]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - uses: softprops/action-gh-release
+        with:
+          draft: true
+          files: |
+            Endless_Sky-${{ github.event.release.tag_name }}-x86_64.AppImage
+            EndlessSky-win32-${{ github.event.release.tag_name }}.zip
+            EndlessSky-win64-${{ github.event.release.tag_name }}.zip
+            Endless-Sky-${{ github.event.release.tag_name }}
