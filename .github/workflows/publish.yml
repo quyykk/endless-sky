@@ -20,12 +20,6 @@ jobs:
         arch: [x86_64, aarch64]
     steps:
       - uses: actions/checkout@v3
-      - name: Build
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v5
-        with:
-          bundle: endless-sky.flatpak
-          manifest-path: io.github.endless_sky.endless_sky.json
-          cache: false
       - name: Install docker
         if: ${{ matrix.arch == 'aarch64' }}
         run: dnf -y install docker
@@ -34,6 +28,13 @@ jobs:
         uses: docker/setup-qemu-action@v2
         with:
           platforms: arm64
+      - name: Build
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v5
+        with:
+          bundle: endless-sky.flatpak
+          manifest-path: io.github.endless_sky.endless_sky.json
+          cache: false
+          arch: ${{ matrix.arch }}
       # - uses: flatpak/flatpak-github-actions/flat-manager@v5
       #   name: Deploy
       #   with:
