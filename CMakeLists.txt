@@ -24,8 +24,8 @@ set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
 # Setup vcpkg.
 if(ES_USE_VCPKG)
-	# No need to bootstrap vcpkg for Flatpak, it is assumed that it is already provided.
-	if(NOT ES_FLATPAK)
+	# No need to bootstrap vcpkg if the toolchain file is explictly provided.
+	if(NOT CMAKE_TOOLCHAIN_FILE)
 		include(utils/vcpkg_bootstrap.cmake)
 		x_vcpkg_bootstrap()
 	endif()

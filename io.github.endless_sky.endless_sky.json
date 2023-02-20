@@ -53,7 +53,6 @@
                 {
                     "type": "git",
                     "url": "https://github.com/Microsoft/vcpkg",
-                    "commit": "163fe7bd3d67c41200617caaa245b5ba2ba854e6",
                     "dest": "vcpkg-source"
                 },
                 {
