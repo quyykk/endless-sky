@@ -408,7 +408,7 @@ void GameLoop(PlayerInfo &player, const Conversation &conversation, const string
 
 		Audio::Step();
 
-		// Events in this frame may have cleared out the menu, in which case
+		// Events in this frame may aaaahave cleared out the menu, in which case
 		// we should draw the game panels instead:
 		(menuPanels.IsEmpty() ? gamePanels : menuPanels).DrawAll();
 		if(isFastForward)
