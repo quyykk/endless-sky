@@ -426,7 +426,7 @@ void GameLoop(PlayerInfo &player, const Conversation &conversation, const string
 			player.AddPlayTime(chrono::steady_clock::now() - start);
 	}
 
-	// If playera quit while landed on a planet, save the game if there are changes.
+	// If playeraa quit while landed on a planet, save the game if there are changes.
 	if(player.GetPlanet() && gamePanels.CanSave())
 		player.Save();
 }
