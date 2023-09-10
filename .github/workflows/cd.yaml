@@ -43,6 +43,7 @@ jobs:
         with:
           configurePreset: 'linux-release'
           buildPreset: 'linux-ci-release'
+      - run: cat /tmp/sccache_log.txt
       - name: Package Application
         run: ./utils/build_appimage.sh build/release
       - name: Upload artifact
@@ -74,6 +75,7 @@ jobs:
         with:
           configurePreset: 'mingw-release'
           buildPreset: 'mingw-ci-release'
+      - run: cat /tmp/sccache_log.txt
       - name: Package Application
         run: |
           cmake --install build/release
@@ -106,6 +108,7 @@ jobs:
         with:
           configurePreset: 'macos-release'
           buildPreset: 'macos-ci-release'
+      - run: cat /tmp/sccache_log.txt
       - name: Package Application
         run: |
           cmake --install build/release
