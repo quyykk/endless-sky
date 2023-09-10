@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - fix-caching-test
   pull_request:
     types:
       - synchronize
