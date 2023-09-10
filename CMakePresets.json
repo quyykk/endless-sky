@@ -224,6 +224,7 @@
       "inherits": "ci",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld-link",
         "VCPKG_HOST_TRIPLET": "x64-windows-release",
         "VCPKG_TARGET_TRIPLET": "x64-windows-release",
         "CMAKE_CXX_COMPILER": "clang-cl.exe"
@@ -250,6 +251,7 @@
       "inherits": "release",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "linux64-release",
         "VCPKG_TARGET_TRIPLET": "linux64-release"
       }
@@ -262,6 +264,7 @@
       "cacheVariables": {
         "ES_CREATE_BUNDLE": "ON",
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "macos64-release",
         "VCPKG_TARGET_TRIPLET": "macos64-release",
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
@@ -280,6 +283,7 @@
       "cacheVariables": {
         "ES_CREATE_BUNDLE": "ON",
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "macos64-release",
         "VCPKG_TARGET_TRIPLET": "macos-arm64-release",
         "CMAKE_OSX_ARCHITECTURES": "arm64",
@@ -295,6 +299,7 @@
         "ES_CREATE_BUNDLE": "ON",
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "CMAKE_RC_COMPILER": "windres",
         "VCPKG_HOST_TRIPLET": "win64-release",
         "VCPKG_TARGET_TRIPLET": "win64-release"
@@ -308,6 +313,7 @@
       "cacheVariables": {
         "ES_CREATE_BUNDLE": "ON",
         "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "CMAKE_RC_COMPILER": "windres",
         "VCPKG_HOST_TRIPLET": "win64-release",
         "VCPKG_TARGET_TRIPLET": "win32-release"
