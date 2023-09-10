@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - use-lld-in-ci
   pull_request:
     types:
       - synchronize
