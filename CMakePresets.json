@@ -183,6 +183,7 @@
       "inherits": "ci",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "linux64-release",
         "VCPKG_TARGET_TRIPLET": "linux64-release",
         "ES_USE_OFFSCREEN": "ON"
@@ -195,6 +196,7 @@
       "inherits": "ci",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "linux64-release",
         "VCPKG_TARGET_TRIPLET": "linux64-release",
         "ES_GLES": "ON",
@@ -208,6 +210,7 @@
       "inherits": "ci",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "VCPKG_HOST_TRIPLET": "macos64-release",
         "VCPKG_TARGET_TRIPLET": "macos64-release",
         "CMAKE_OSX_ARCHITECTURES": "x86_64",
@@ -234,6 +237,7 @@
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache",
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld",
         "CMAKE_RC_COMPILER": "windres",
         "VCPKG_HOST_TRIPLET": "win64-release",
         "VCPKG_TARGET_TRIPLET": "win64-release"
