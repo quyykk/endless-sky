@@ -167,9 +167,12 @@ void StarField::Draw(const Point &pos, const Point &vel, double zoom, const Syst
 			glUniform1f(elongationI, length * zoom);
 			glUniform1f(brightnessI, min(1., pow(zoom, .5)));
 
+			// Starfield offset when parallax is enabled.
+			float shove = pow(-5., pass);
+
 			// Stars this far beyond the border may still overlap the screen.
-			double borderX = fabs(vel.X()) + 1.;
-			double borderY = fabs(vel.Y()) + 1.;
+			double borderX = fabs(shove) + 1.;
+			double borderY = fabs(shove) + 1.;
 			// Find the absolute bounds of the star field we must draw.
 			int minX = pos.X() + (Screen::Left() - borderX) / zoom;
 			int minY = pos.Y() + (Screen::Top() - borderY) / zoom;
@@ -181,7 +184,6 @@ void StarField::Draw(const Point &pos, const Point &vel, double zoom, const Syst
 
 			for(int gy = minY; gy < maxY; gy += TILE_SIZE)
 			{
-				float shove = pow(-5., pass);
 				for(int gx = minX; gx < maxX; gx += TILE_SIZE)
 				{
 					Point off = Point(gx + shove, gy + shove) - pos;
