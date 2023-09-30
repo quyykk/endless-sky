@@ -15,7 +15,7 @@ jobs:
     - name: Upload Steam Data Depot
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.data }}
+        name: data.zip
         path: |
           changelog
           copyright
