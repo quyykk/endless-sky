@@ -3984,8 +3984,7 @@ bool Ship::DoHyperspaceLogic(vector<Visual> &visuals)
 			else
 			{
 				for(const StellarObject &object : currentSystem->Objects())
-					if(object.HasSprite() && object.HasValidPlanet()
-							&& object.GetPlanet()->HasSpaceport())
+					if(object.HasValidPlanet() && object.GetPlanet()->HasSpaceport())
 					{
 						target = object.Position();
 						break;

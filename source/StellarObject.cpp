@@ -22,6 +22,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Radar.h"
 
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -43,7 +44,7 @@ StellarObject::StellarObject()
 // Get the radius of this planet, i.e. how close you must be to land.
 double StellarObject::Radius() const
 {
-	double radius = -1.;
+	double radius = std::numeric_limits<double>::max();
 	if(HasSprite())
 		radius = .5 * min(Width(), Height());
 
@@ -52,7 +53,8 @@ double StellarObject::Radius() const
 	if(isStar)
 		radius = min(radius, 80.);
 
-	return radius;
+	// Use a default radius if this object has no sprite.
+	return radius == std::numeric_limits<double>::max() ? 150. : radius;
 }
 
 

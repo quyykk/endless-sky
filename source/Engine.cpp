@@ -255,7 +255,7 @@ Engine::Engine(PlayerInfo &player)
 
 	// Preload any landscapes for this system.
 	for(const StellarObject &object : player.GetSystem()->Objects())
-		if(object.HasSprite() && object.HasValidPlanet())
+		if(object.HasValidPlanet())
 			GameData::Preload(object.GetPlanet()->Landscape());
 
 	// Figure out what planet the player is landed on, if any.
@@ -269,13 +269,12 @@ Engine::Engine(PlayerInfo &player)
 	radar[calcTickTock].SetCenter(center);
 	const Ship *flagship = player.Flagship();
 	for(const StellarObject &object : player.GetSystem()->Objects())
-		if(object.HasSprite())
-		{
-			draw[calcTickTock].Add(object);
+	{
+		draw[calcTickTock].Add(object);
 
-			double r = max(2., object.Radius() * .03 + .5);
-			radar[calcTickTock].Add(object.RadarType(flagship), object.Position(), r, r - 1.);
-		}
+		double r = max(2., object.Radius() * .03 + .5);
+		radar[calcTickTock].Add(object.RadarType(flagship), object.Position(), r, r - 1.);
+	}
 
 	// Add all neighboring systems that the player has seen to the radar.
 	const System *targetSystem = flagship ? flagship->GetTargetSystem() : nullptr;
@@ -513,7 +512,7 @@ void Engine::Step(bool isActive)
 			// Create the planet labels as soon as we entered a new system.
 			labels.clear();
 			for(const StellarObject &object : player.GetSystem()->Objects())
-				if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->IsAccessible(flagship.get()))
+				if(object.HasValidPlanet() && object.GetPlanet()->IsAccessible(flagship.get()))
 					labels.emplace_back(labels, *player.GetSystem(), object);
 		}
 		if(doEnter && flagship->Zoom() == 1. && !flagship->IsHyperspacing())
@@ -618,7 +617,7 @@ void Engine::Step(bool isActive)
 		bool travelPlanIsValid = false;
 		const System *system = player.TravelPlan().back();
 		for(const StellarObject &object : flagship->GetSystem()->Objects())
-			if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->IsWormhole()
+			if(object.HasValidPlanet() && object.GetPlanet()->IsWormhole()
 				&& object.GetPlanet()->IsAccessible(flagship.get()) && player.HasVisited(*object.GetPlanet())
 				&& player.HasVisited(*system))
 			{
@@ -1587,14 +1586,13 @@ void Engine::CalculateStep()
 
 	// Draw the planets.
 	for(const StellarObject &object : playerSystem->Objects())
-		if(object.HasSprite())
-		{
-			// Don't apply motion blur to very large planets and stars.
-			if(object.Width() >= 280.)
-				draw[calcTickTock].AddUnblurred(object);
-			else
-				draw[calcTickTock].Add(object);
-		}
+	{
+		// Don't apply motion blur to very large planets and stars.
+		if(object.Width() >= 280.)
+			draw[calcTickTock].AddUnblurred(object);
+		else
+			draw[calcTickTock].Add(object);
+	}
 	// Draw the asteroids and minables.
 	asteroids.Draw(draw[calcTickTock], newCenter, zoom);
 	// Draw the flotsam.
@@ -2005,7 +2003,7 @@ void Engine::HandleMouseClicks()
 	const System *playerSystem = player.GetSystem();
 	if(!isRightClick && flagship->Zoom() == 1.)
 		for(const StellarObject &object : playerSystem->Objects())
-			if(object.HasSprite() && object.HasValidPlanet())
+			if(object.HasValidPlanet())
 			{
 				// If the player clicked to land on a planet,
 				// do so unless already landing elsewhere.
@@ -2382,11 +2380,10 @@ void Engine::FillRadar()
 
 	// Add stellar objects.
 	for(const StellarObject &object : playerSystem->Objects())
-		if(object.HasSprite())
-		{
-			double r = max(2., object.Radius() * .03 + .5);
-			radar[calcTickTock].Add(object.RadarType(flagship), object.Position(), r, r - 1.);
-		}
+	{
+		double r = max(2., object.Radius() * .03 + .5);
+		radar[calcTickTock].Add(object.RadarType(flagship), object.Position(), r, r - 1.);
+	}
 
 	// Add pointers for neighboring systems.
 	if(flagship)

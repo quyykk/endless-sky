@@ -152,7 +152,7 @@ double MapShipyardPanel::SystemValue(const System *system) const
 		// Visiting a system is sufficient to know what ports are available on its planets.
 		double value = -1.;
 		for(const StellarObject &object : system->Objects())
-			if(object.HasSprite() && object.HasValidPlanet())
+			if(object.HasValidPlanet())
 			{
 				const auto &shipyard = object.GetPlanet()->Shipyard();
 				if(shipyard.Has(selected))
@@ -220,7 +220,7 @@ void MapShipyardPanel::DrawItems()
 			{
 				isForSale = false;
 				for(const StellarObject &object : selectedSystem->Objects())
-					if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->Shipyard().Has(ship))
+					if(object.HasValidPlanet() && object.GetPlanet()->Shipyard().Has(ship))
 					{
 						isForSale = true;
 						break;

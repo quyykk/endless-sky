@@ -145,7 +145,7 @@ double MapOutfitterPanel::SystemValue(const System *system) const
 	double value = -1.;
 	const auto &planetStorage = player.PlanetaryStorage();
 	for(const StellarObject &object : system->Objects())
-		if(object.HasSprite() && object.HasValidPlanet())
+		if(object.HasValidPlanet())
 		{
 			const auto storage = planetStorage.find(object.GetPlanet());
 			if(storage != planetStorage.end() && storage->second.Get(selected))
@@ -231,7 +231,7 @@ void MapOutfitterPanel::DrawItems()
 
 				for(const StellarObject &object : selectedSystem->Objects())
 				{
-					if(!object.HasSprite() || !object.HasValidPlanet())
+					if(!object.HasValidPlanet())
 						continue;
 
 					const Planet &planet = *object.GetPlanet();

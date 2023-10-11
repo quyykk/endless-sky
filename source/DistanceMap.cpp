@@ -198,7 +198,7 @@ void DistanceMap::Init(const Ship *ship)
 		{
 			bool hasWormhole = false;
 			for(const StellarObject &object : ship->GetSystem()->Objects())
-				if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->IsWormhole())
+				if(object.HasValidPlanet() && object.GetPlanet()->IsWormhole())
 				{
 					hasWormhole = true;
 					break;
@@ -233,7 +233,7 @@ void DistanceMap::Init(const Ship *ship)
 		// not be included in Local Maps or mission itineraries.
 		if(wormholeStrategy != WormholeStrategy::NONE)
 			for(const StellarObject &object : top.next->Objects())
-				if(object.HasSprite() && object.HasValidPlanet() && object.GetPlanet()->IsWormhole()
+				if(object.HasValidPlanet() && object.GetPlanet()->IsWormhole()
 					&& (object.GetPlanet()->IsUnrestricted() || wormholeStrategy == WormholeStrategy::ALL))
 				{
 					// If we're seeking a path toward a "source," travel through

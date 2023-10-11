@@ -141,7 +141,7 @@ namespace {
 	{
 		const Planet *firstPlanet = nullptr;
 		for(auto &&stellarObject : system.Objects())
-			if(stellarObject.HasValidPlanet() && stellarObject.HasSprite() && !stellarObject.GetPlanet()->IsWormhole())
+			if(stellarObject.HasValidPlanet() && !stellarObject.GetPlanet()->IsWormhole())
 			{
 				// We can return true once we found 2 different landable planets.
 				if(!firstPlanet)
@@ -883,7 +883,7 @@ bool MapPanel::GetTravelInfo(const System *previous, const System *next, const d
 	// Short-circuit the loop for MissionPanel, which draws hyperlinks and wormholes the same.
 	if(!isHyper || wormholeColor)
 		for(const StellarObject &object : previous->Objects())
-			if(object.HasSprite() && object.HasValidPlanet()
+			if(object.HasValidPlanet()
 				&& object.GetPlanet()->IsWormhole()
 				&& player.HasVisited(*object.GetPlanet())
 				&& player.HasVisited(*previous) && player.HasVisited(*next)
@@ -961,7 +961,7 @@ void MapPanel::UpdateCache()
 				{
 					double size = 0;
 					for(const StellarObject &object : system.Objects())
-						if(object.HasSprite() && object.HasValidPlanet())
+						if(object.HasValidPlanet())
 							size += object.GetPlanet()->Shipyard().size();
 					value = size ? min(10., size) / 10. : -1.;
 				}
@@ -969,7 +969,7 @@ void MapPanel::UpdateCache()
 				{
 					double size = 0;
 					for(const StellarObject &object : system.Objects())
-						if(object.HasSprite() && object.HasValidPlanet())
+						if(object.HasValidPlanet())
 							size += object.GetPlanet()->Outfitter().size();
 					value = size ? min(60., size) / 60. : -1.;
 				}
@@ -979,7 +979,7 @@ void MapPanel::UpdateCache()
 					bool some = false;
 					colorSystem = false;
 					for(const StellarObject &object : system.Objects())
-						if(object.HasSprite() && object.HasValidPlanet() && !object.GetPlanet()->IsWormhole()
+						if(object.HasValidPlanet() && !object.GetPlanet()->IsWormhole()
 							&& object.GetPlanet()->IsAccessible(player.Flagship()))
 						{
 							bool visited = player.HasVisited(*object.GetPlanet());
@@ -1013,7 +1013,7 @@ void MapPanel::UpdateCache()
 				bool canLand = false;
 				bool hasSpaceport = false;
 				for(const StellarObject &object : system.Objects())
-					if(object.HasSprite() && object.HasValidPlanet())
+					if(object.HasValidPlanet())
 					{
 						const Planet *planet = object.GetPlanet();
 						hasSpaceport |= !planet->IsWormhole() && planet->HasSpaceport();
