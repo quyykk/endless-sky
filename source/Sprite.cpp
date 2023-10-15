@@ -104,6 +104,32 @@ void Sprite::AddSwizzleMaskFrames(ImageBuffer &buffer, bool is2x)
 
 
 
+// Upload the given frames. The given buffer will be cleared afterwards.
+void Sprite::AddFramesHeadless(ImageBuffer &buffer, bool is2x)
+{
+	// Do nothing if the buffer is empty.
+	if(!buffer.Pixels())
+		return;
+
+	// If this is the 1x image, its dimensions determine the sprite's size.
+	if(!is2x)
+	{
+		width = buffer.Width();
+		height = buffer.Height();
+		frames = buffer.Frames();
+	}
+}
+
+
+
+// Upload the given frames. The given buffer will be cleared afterwards.
+void Sprite::AddSwizzleMaskFramesHeadless(ImageBuffer &buffer, bool is2x)
+{
+	// Do nothing.
+}
+
+
+
 // Free up all textures loaded for this sprite.
 void Sprite::Unload()
 {

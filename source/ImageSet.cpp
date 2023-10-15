@@ -324,3 +324,16 @@ void ImageSet::Upload(Sprite *sprite)
 	GameData::GetMaskManager().SetMasks(sprite, std::move(masks));
 	masks.clear();
 }
+
+
+
+void ImageSet::UploadHeadless(Sprite *sprite)
+{
+	// Load the frames (this will clear the buffers).
+	sprite->AddFramesHeadless(buffer[0], false);
+	sprite->AddFramesHeadless(buffer[1], true);
+	sprite->AddSwizzleMaskFramesHeadless(buffer[2], false);
+	sprite->AddSwizzleMaskFramesHeadless(buffer[3], true);
+	GameData::GetMaskManager().SetMasks(sprite, std::move(masks));
+	masks.clear();
+}

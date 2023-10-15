@@ -133,12 +133,15 @@ int main(int argc, char *argv[])
 
 		// Begin loading the game data.
 		bool isConsoleOnly = loadOnly || printTests || printData;
-		auto dataFuture = GameData::BeginLoad(queue, isConsoleOnly, debugMode);
+		const bool isTesting = !testToRunName.empty();
+		auto dataFuture = GameData::BeginLoad(queue, isConsoleOnly, debugMode, isTesting);
 
 		// If we are not using the UI, or performing some automated task, we should load
 		// all data now.
-		if(isConsoleOnly || !testToRunName.empty())
+		if(isConsoleOnly)
 			dataFuture.wait();
+		if(isTesting)
+			queue.Wait();
 
 		if(!testToRunName.empty() && !GameData::Tests().Has(testToRunName))
 		{
@@ -188,18 +191,19 @@ int main(int argc, char *argv[])
 
 		if(!GameWindow::Init())
 			return 1;
+		GameData::LoadShaders(isTesting);
 
-		GameData::LoadShaders();
-
-		// Show something other than a blank window.
-		GameWindow::Step();
-
-		Audio::Init(GameData::Sources());
-
-		if(!testToRunName.empty() && !noTestMute)
+		if(!isTesting)
 		{
-			Audio::SetVolume(0);
+			// Show something other than a blank window.
+			GameWindow::Step();
+
+			Audio::Init(GameData::Sources());
 		}
+
+
+		if(isTesting && !noTestMute)
+			Audio::SetVolume(0);
 
 		// This is the main loop where all the action begins.
 		GameLoop(player, queue, conversation, testToRunName, debugMode);
@@ -411,11 +415,13 @@ void GameLoop(PlayerInfo &player, TaskQueue &queue, const Conversation &conversa
 
 		// Events in this frame may have cleared out the menu, in which case
 		// we should draw the game panels instead:
-		(menuPanels.IsEmpty() ? gamePanels : menuPanels).DrawAll();
-		if(isFastForward)
-			SpriteShader::Draw(SpriteSet::Get("ui/fast forward"), Screen::TopLeft() + Point(10., 10.));
-
-		GameWindow::Step();
+		(menuPanels.IsEmpty() ? gamePanels : menuPanels).DrawAll(testToRunName.empty());
+		if(testToRunName.empty())
+		{
+			if(isFastForward)
+				SpriteShader::Draw(SpriteSet::Get("ui/fast forward"), Screen::TopLeft() + Point(10., 10.));
+			GameWindow::Step();
+		}
 
 		// When we perform automated testing, then we run the game by default as quickly as possible.
 		// Except when debug-mode is set.

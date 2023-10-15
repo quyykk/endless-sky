@@ -64,6 +64,7 @@ public:
 	// called, the internal image buffers and mask vector will be cleared, but
 	// the paths are saved in case the sprite needs to be loaded again.
 	void Upload(Sprite *sprite);
+	void UploadHeadless(Sprite *sprite);
 
 
 private:

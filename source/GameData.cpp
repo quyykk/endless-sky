@@ -109,6 +109,13 @@ namespace {
 				[image] { image->Upload(SpriteSet::Modify(image->Name())); ++spriteLoadingProgress; });
 		++totalSprites;
 	}
+	void LoadSpriteHeadless(TaskQueue &queue, const shared_ptr<ImageSet> &image)
+	{
+		queue.Run([image] { image->Load(); },
+				[image] { image->UploadHeadless(SpriteSet::Modify(image->Name())); ++spriteLoadingProgress; });
+		++totalSprites;
+	}
+	auto LoadPtr = &LoadSprite;
 
 	void LoadPlugin(TaskQueue &queue, const string &path)
 	{
@@ -136,15 +143,18 @@ namespace {
 		if(!icon->IsEmpty())
 		{
 			icon->ValidateFrames();
-			LoadSprite(queue, icon);
+			LoadPtr(queue, icon);
 		}
 	}
 }
 
 
 
-std::shared_future<void> GameData::BeginLoad(TaskQueue &queue, bool onlyLoadData, bool debugMode)
+std::shared_future<void> GameData::BeginLoad(TaskQueue &queue, bool onlyLoadData, bool debugMode, bool testing)
 {
+	if(testing)
+		LoadPtr = &LoadSpriteHeadless;
+
 	// Initialize the list of "source" folders based on any active plugins.
 	LoadSources(queue);
 
@@ -169,7 +179,7 @@ std::shared_future<void> GameData::BeginLoad(TaskQueue &queue, bool onlyLoadData
 				if(ImageSet::IsDeferred(it.first))
 					deferred[SpriteSet::Get(it.first)] = it.second;
 				else
-					LoadSprite(queue, it.second);
+					LoadPtr(queue, it.second);
 			}
 
 			// Generate a catalog of music files.
@@ -208,7 +218,7 @@ void GameData::CheckReferences()
 
 
 
-void GameData::LoadShaders()
+void GameData::LoadShaders(bool isTesting)
 {
 	FontSet::Add(Files::Images() + "font/ubuntu14r.png", 14);
 	FontSet::Add(Files::Images() + "font/ubuntu18r.png", 18);
@@ -217,6 +227,8 @@ void GameData::LoadShaders()
 	Command::LoadSettings(Files::Resources() + "keys.txt");
 	Command::LoadSettings(Files::Config() + "keys.txt");
 
+	if(isTesting)
+		return;
 	FillShader::Init();
 	FogShader::Init();
 	LineShader::Init();
@@ -289,8 +301,7 @@ void GameData::Preload(TaskQueue &queue, const Sprite *sprite)
 	// Now, load all the files for this sprite.
 	preloaded[sprite] = 0;
 	auto image = dit->second;
-	queue.Run([image] { image->Load(); },
-		[image] { image->Upload(SpriteSet::Modify(image->Name())); });
+	LoadPtr(queue, image);
 }
 
 
