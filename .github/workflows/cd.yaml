@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - allow-concurrent-push-commits
   pull_request:
     types:
       - synchronize
@@ -12,7 +13,7 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-
+#fadf
 jobs:
 
   cd_appimage_x64:
